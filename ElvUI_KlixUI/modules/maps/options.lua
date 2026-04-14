@@ -1,7 +1,27 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local MM = KUI:GetModule("KuiMinimap")
-local KWM = KUI:GetModule('KuiWorldMap')
 local SMB = KUI:GetModule("KuiSquareMinimapButtons")
+local KWM = KUI:GetModule('KuiWorldMap', true)
+--local FQ = KUI:GetModule("FlightQueue")
+local COMP = KUI:GetModule("KuiCompatibility")
+
+local function GetElvUIMapsArgs()
+	local maps = E.Options and E.Options.args and E.Options.args.maps
+	return maps and maps.args
+end
+
+local function GetElvUIMinimapArgs()
+	local mapsArgs = GetElvUIMapsArgs()
+	local minimap = mapsArgs and mapsArgs.minimap
+	return minimap and minimap.args
+end
+
+local function GetElvUILocationTextArgs()
+	local minimapArgs = GetElvUIMinimapArgs()
+	local cluster = minimapArgs and minimapArgs.cluster
+	local locationTextGroup = cluster and cluster.args and cluster.args.locationTextGroup
+	return locationTextGroup and locationTextGroup.args
+end
 
 local function Maps()
 	E.Options.args.KlixUI.args.modules.args.maps = {
@@ -16,7 +36,7 @@ local function Maps()
 				type = "header",
 				name = KUI:cOption(L["Maps"]),
 				order = 1,
-			},
+					   },
 			minimap = {
 				type = "group",
 				name = MINIMAP_LABEL,
@@ -36,6 +56,19 @@ local function Maps()
 								name = L["Rectangular Minimap"],
 								desc = L["Reshape the minimap to a rectangle."],
 								hidden = function() return T.IsAddOnLoaded("ElvUI_RectangleMinimap") end,
+							},
+							styleButton = {
+								order = 2,
+								type = "toggle",
+								name = L["Garrison Button Style"],
+								desc = L["Change the look of the Garrison/OrderHall/BfA Mission Button"],
+								set = function(info, value) E.db.KlixUI.maps.minimap[ info[#info] ] = value; MM:GarrisonButtonPosition(); E:StaticPopup_Show("PRIVATE_RL"); end,
+							},
+							styleLFG = {
+								order = 3,
+								type = "toggle",
+								name = L["LFG Button Style"],
+								desc = L["Change the look of the looking for group Button"],
 							},
 							glow = {
 								order = 4,
@@ -101,14 +134,33 @@ local function Maps()
 							},
 						},
 					},
+
+                        -- Blip textures
+			-- textures = {
+						-- order = 2,
+						-- type = "group",
+				-- name = L["Blip Textures"],
+				-- get = function(info) return E.db.KlixUI.maps.minimap.blip[ info[#info] ] end,
+				-- set = function(info, value) E.db.KlixUI.maps.minimap.blip[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+				-- args = {
+					-- enable = {
+						-- order = 1,
+						-- type = "toggle",
+						-- name = L["Enable"],
+						-- desc = L["Use other Minimap blip textures. |cffFF0000WARNING: You need to restart your game to take effect.|r"],
+					-- },
+
+				-- },
+			-- },
+
 					buttons = {
 						order = 2,
 						type = "group",
 						name = L["Minimap Buttons"],
 						get = function(info) return E.db.KlixUI.maps.minimap.buttons[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; SMB:Update(); end,
-						disabled = function() return T.IsAddOnLoaded("ProjectAzilroka") end,
-						hidden = function() return T.IsAddOnLoaded("ProjectAzilroka") end,
+						set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; if SMB.RefreshSettings then SMB:RefreshSettings() else SMB:Update() end end,
+						disabled = function() return ((COMP.PA and _G.ProjectAzilroka.db["SquareMinimapButtons"]['Enable']) or (COMP.SLE and E.private.sle.minimap.mapicons.enable)) end,
+						hidden = function() return ((COMP.PA and _G.ProjectAzilroka.db["SquareMinimapButtons"]['Enable']) or (COMP.SLE and E.private.sle.minimap.mapicons.enable)) end,
 						args = {
 							enable = {
 								order = 1,
@@ -165,6 +217,47 @@ local function Maps()
 								min = 1, max = 12, step = 1,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
+							sortBy = {
+								order = 10,
+								type = "select",
+								name = "Sort By",
+								values = {
+									ADDED = "Added Order",
+									BY_FILTERING = "By Filtering",
+									NAME_ASC = "Name Ascending",
+									NAME_DESC = "Name Descending",
+									TYPE_NAME = "Type then Name",
+								},
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+							},
+							buttonSource = {
+								order = 11,
+								type = "select",
+								name = "Button Source",
+								values = {
+									ALL = "AddOn + Blizzard",
+									ADDON = "Only AddOn Buttons",
+									BLIZZARD = "Only Blizzard Buttons",
+								},
+								set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+							},
+							growthDirection = {
+								order = 12,
+								type = "select",
+								name = "Growth Direction",
+								values = {
+									RIGHT_DOWN = "RIGHT_DOWN",
+									LEFT_DOWN = "LEFT_DOWN",
+									RIGHT_UP = "RIGHT_UP",
+									LEFT_UP = "LEFT_UP",
+									DOWN_RIGHT = "DOWN_RIGHT",
+									DOWN_LEFT = "DOWN_LEFT",
+									UP_RIGHT = "UP_RIGHT",
+									UP_LEFT = "UP_LEFT",
+								},
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+							},
 							visibility = {
 								order = 15,
 								type = 'input',
@@ -172,6 +265,134 @@ local function Maps()
 								name = L["Visibility State"],
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 								set = function(info, value) E.db.KlixUI.maps.minimap.buttons.visibility = value; SMB:UpdateVisibility() end,
+							},
+							filtering = {
+								order = 16,
+								type = "group",
+								name = "Filtering",
+								guiInline = true,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+								args = {
+									whitelist = {
+										order = 1,
+										type = "input",
+										width = "full",
+										name = "Whitelist",
+										desc = function()
+											return SMB:GetButtonTokensTooltipText("Comma or newline separated button names. Blizzard tokens: TRACKING, MAIL, QUEUE, GARRISON.")
+										end,
+										multiline = 4,
+									},
+									blacklist = {
+										order = 2,
+										type = "input",
+										width = "full",
+										name = "Blacklist",
+										desc = function()
+											return SMB:GetButtonTokensTooltipText("Comma or newline separated button names. Blizzard tokens: TRACKING, MAIL, QUEUE, GARRISON.")
+										end,
+										multiline = 4,
+									},
+								},
+							},
+							collapse = {
+								order = 17,
+								type = "group",
+								name = "Collapse",
+								guiInline = true,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+								args = {
+									enableCollapse = {
+										order = 1,
+										type = "toggle",
+										name = "Enable Collapse Button",
+									},
+									collapsed = {
+										order = 2,
+										type = "toggle",
+										name = "Start Collapsed",
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enableCollapse end,
+									},
+									collapsedButtons = {
+										order = 3,
+										type = "input",
+										width = "full",
+										name = "Collapsed Buttons",
+										desc = function()
+											return SMB:GetButtonTokensTooltipText("Only these buttons stay visible while collapsed. Use names or TRACKING, MAIL, QUEUE, GARRISON.")
+										end,
+										multiline = 4,
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enableCollapse end,
+									},
+								},
+							},
+							positioning = {
+								order = 18,
+								type = "group",
+								name = L["Position"],
+								guiInline = true,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+								args = {
+									useCustomPosition = {
+										order = 1,
+										type = "toggle",
+										name = "Use Position Options",
+									},
+									dockToMinimap = {
+										order = 2,
+										type = "toggle",
+										name = "Dock To Minimap",
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.useCustomPosition end,
+									},
+									point = {
+										order = 3,
+										type = "select",
+										name = L["Point"],
+										values = {
+											TOPLEFT = "TOPLEFT",
+											TOP = "TOP",
+											TOPRIGHT = "TOPRIGHT",
+											LEFT = "LEFT",
+											CENTER = "CENTER",
+											RIGHT = "RIGHT",
+											BOTTOMLEFT = "BOTTOMLEFT",
+											BOTTOM = "BOTTOM",
+											BOTTOMRIGHT = "BOTTOMRIGHT",
+										},
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.useCustomPosition end,
+									},
+									relativePoint = {
+										order = 4,
+										type = "select",
+										name = "Relative Point",
+										values = {
+											TOPLEFT = "TOPLEFT",
+											TOP = "TOP",
+											TOPRIGHT = "TOPRIGHT",
+											LEFT = "LEFT",
+											CENTER = "CENTER",
+											RIGHT = "RIGHT",
+											BOTTOMLEFT = "BOTTOMLEFT",
+											BOTTOM = "BOTTOM",
+											BOTTOMRIGHT = "BOTTOMRIGHT",
+										},
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.useCustomPosition end,
+									},
+									xOffset = {
+										order = 5,
+										type = "range",
+										name = L["X-Offset"],
+										min = -200, max = 200, step = 1,
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.useCustomPosition end,
+									},
+									yOffset = {
+										order = 6,
+										type = "range",
+										name = L["Y-Offset"],
+										min = -200, max = 200, step = 1,
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.useCustomPosition end,
+									},
+								},
 							},
 							blizzard = {
 								order = 20,
@@ -195,6 +416,18 @@ local function Maps()
 										order = 3,
 										type = "toggle",
 										name = L["Move Mail Icon"],
+									},
+									hideGarrison  = {
+										order = 4,
+										type = "toggle",
+										name = L["Hide Garrison Icon"],
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable or E.db.KlixUI.maps.minimap.buttons.moveGarrison end,
+									},
+									moveGarrison  = {
+										order = 5,
+										type = "toggle",
+										name = L["Move Garrison Icon"],
+										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable or E.db.KlixUI.maps.minimap.buttons.hideGarrison end,
 									},
 								},
 							},
@@ -369,11 +602,11 @@ local function Maps()
 										type = 'color',
 										order = 4,
 										name = L["Color"],
-										get = function(info)
-											local t = E.db.KlixUI.maps.minimap.coords[ info[#info] ]
-											local d = P.KlixUI.maps.minimap.coords[info[#info]]
-											return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a
-										end,
+										   get = function(info)
+											   local t = E.db.KlixUI.maps.minimap.coords[ info[#info] ]
+											   local d = P.KlixUI.maps.minimap.coords[info[#info]]
+											   return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a
+										   end,
 										set = function(info, r, g, b, a)
 											E.db.KlixUI.maps.minimap.coords[ info[#info] ] = {}
 											local t = E.db.KlixUI.maps.minimap.coords[ info[#info] ]
@@ -466,7 +699,7 @@ local function Maps()
 									["OUTLINE"] = "OUTLINE",
 									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
 									["THICKOUTLINE"] = "THICKOUTLINE",
-								},
+								},  
 							},
 							color = {
 								order = 10,
@@ -495,7 +728,7 @@ local function Maps()
 									MM:ColorCardinalFrame();
 								end,
 							},
-						},	
+						},
 					},
 				},
 			},
@@ -503,6 +736,8 @@ local function Maps()
 				type = "group",
 				name = L["Worldmap"],
 				order = 3,
+				disabled = function() return not KWM end,
+				hidden = function() return not KWM end,
 				get = function(info) return E.db.KlixUI.maps.worldmap[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.maps.worldmap[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
 				args = {
@@ -516,15 +751,27 @@ local function Maps()
 								order = 1,
 								type = "range",
 								name = L["World Map Frame Size"],
-								min = 0.1, max = 1, step = 0.1,
-								set = function(info, value) E.db.KlixUI.maps.worldmap.scale = value; KWM:WorldMapScale() end,
+								min = 0.5, max = 2, step = 0.1,
+								set = function(info, value) E.db.KlixUI.maps.worldmap.scale = value; KWM:SetMapScale() end
 							},
-							zoom = {
+							worldquests = {
 								order = 2,
 								type = "toggle",
-								name = L["World Map Frame Zoom"],
-								desc = L["Mouse scroll on the world map to zoom."],
+								name = L["Enhanced World Quests"]..E.NewSign,
+								desc = L["Enhances the regular world quests pins on the world map."],
+								disabled = function() return E.Mists
+									or T.IsAddOnLoaded("BetterWorldQuests")
+									or T.IsAddOnLoaded("WorldQuestTracker") 
+									or T.IsAddOnLoaded("WorldQuestsList") 
+									or T.IsAddOnLoaded("WorldQuestTab")
+								end,
+								hidden = function() return E.Mists end,
 							},
+							--[[flightQ = {
+								order = 3,
+								type = "toggle",
+								name = L["Flight Queue"],
+							},]]
 						},
 					},
 					reveal = {
@@ -580,34 +827,34 @@ if E.db.KlixUI.maps == nil then E.db.KlixUI.maps = {} end
 if E.db.KlixUI.maps.minimap == nil then E.db.KlixUI.maps.minimap = {} end
 if E.db.KlixUI.maps.minimap.rectangle then
 	local function InjectElvUIMapsOptions()
-		E.Options.args.maps.args.minimap.args.generalGroup.args.size = {
-			order = 2,
-			type = "range",
-			name = L["Size"],
-			desc = L["Adjust the size of the minimap."],
-			min = 150, max = 400, step = 1,
-			get = function(info) return E.db.general.minimap.size end,
-			set = function(info, value) E.db.general.minimap.size = value; MM:UpdateSettings(); E:StaticPopup_Show("PRIVATE_RL") end,
-			disabled = function() return not E.private.general.minimap.enable end,
-		}
+		local minimapArgs = GetElvUIMinimapArgs()
+		local size = minimapArgs and minimapArgs.size
+		if not size then return end
+
+		size.min = 150
+		size.max = 400
+		size.step = 1
 	end
 	T.table_insert(KUI.Config, InjectElvUIMapsOptions)
 end
 
 local function injectElvUIDataTextsOptions()
-	E.Options.args.maps.args.minimap.args.locationTextGroup.args.spacer1 = {
+	local locationTextArgs = GetElvUILocationTextArgs()
+	if not locationTextArgs then return end
+
+	locationTextArgs.spacer1 = {
 		order = 21,
 		type = 'description',
 		name = '',
 	}
 
-	E.Options.args.maps.args.minimap.args.locationTextGroup.args.spacer2 = {
+	locationTextArgs.spacer2 = {
 		order = 22,
 		type = 'header',
 		name = '',
 	}
 	
-	E.Options.args.maps.args.minimap.args.locationTextGroup.args.locationdigits = {
+	locationTextArgs.locationdigits = {
 		order = 23,
 		type = 'range',
 		name = KUI:cOption(L["Location Digits"]),
@@ -618,7 +865,7 @@ local function injectElvUIDataTextsOptions()
 		disabled = function() return E.db.general.minimap.locationText ~= "ABOVE" end,
 	}
 	
-	E.Options.args.maps.args.minimap.args.locationTextGroup.args.locationtext = {
+	locationTextArgs.locationtext = {
 		order = 24,
 		type = "select",
 		name = KUI:cOption(L["Location Text"]),
@@ -632,11 +879,13 @@ local function injectElvUIDataTextsOptions()
 		disabled = function() return E.db.general.minimap.locationText ~= "ABOVE" end,
 	}
 	
-	E.Options.args.maps.args.minimap.args.locationTextGroup.args.locationText.values = {
-		['MOUSEOVER'] = L['Minimap Mouseover'],
-		['SHOW'] = L['Always Display'],
-		['ABOVE'] = KUI:cOption(L['Above Minimap']),
-		['HIDE'] = L['Hide'],
-	}
+	if locationTextArgs.locationText then
+		locationTextArgs.locationText.values = {
+			['MOUSEOVER'] = L['Minimap Mouseover'],
+			['SHOW'] = L['Always Display'],
+			['ABOVE'] = KUI:cOption(L['Above Minimap']),
+			['HIDE'] = L['Hide'],
+		}
+	end
 end
 T.table_insert(KUI.Config, injectElvUIDataTextsOptions)

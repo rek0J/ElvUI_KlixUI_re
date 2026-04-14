@@ -1,10 +1,26 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KSR = KUI:NewModule("KuiSoloReminder", "AceEvent-3.0", "AceTimer-3.0")
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 local LCG = LibStub('LibCustomGlow-1.0')
+local C_SpecializationInfo = _G.C_SpecializationInfo
+local GetSpecialization = T.GetSpecialization or (C_SpecializationInfo and C_SpecializationInfo.GetSpecialization)
 
 _Reminder = KSR
 _CreatedReminders = {}
+
+local function OffhandHasWeapon()
+	if T.C_PaperDollInfo_OffhandHasWeapon then
+		return T.C_PaperDollInfo_OffhandHasWeapon()
+	end
+
+	local offhandLink = T.GetInventoryItemLink("player", 17)
+	if not offhandLink then
+		return false
+	end
+
+	local itemEquipLoc = T.select(9, T.GetItemInfo(offhandLink))
+	return itemEquipLoc and itemEquipLoc ~= 'INVTYPE_SHIELD' and itemEquipLoc ~= 'INVTYPE_HOLDABLE' or false
+end
 
 function KSR:PlayerHasFilteredBuff(frame, db, checkPersonal)
 	for buff, value in T.pairs(db) do
@@ -122,7 +138,7 @@ function KSR:FilterCheck(frame, isReverse)
 	end
 
 	if db.tree then
-		if db.tree == T.GetSpecialization() or db.tree == "ANY" then
+		if db.tree == (GetSpecialization and GetSpecialization()) or db.tree == "ANY" then
 			treeCheck = true
 		else
 			treeCheck = nil
@@ -193,7 +209,7 @@ function KSR:ReminderIcon_OnEvent(event, unit)
 	--Negate Spells Check
 	if db.negateGroup and KSR:PlayerHasFilteredBuff(self, db.negateGroup) and not self.ForceShow then return end
 
-	local hasOffhandWeapon = T.C_PaperDollInfo_OffhandHasWeapon()
+	local hasOffhandWeapon = OffhandHasWeapon()
 	local hasMainHandEnchant, _, _, hasOffHandEnchant, _, _ = T.GetWeaponEnchantInfo()
 	local hasBuff, hasDebuff
 	if db.spellGroup and not db.CDSpell then
@@ -217,6 +233,7 @@ function KSR:ReminderIcon_OnEvent(event, unit)
 			self:UnregisterAllEvents()
 			self:RegisterEvent("UNIT_AURA")
 			self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+			self:RegisterEvent("PLAYER_TALENT_UPDATE")
 			if db.combat then
 				self:RegisterEvent("PLAYER_REGEN_ENABLED")
 				self:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -286,7 +303,7 @@ function KSR:ReminderIcon_OnEvent(event, unit)
 		return
 	end
 
-	if not self.icon:GetTexture() then return end
+	if not self.icon:GetTexture() or T.UnitInVehicle("player") then return end
 
 	local filterCheck = KSR:FilterCheck(self)
 	local reverseCheck = KSR:FilterCheck(self, true)
@@ -298,12 +315,13 @@ function KSR:ReminderIcon_OnEvent(event, unit)
 		return
 	end
 
+	local activeTree = GetSpecialization and GetSpecialization()
 	if db.spellGroup and not db.weaponCheck then
 		if filterCheck and ((not hasBuff) and (not hasDebuff)) and not db.reverseCheck then
 			self:SetAlpha(1)
-		elseif reverseCheck and db.reverseCheck and (hasBuff or hasDebuff) then
+		elseif reverseCheck and db.reverseCheck and (hasBuff or hasDebuff) and not (db.talentTreeException == activeTree) then
 			self:SetAlpha(1)
-		elseif reverseCheck and db.reverseCheck and ((not hasBuff) and (not hasDebuff)) then
+		elseif reverseCheck and db.reverseCheck and ((not hasBuff) and (not hasDebuff)) and (db.talentTreeException == activeTree) then
 			self:SetAlpha(1)
 		end
 	elseif db.weaponCheck then
@@ -335,13 +353,16 @@ function KSR:CreateReminder(name, index)
 	if _CreatedReminders[name] then return end
 
 	local frame = T.CreateFrame("Button", "KUI_ReminderIcon"..index, E.UIParent)
-	frame:Size(KSR.db.size or (_G["ElvUF_Player"]:GetHeight() - 4))
+	local playerFrame = _G["ElvUF_Player"]
+	local petFrame = _G["ElvUF_Pet"]
+	local frameSize = KSR.db.size or ((playerFrame and playerFrame:GetHeight()) and (playerFrame:GetHeight() - 4) or 36)
+	frame:Size(frameSize)
 	frame:SetFrameStrata(KSR.db.strata or "LOW")
 	frame.groupName = name
-	if _G["ElvUF_Pet"]:IsShown() then
-		frame:SetPoint("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 445, 282)
+	if petFrame and petFrame:IsShown() then
+		frame:Point("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 445, 282)
 	else
-		frame:SetPoint("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 537, 282)
+		frame:Point("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 537, 282)
 	end
 	E:CreateMover(frame, "KUI_ReminderMover", L["Reminders"], nil, nil, nil, "ALL,SOLO,KLIXUI", nil, 'KlixUI,modules,reminder')
 
@@ -382,7 +403,7 @@ function KSR:CheckForNewReminders()
 end
 
 function KSR:Initialize()
-	if not E.private.unitframe.enable or not E.db.KlixUI.reminder.solo.enable then return end
+	if not E.private.unitframe.enable or not E.db.KlixUI.reminder.solo.enable or T.UnitInVehicle("player") then return end
 	
 	KSR.db = E.db.KlixUI.reminder.solo
 
@@ -390,8 +411,4 @@ function KSR:Initialize()
 	T.C_Timer_After(1, function() KSR.initialized = true end)
 end
 
-local function InitializeCallback()
-	KSR:Initialize()
-end
-
-KUI:RegisterModule(KSR:GetName(), InitializeCallback)
+KUI:RegisterModule(KSR:GetName())

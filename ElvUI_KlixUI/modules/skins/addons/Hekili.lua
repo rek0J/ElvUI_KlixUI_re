@@ -1,5 +1,5 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 
 local function styleHekili()
 	if not E.db.KlixUI.general.iconShadow or not T.IsAddOnLoaded("Hekili") or T.IsAddOnLoaded("Masque") then return end

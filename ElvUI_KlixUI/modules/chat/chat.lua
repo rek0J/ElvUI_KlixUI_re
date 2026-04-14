@@ -1,18 +1,52 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KC = KUI:NewModule("KuiChat", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local KS = KUI:GetModule('KuiSkins')
 local CH = E:GetModule('Chat')
+local LO = E:GetModule('Layout')
 
-local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
+-- Cache global variables
+-- Lua functions
+local _G = _G
+local pairs, unpack = pairs, unpack
+local format = format
+local time = time
+local BetterDate = BetterDate
+local gsub = string.gsub
+-- WoW API / Variable
+local CreateFrame = CreateFrame
+local ChatTypeInfo = ChatTypeInfo
+local GetItemIcon = GetItemIcon
+local GetRealmName = GetRealmName
+local GUILD_MOTD = GUILD_MOTD
+local hooksecurefunc = hooksecurefunc
+local UIParent = UIParent
+local IsAddOnLoaded = IsAddOnLoaded
 
-KC.SelectedStrings = {
-	["DEFAULT"] = "|cff%02x%02x%02x>|r %s |cff%02x%02x%02x<|r",
-	["SQUARE"] = "|cff%02x%02x%02x[|r %s |cff%02x%02x%02x]|r",
-	["BEND"] = "|cff%02x%02x%02x(|r %s |cff%02x%02x%02x)|r",
-	["HALFDEFAULT"] = "|cff%02x%02x%02x>|r %s",
-	["CHECKBOX"] = [[|TInterface\ACHIEVEMENTFRAME\UI-Achievement-Criteria-Check:%s|t%s]],
-	["ARROWRIGHT"] = [[|TInterface\BUTTONS\UI-SpellbookIcon-NextPage-Up:%s|t%s]],
-	["ARROWDOWN"] = [[|TInterface\BUTTONS\UI-MicroStream-Green:%s|t%s]],
-}
+-- GLOBALS: CHAT_FRAMES, ChatTypeInfo, COMMUNITIES_FRAME_DISPLAY_MODES
+
+local r, g, b = unpack(E["media"].rgbvaluecolor)
+
+-- Place the new chat frame
+function KC:UpdateEditboxAnchors()
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName..'EditBox']
+		if not frame then break; end
+		frame:ClearAllPoints()
+		if E.db.datatexts.leftChatPanel and E.db.chat.editBoxPosition == 'BELOW_CHAT' then
+			frame:SetAllPoints(LeftChatDataPanel)
+		elseif E.db.KlixUI.datatexts.chat.enable and KuiDummyChat and E.db.KlixUI.datatexts.chat.editBoxPosition == 'BELOW_CHAT' then
+			frame:SetAllPoints(KuiDummyChat)
+		elseif E.ActionBars.Initialized and E.db.actionbar.bar1.backdrop == true and E.db.KlixUI.datatexts.chat.editBoxPosition == 'EAB_1' then
+			KUI:GetModule('KuiLayout'):PositionEditBoxHolder(ElvUI_Bar1)
+			frame:SetAllPoints(KuiDummyEditBoxHolder)
+		elseif E.ActionBars.Initialized and E.db.actionbar.bar2.backdrop == true and E.db.KlixUI.datatexts.chat.editBoxPosition == 'EAB_2' then
+			KUI:GetModule('KuiLayout'):PositionEditBoxHolder(ElvUI_Bar2)
+			frame:SetAllPoints(KuiDummyEditBoxHolder)
+		else
+			frame:SetAllPoints(LeftChatTab)
+		end
+	end
+end
 
 local CreatedFrames = 0;
 
@@ -20,26 +54,37 @@ local function Style(self, frame)
 	CreatedFrames = frame:GetID()
 end
 
+
+local ChatFrame_SystemEventHandler = ChatFrame_SystemEventHandler
+local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
+
+function KC:RemoveCurrentRealmName(msg, author, ...)
+	local realmName = gsub(GetRealmName(), " ", "")
+
+	if msg and msg:find("-" .. realmName) then
+		return false, gsub(msg, "%-"..realmName, ""), author, ...
+	end
+end
+
 --Replacement of chat tab position and size function
 local PixelOff = E.PixelMode and 33 or 27
 
 local function PositionChat(self, override)
-	if ((T.InCombatLockdown() and not override and self.initialMove) or (T.IsMouseButtonDown("LeftButton") and not override)) then return end
+	if ((InCombatLockdown() and not override and self.initialMove) or (IsMouseButtonDown("LeftButton") and not override)) then return end
 	if not RightChatPanel or not LeftChatPanel then return; end
-	if not self.db.lockPositions or E.private.chat.enable ~= true then return end
+	if E.private.chat.enable ~= true then return end
+	if not E.db.KlixUI.datatexts.chat.enable then return end
 
 	local BASE_OFFSET = 60
 	if E.PixelMode then
 		BASE_OFFSET = BASE_OFFSET - 3
 	end
-	local chat, id, tab, isDocked, point
+	local chat, id, tab, isDocked
 	for i=1, CreatedFrames do
-		chat = _G[T.string_format("ChatFrame%d", i)]
+		chat = _G[format("ChatFrame%d", i)]
 		id = chat:GetID()
-		tab = _G[T.string_format("ChatFrame%sTab", i)]
-		point = T.GetChatWindowSavedPosition(id)
+		tab = _G[format("ChatFrame%sTab", i)]
 		isDocked = chat.isDocked
-		tab.flashTab = true
 
 		if chat:IsShown() and not (id > NUM_CHAT_WINDOWS) and id == CH.RightChatWindowID then
 			chat:ClearAllPoints()
@@ -47,210 +92,142 @@ local function PositionChat(self, override)
 				chat:Point("BOTTOMRIGHT", RightChatDataPanel, "TOPRIGHT", 10, 3)
 			else
 				BASE_OFFSET = BASE_OFFSET - 24
-				chat:SetPoint("BOTTOMLEFT", RightChatPanel, "BOTTOMLEFT", 4, 4)
+				chat:Point("BOTTOMLEFT", RightChatPanel, "BOTTOMLEFT", 4, 4)
 			end
 			if id ~= 2 then
 				chat:Size((E.db.chat.separateSizes and E.db.chat.panelWidthRight or E.db.chat.panelWidth) - 10, ((E.db.chat.separateSizes and E.db.chat.panelHeightRight or E.db.chat.panelHeight) - PixelOff))
 			end
 		elseif not isDocked and chat:IsShown() then
-
+			chat:SetAlpha(1)
 		else
 			if id ~= 2 and not (id > NUM_CHAT_WINDOWS) then
 				BASE_OFFSET = BASE_OFFSET - 24
-				chat:SetPoint("BOTTOMLEFT", LeftChatPanel, "BOTTOMLEFT", 4, 4)
+				chat:Point("BOTTOMLEFT", LeftChatPanel, "BOTTOMLEFT", 4, 4)
 				chat:Size(E.db.chat.panelWidth - 10, E.db.chat.panelHeight - PixelOff)
 			end
 		end
 	end
 end
-hooksecurefunc(CH, "PositionChat", PositionChat)
-hooksecurefunc(CH, "StyleChat", Style)
 
-function KC:SetSelectedTab(isForced)
-	local selectedId = GeneralDockManager.selected:GetID()
+function KC:AddMessage(msg, infoR, infoG, infoB, infoID, accessID, typeID, isHistory, historyTime)
+	local historyTimestamp --we need to extend the arguments on AddMessage so we can properly handle times without overriding
+	if isHistory == "ElvUI_ChatHistory" then historyTimestamp = historyTime end
 
-	--Set/Remove brackets and set alpha of chat tabs
-	for i=1, CreatedFrames do
-		local tab = _G[T.string_format("ChatFrame%sTab", i)]
-		if tab.isDocked then
-			--Brackets
-			if selectedId == tab:GetID() and E.db.KlixUI.chat.select then
-				if tab.hasBracket ~= true or isForced then
-					local color = E.db.KlixUI.chat.colorTab
-					if E.db.KlixUI.chat.styleTab == "DEFAULT" or E.db.KlixUI.chat.styleTab == "SQUARE" or E.db.KlixUI.chat.styleTab == "BEND" then
-						tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID())), color.r * 255, color.g * 255, color.b * 255))
-					elseif E.db.KlixUI.chat.styleTab == "HALFDEFAULT" then
-						tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID()))))
-					else
-						tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], (E.db.chat.tabFontSize + 12), (T.FCF_GetChatWindowInfo(tab:GetID()))))
-					end
-					tab.hasBracket = true
-				end
-			else
-				if tab.hasBracket == true then
-					local tabText = tab.isTemporary and tab.origText or (T.FCF_GetChatWindowInfo(tab:GetID()))
-					tab.text:SetText(tabText)
-					tab.hasBracket = false
-				end
-			end
-			--Alpha
-			tab.SetAlpha = nil
-			if selectedId == tab:GetID() or not E.db.KlixUI.chat.fadeChatTabs then
-				tab:SetAlpha(1)
-			else
-				tab:SetAlpha(E.db.KlixUI.chat.fadedChatTabAlpha)
-			end
-			tab.SetAlpha = E.noop
-		end
-
-		--Prevent chat tabs changing width on each click.
-		T.PanelTemplates_TabResize(tab, tab.isTemporary and 20 or 10, nil, nil, nil, tab.textWidth);
-	end
-end
-
-function KC:OpenTemporaryWindow()
-	local chatID = T.FCF_GetCurrentChatFrameID()
-	local tab = _G[T.string_format("ChatFrame%sTab", chatID)]
-	tab.origText = (T.FCF_GetChatWindowInfo(tab:GetID()))
-	KC:SetSelectedTab()
-end
-
-function KC:DelaySetSelectedTab()
-	KC:ScheduleTimer('SetSelectedTab', 1)
-end
-
-function KC:SetTabWidth()
-	for i=1, CreatedFrames do
-		local tab = _G[T.string_format("ChatFrame%sTab", i)]
-		T.PanelTemplates_TabResize(tab, tab.isTemporary and 20 or 10, nil, nil, nil, tab.textWidth);
-	end
-end
-
-function KC:StyleChat(frame)
-	if frame.KCstyled then return end
-
-	local name = frame:GetName()
-	local id = frame:GetID()
-	local tab = _G[name..'Tab']
-	
-	--Store variables for each tab
-	tab.isTemporary = frame.isTemporary
-	tab.isDocked = frame.isDocked
-	tab.SetAlpha = E.noop --Prevent ElvUI or WoW from changing alpha on the tab
-
-	--Mark current selected tab on initial load and set alpha of chat tabs
-	if GeneralDockManager.selected:GetID() == tab:GetID() then
-		if not tab.isTemporary and E.db.KlixUI.chat.select then
-			local color = E.db.KlixUI.chat.colorTab
-				if E.db.KlixUI.chat.styleTab == "DEFAULT" or E.db.KlixUI.chat.styleTab == "SQUARE" or E.db.KlixUI.chat.styleTab == "BEND" then
-					tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID())), color.r * 255, color.g * 255, color.b * 255))
-				elseif E.db.KlixUI.chat.styleTab == "HALFDEFAULT" then
-					tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID()))))
-				else
-					tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], (E.db.chat.tabFontSize + 12), (T.FCF_GetChatWindowInfo(tab:GetID()))))
-				end
-			tab.hasBracket = true
-		end
-		tab.SetAlpha = nil --Re-enable SetAlpha
-		tab:SetAlpha(1)
-		tab.SetAlpha = E.noop --Disable SetAlpha once more
-	else
-		tab.SetAlpha = nil
-		if E.db.KlixUI.chat.fadeChatTabs then
-			tab:SetAlpha(E.db.KlixUI.chat.fadedChatTabAlpha)
+	if (CH.db.timeStampFormat and CH.db.timeStampFormat ~= 'NONE' ) then
+		local timeStamp = BetterDate(CH.db.timeStampFormat, historyTimestamp or time());
+		timeStamp = gsub(timeStamp, ' $', '') --Remove space at the end of the string
+		timeStamp = timeStamp:gsub('AM', ' AM')
+		timeStamp = timeStamp:gsub('PM', ' PM')
+		if CH.db.useCustomTimeColor then
+			local color = CH.db.customTimeColor
+			local hexColor = E:RGBToHex(color.r, color.g, color.b)
+			msg = format("%s[%s]|r %s", hexColor, timeStamp, msg)
 		else
-			tab:SetAlpha(1)
+			msg = format("[%s] %s", timeStamp, msg)
 		end
-		tab.SetAlpha = E.noop
 	end
-	
-	--Mark current selected tab if renamed
-	hooksecurefunc(tab, "SetText", function(self)
-		if self.isDocked and GeneralDockManager.selected:GetID() == self:GetID() and not self.isTemporary and E.db.KlixUI.chat.select then
-			local color = E.db.KlixUI.chat.colorTab
-				if E.db.KlixUI.chat.styleTab == "DEFAULT" or E.db.KlixUI.chat.styleTab == "SQUARE" or E.db.KlixUI.chat.styleTab == "BEND" then
-					tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID())), color.r * 255, color.g * 255, color.b * 255))
-				elseif E.db.KlixUI.chat.styleTab == "HALFDEFAULT" then
-					tab.text:SetText(T.string_format(KC.SelectedStrings[C.db.tab.style], color.r * 255, color.g * 255, color.b * 255, (T.FCF_GetChatWindowInfo(tab:GetID()))))
-				else
-					tab.text:SetText(T.string_format(KC.SelectedStrings[E.db.KlixUI.chat.styleTab], (E.db.chat.tabFontSize + 12), (T.FCF_GetChatWindowInfo(tab:GetID()))))
-				end
-			self.hasBracket = true
-		end
-	end)
-	
-	--Prevent text from jumping from left to right when tab is clicked.
-	hooksecurefunc(tab, "SetWidth", function(self)
-		self.text:ClearAllPoints()
-		self.text:SetPoint("CENTER", self, "CENTER", 0, -4)
-	end)
-	
-	--Mark current selected tab when clicked
-	tab:HookScript("OnClick", function()
-		KC:SetSelectedTab()
-	end)
-	
-	CreatedFrames = id
-	frame.KCstyled = true
+
+	if CH.db.copyChatLines then
+		msg = format('|Hcpl:%s|h%s|h %s', self:GetID(), [[|TInterface\AddOns\ElvUI\media\textures\ArrowRight:14|t]], msg)
+	end
+
+	if E.db.KlixUI.chat.hidePlayerBrackets then
+		msg = gsub(msg, "(|HB?N?player.-|h)%[(.-)%]|h", "%1%2|h")
+	end
+
+	self.OldAddMessage(self, msg, infoR, infoG, infoB, infoID, accessID, typeID)
 end
-hooksecurefunc(CH, "StyleChat", KC.StyleChat)
 
-function KC:ModifyChatTabs(override)
-	--If "Force to Show" is not enabled then just stop here
-	if not E.db.KlixUI.chat.forceShow then return end
+function CH:AddMessage(msg, ...)
+	return KC.AddMessage(self, msg, ...)
+end
 
-	local fade = E.db.KlixUI.chat.fadeChatTabs
-	local fadeAlpha = E.db.KlixUI.chat.fadedChatTabAlpha
-	local showBelowAlpha = E.db.KlixUI.chat.forceShowBelowAlpha
-	local showToAlpha = E.db.KlixUI.chat.forceShowToAlpha
+function CH:ChatFrame_SystemEventHandler(chat, event, message, ...)
+	if event == "GUILD_MOTD" then
+		if message and message ~= "" then
+			local info = ChatTypeInfo["GUILD"]
+			local GUILD_MOTD = "GMOTD"
+			chat:AddMessage(format('|cff00c0fa%s|r: %s', GUILD_MOTD, message), info.r, info.g, info.b, info.id)
+		end
+		return true
+	else
+		return ChatFrame_SystemEventHandler(chat, event, message, ...)
+	end
+end
 
-	for i = 1, CreatedFrames do
-		local tab = _G[T.string_format("ChatFrame%sTab", i)]
-		local text = _G[T.string_format("ChatFrame%sTabText", i)]
-		
-		--If chat panel backdrop is hidden then force tab to show when flashing
-		if E.db.chat.panelBackdrop ~= 'SHOWBOTH' then
-			if tab.glow:IsShown() then
-				CH:SetupChatTabs(tab, false)
+-- Hide communities Chat - thx Nnogga
+local commOpen = CreateFrame("Frame", nil, UIParent)
+commOpen:RegisterEvent("ADDON_LOADED")
+commOpen:RegisterEvent("CHANNEL_UI_UPDATE")
+commOpen:SetScript("OnEvent", function(self, event, addonName)
+	if event == "ADDON_LOADED" and addonName == "Blizzard_Communities" then
+		--create overlay
+		local f = CreateFrame("Button", nil, UIParent)
+		f:SetFrameStrata("HIGH")
+
+		f.tex = f:CreateTexture(nil, "BACKGROUND")
+		f.tex:SetAllPoints()
+		f.tex:SetColorTexture(0.1, 0.1, 0.1, 1)
+
+		f.text = f:CreateFontString()
+		f.text:FontTemplate(nil, 20, "OUTLINE")
+		f.text:SetShadowOffset(-2, 2)
+		f.text:SetText(L["Chat Hidden. Click to show"])
+		f.text:SetTextColor(r, g, b)
+		f.text:SetJustifyH("CENTER")
+		f.text:SetJustifyV("MIDDLE")
+		f.text:Height(20)
+		f.text:Point("CENTER", f, "CENTER", 0, 0)
+
+		f:EnableMouse(true)
+		f:RegisterForClicks("AnyUp")
+		f:SetScript("OnClick",function(...)
+			f:Hide()
+		end)
+
+		--toggle
+		local function toggleOverlay()
+			if _G.CommunitiesFrame:GetDisplayMode() == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT and E.db.KlixUI.chat.hideChat then
+				f:SetAllPoints(_G.CommunitiesFrame.Chat.InsetFrame)
+				f:Show()
 			else
-				CH:SetupChatTabs(tab, true)
+				f:Hide()
 			end
 		end
 
-		--If chat tab is faded then force it to show when flashing
-		if i ~= GeneralDockManager.selected:GetID() then
-			if tab.glow:IsShown() then
-				tab.SetAlpha = nil
-				if fade and fadeAlpha <= showBelowAlpha then
-					tab:SetAlpha(showToAlpha)
-				else
-					tab:SetAlpha(fadeAlpha)
-				end
-				tab.SetAlpha = E.noop
-			end
+		local function hideOverlay()
+			f:Hide()
 		end
+		toggleOverlay() --run once
+
+		--hook
+		hooksecurefunc(_G.CommunitiesFrame, "SetDisplayMode", toggleOverlay)
+		hooksecurefunc(_G.CommunitiesFrame, "Show", toggleOverlay)
+		hooksecurefunc(_G.CommunitiesFrame, "Hide", hideOverlay)
+		hooksecurefunc(_G.CommunitiesFrame, "OnClubSelected", toggleOverlay)
 	end
-end
-hooksecurefunc(CH, "PositionChat", KC.ModifyChatTabs)
+end)
 
-function KC:StyleChat()
-	-- Style the chat
-	_G["LeftChatPanel"].backdrop:Styling()
-	_G["RightChatPanel"].backdrop:Styling()
+local function AddIcon(link)
+	local texture = GetItemIcon(link)
+
+	return "\124T"..texture..":12:12:0:0:64:64:5:59:5:59\124t"..link
+end
+
+function KC:CreateChatLootIcons(_, message, ...)
+	if IsAddOnLoaded("ChatLinkIcons") then return end
+
+	message = message:gsub("(\124c%x+\124Hitem:.-\124h\124r)", AddIcon)
+
+	return false, message, ...
 end
 
 function KC:Initialize()
 	if E.private.chat.enable ~= true then return; end
-	
-	self:StyleChat()
-	
-	--Bracket selected chat tab and set correct width
-	hooksecurefunc("FCF_OpenNewWindow", KC.DelaySetSelectedTab)
-	hooksecurefunc("FCF_OpenTemporaryWindow", KC.OpenTemporaryWindow)
-	hooksecurefunc("FCFDockOverflowListButton_OnClick", KC.SetSelectedTab)
-	hooksecurefunc("FCF_Close", KC.SetSelectedTab)
-	hooksecurefunc("FCF_DockUpdate", KC.SetTabWidth)
-	
+
+	local db = E.db.KlixUI.chat
+	KUI:RegisterDB(self, "chat")
+
 	_G["ERR_FRIEND_ONLINE_SS"] = "[%s] "..L["has come |cff298F00online|r."]
 	_G["ERR_FRIEND_OFFLINE_S"] = "[%s] "..L["has gone |cffff0000offline|r."]
 
@@ -258,12 +235,33 @@ function KC:Initialize()
 	_G["BN_INLINE_TOAST_FRIEND_OFFLINE"] = "[%s]"..L[" has gone |cffff0000offline|r."]
 	
 	_G["GUILD_MOTD_TEMPLATE"] = L["|cfff960d9GMOTD:|r %s"]
-	
-	self:LoadChatEmote()
+
+	self.UpdateEditboxAnchors()	
+	hooksecurefunc(CH, "PositionChats", PositionChat)
+	hooksecurefunc(CH, "UpdateEditboxAnchors", KC.UpdateEditboxAnchors)
+	hooksecurefunc(CH, "StyleChat", Style)
+
+	-- Remove the Realm Name from system messages
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", KC.RemoveCurrentRealmName)
+
+	-- Chat Icons for loot
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", KC.CreateChatLootIcons)
+
+	self:EasyChannel()
+	self:ChatFilter()
+	self:DamageMeterFilter()
+	self:LoadChatFade()
+
+	--Custom Emojis
+	local t = "|TInterface\\AddOns\\ElvUI_KlixUI\\media\\textures\\chatEmojis\\%s:16:16|t"
+
+	-- Twitch Emojis
+	CH:AddSmiley(':monkaomega:', format(t, 'monkaomega'))
+	CH:AddSmiley(':salt:', format(t, 'salt'))
 end
 
-local function InitializeCallback()
-	KC:Initialize()
+function KC:Configure_All()
+	self:Configure_ChatFade()
 end
 
-KUI:RegisterModule(KC:GetName(), InitializeCallback)
+KUI:RegisterModule(KC:GetName())

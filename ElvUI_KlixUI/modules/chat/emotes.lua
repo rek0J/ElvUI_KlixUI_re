@@ -1,6 +1,24 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KC = KUI:GetModule("KuiChat")
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KC = KUI:NewModule("KuiEmotes")
 local CH = E:GetModule("Chat")
+
+-- Cache global variables
+-- Lua functions
+local _G = _G
+local pairs = pairs
+local format = string.format
+local gmatch, gsub = gmatch, gsub
+local tinsert = table.insert
+local strmatch, strtrim = strmatch, strtrim
+-- WoW API / Variable
+local CreateFrame = CreateFrame
+local ChatEdit_ActivateChat = ChatEdit_ActivateChat
+local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
+local C_Club = _G.C_Club
+local C_Club_GetMessageInfo = C_Club and C_Club.GetMessageInfo
+local InCombatLockdown = InCombatLockdown
+local UISpecialFrames = UISpecialFrames
+-- GLOBALS:
 
 local ChatEmote = {}
 KC.ChatEmote = ChatEmote
@@ -57,55 +75,25 @@ local emotes = {
 	{":zzz:", [=[Interface\AddOns\ElvUI\Media\ChatEmojis\ZZZ]=]},
 	{":stuck_out_tongue:", [=[Interface\AddOns\ElvUI\Media\ChatEmojis\StuckOutTongue]=]},
 	{":stuck_out_tongue_closed_eyes:", [=[Interface\AddOns\ElvUI\Media\ChatEmojis\StuckOutTongueClosedEyes]=]},
+
+	-- My emots
+	{":monkaomega:", [=[Interface\AddOns\ElvUI_KlixUI\media\textures\chatEmojis\monkaomega]=]},
+	{":salt:", [=[Interface\AddOns\ElvUI_KlixUI\media\textures\chatEmojis\salt]=]},
 }
 
 KC.emotes = emotes
 
 local ShowEmoteTableButton
-local EmoteTableFrame, EmoteClubTableFrame
-
+local EmoteTableFrame
 local text, texture
-local function CreateEmoteClubTableFrame()
-	EmoteClubTableFrame = T.CreateFrame("Frame", "EmoteClubTableFrame", _G.CommunitiesFrame)
-	EmoteClubTableFrame:SetTemplate("Default")
-	EmoteClubTableFrame:SetWidth((ChatEmote.Config.iconSize + 2) * 12 + 4)
-	EmoteClubTableFrame:SetHeight((ChatEmote.Config.iconSize + 2) * 5 + 4)
-	EmoteClubTableFrame:SetPoint("BOTTOMLEFT", _G.CommunitiesFrame, "BOTTOMRIGHT", E:Scale(2), 0)
-	EmoteClubTableFrame:Hide()
-	EmoteClubTableFrame:SetFrameStrata("DIALOG")
-
-	local icon, row, col
-	row = 1
-	col = 1
-	for i = 1, #emotes do
-		text = emotes[i][1]
-		texture = emotes[i][2]
-		icon = T.CreateFrame("Frame", T.string_format("IconButton%d", i), EmoteClubTableFrame)
-		icon:SetWidth(ChatEmote.Config.iconSize)
-		icon:SetHeight(ChatEmote.Config.iconSize)
-		icon.text = text
-		icon.texture = icon:CreateTexture(nil, "ARTWORK")
-		icon.texture:SetTexture(texture)
-		icon.texture:SetAllPoints(icon)
-		icon:Show()
-		icon:SetPoint("TOPLEFT", (col - 1) * (ChatEmote.Config.iconSize + 2) + 2, -(row - 1) * (ChatEmote.Config.iconSize + 2) - 2)
-		icon:SetScript("OnMouseUp", ChatEmote.EmoteClubIconMouseUp)
-		icon:EnableMouse(true)
-		col = col + 1
-		if (col > 12) then
-			row = row + 1
-			col = 1
-		end
-	end
-end
 
 local function CreateEmoteTableFrame()
-	EmoteTableFrame = T.CreateFrame("Frame", "EmoteTableFrame", E.UIParent)
+	EmoteTableFrame = T.CreateFrame("Frame", "EmoteTableFrame", E.UIParent, "BackdropTemplate")
 	EmoteTableFrame:CreateBackdrop("Transparent")
 	EmoteTableFrame.backdrop:Styling()
 	EmoteTableFrame:SetWidth((ChatEmote.Config.iconSize + 2) * 12 + 4)
 	EmoteTableFrame:SetHeight((ChatEmote.Config.iconSize + 2) * 5 + 4)
-	EmoteTableFrame:SetPoint("BOTTOMLEFT", _G.LeftChatPanel, "TOPLEFT", 1, 2)
+	EmoteTableFrame:SetPoint("BOTTOMLEFT", _G.LeftChatPanel, "TOPLEFT", 0, 5)
 	EmoteTableFrame:Hide()
 	EmoteTableFrame:SetFrameStrata("DIALOG")
 	T.table_insert(UISpecialFrames, EmoteTableFrame:GetDebugName())
@@ -144,15 +132,6 @@ function ChatEmote.ToggleEmoteTable()
 	end
 end
 
-function ChatEmote.ToggleClubEmoteTable()
-	if (not EmoteClubTableFrame) then CreateEmoteClubTableFrame() end
-	if (EmoteClubTableFrame:IsShown()) then
-		EmoteClubTableFrame:Hide()
-	else
-		EmoteClubTableFrame:Show()
-	end
-end
-
 function ChatEmote.EmoteIconMouseUp(frame, button)
 	if (button == "LeftButton") then
 		local ChatFrameEditBox = T.ChatEdit_ChooseBoxForSend()
@@ -165,26 +144,72 @@ function ChatEmote.EmoteIconMouseUp(frame, button)
 end
 
 function KC:LoadChatEmote()
-	function C_Club.GetMessageInfo(clubId, streamId, messageId)
-		local message = T.C_Club_GetMessageInfo(clubId, streamId, messageId)
-		message.content = CH:GetSmileyReplacementText(message.content)
-		return message
+	if C_Club and C_Club_GetMessageInfo then
+		function C_Club.GetMessageInfo(clubId, streamId, messageId)
+			local message = C_Club_GetMessageInfo(clubId, streamId, messageId)
+			if message and message.content then
+				message.content = CH:GetSmileyReplacementText(message.content)
+			end
+			return message
+		end
 	end
 
 	function CH:InsertEmotions(msg)
+		if not msg then return msg end
+
 		for k, v in T.pairs(emotes) do
 			msg = T.string_gsub(msg, v[1], "|T" .. v[2] .. ":16|t")
 		end
 
 		for word in T.string_gmatch(msg, "%s-%S+%s*") do
 			word = T.strtrim(word)
-			local pattern = T.string_gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
+			local pattern = E.EscapeString and E:EscapeString(word) or T.string_gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
 			local emoji = CH.Smileys[pattern]
 			if emoji and T.string_match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
-				local base64 = E.Libs.Base64:Encode(word)
-				msg = T.string_gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", (base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1") .. emoji .. "%2")
+				local libs = E.Libs
+				local deflate = libs and libs.Deflate
+				local encode = deflate and deflate.EncodeForPrint and deflate:EncodeForPrint(word)
+				msg = T.string_gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", (encode and ("%1|Helvmoji:%%" .. encode .. "|h|cFFffffff|r|h") or "%1") .. emoji .. "%2")
 			end
 		end
 		return msg
 	end
 end
+
+-- ChatEmotes thx Merathilis
+function KC:Initialize()
+	if E.db.KlixUI.chat.emotes ~= true or E.private.chat.enable ~= true then return end
+
+	local Emote = self.ChatEmote
+	local ChatEmote = CreateFrame("Button", "KUIEmote", _G.LeftChatPanel)
+	ChatEmote:SetPoint("RIGHT", _G.ElvUI_CopyChatButton1, "LEFT", 0, 0)
+	ChatEmote:SetSize(12, 12)
+	ChatEmote:SetScript("OnClick", function()
+		if InCombatLockdown() then return end
+		Emote.ToggleEmoteTable()
+	end)
+
+	ChatEmote:SetNormalTexture("Interface\\Addons\\ElvUI\\media\\ChatEmojis\\Smile")
+	ChatEmote:GetNormalTexture():SetDesaturated(true)
+	ChatEmote:GetNormalTexture():SetAlpha(.45)
+
+	ChatEmote:SetScript("OnEnter", function(self)
+		_G.GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 6)
+		_G.GameTooltip:AddLine(L["Click to open Emoticon Frame"])
+		_G.GameTooltip:Show()
+		ChatEmote:SetNormalTexture("Interface\\Addons\\ElvUI\\media\\ChatEmojis\\Scream")
+		ChatEmote:GetNormalTexture():SetDesaturated(false)
+		ChatEmote:GetNormalTexture():SetAlpha(1)
+	end)
+
+	ChatEmote:SetScript("OnLeave", function(self)
+		_G.GameTooltip:Hide()
+		ChatEmote:SetNormalTexture("Interface\\Addons\\ElvUI\\media\\ChatEmojis\\Smile")
+		ChatEmote:GetNormalTexture():SetDesaturated(true)
+		ChatEmote:GetNormalTexture():SetAlpha(.45)
+	end)
+
+	self:LoadChatEmote()
+end
+
+KUI:RegisterModule(KC:GetName())

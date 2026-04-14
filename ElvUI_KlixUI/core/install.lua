@@ -1,4 +1,5 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local CH = E:GetModule("Chat")
 
 local FCF_SetLocked = FCF_SetLocked
 local FCF_DockFrame, FCF_UnDockFrame = FCF_DockFrame, FCF_UnDockFrame
@@ -10,9 +11,46 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local ADDONS, LOOT, TRADE, TANK, HEALER = ADDONS, LOOT, TRADE, TANK, HEALER
 
+local function SetLegacyCooldownFont(module, font, fontSize, fontOutline)
+	if E.db["cooldown"] and E.db["cooldown"][module] then
+		E.db["cooldown"][module]["font"] = font
+		E.db["cooldown"][module]["fontSize"] = fontSize
+		if fontOutline then
+			E.db["cooldown"][module]["fontOutline"] = fontOutline
+		end
+		return false
+	end
+
+	local parent = E.db[module]
+	local cooldown = parent and parent["cooldown"]
+	if not cooldown then
+		return false
+	end
+
+	if cooldown["fonts"] then
+		cooldown["fonts"]["enable"] = true
+		cooldown["fonts"]["font"] = font
+		cooldown["fonts"]["fontSize"] = fontSize
+		if fontOutline then
+			cooldown["fonts"]["fontOutline"] = fontOutline
+		end
+	end
+
+	return true
+end
+
+local function HasLegacyCooldownSettings(module)
+	local parent = E.db[module]
+	return parent and parent["cooldown"]
+end
+
+	--[[----------------------------------
+	-- CVars
+	--]]----------------------------------
 local function SetupCVars()
 	T.SetCVar("alwaysCompareItems", 1)
 	T.SetCVar("autoQuestProgress", 1)
+	T.SetCVar("autoDismountFlying", 1)
 	T.SetCVar("guildMemberNotify", 1)
 	T.SetCVar("statusTextDisplay", "BOTH")
 	T.SetCVar("ShowClassColorInNameplate", 1)
@@ -22,9 +60,10 @@ local function SetupCVars()
 	T.SetCVar("WholeChatWindowClickable", 0)
 	T.SetCVar("showTutorials", 0)
 	T.SetCVar("UberTooltips", 1)
+	T.SetCVar("threatWarning", 3)
 	T.SetCVar('alwaysShowActionBars', 1)
 	T.SetCVar('lockActionBars', 1)
-	T.SetCVar('SpamFilter', 0)
+	T.SetCVar('SpamFilter', 1)
 	T.SetCVar("whisperMode", "inline")
 	T.SetCVar("violenceLevel", 5)
 	T.SetCVar("blockTrades", 0)
@@ -32,95 +71,102 @@ local function SetupCVars()
 	T.SetCVar("TargetNearestUseNew", 1)
 	T.SetCVar("cameraSmoothStyle", 0)
 	T.SetCVar("cameraDistanceMaxZoomFactor", 4)
+	T.SetCVar("floatingCombatTextCombatDamage", 1)
+	T.SetCVar("floatingCombatTextCombatLogPeriodicSpells", 0)
+	T.SetCVar("floatingCombatTextCombatHealing", 0)
 	T.SetCVar("screenEdgeFlash", 0)
 	T.SetCVar("WorldTextScale", 0.75)
-	--T.SetCVar("nameplateMaxDistance", "1e4") -- Thanks Ketho!
-
+	T.SetCVar("fstack_preferParentKeys", 0)
 	
 	if not KUI:IsDeveloper() or not (T.IsAddOnLoaded("!BugGrabber") and T.IsAddOnLoaded("BugSack")) then
 		T.SetCVar("scriptErrors", 1)
 	end
 	
-	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue('SHIFT')
-	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
+	-- InterfaceOptionsActionBarsPanelPickupActionKeyDropDown existiert nicht in MoP Classic
+	-- Entfernt für MoP-Kompatibilität
 	
 	PluginInstallStepComplete.message = KUI.Title..L["CVars Set"]
 	PluginInstallStepComplete:Show()
 end
 
+	--[[----------------------------------
+	-- Chat
+	--]]----------------------------------
 local function SetupChat()
-	FCF_ResetChatWindows() -- Monitor this
-	FCF_SetLocked(ChatFrame1, 1)
-	FCF_DockFrame(ChatFrame2)
-	FCF_SetLocked(ChatFrame2, 1)
 
+	if not E.db.movers then
+		E.db.movers = {}
+	end
+
+	FCF_ResetChatWindows()
 	FCF_OpenNewWindow(LOOT)
-	FCF_UnDockFrame(ChatFrame3)
-	FCF_SetLocked(ChatFrame3, 1)
-	ChatFrame3:Show()
+	FCF_UnDockFrame(_G.ChatFrame3)
 
-	for i = 1, NUM_CHAT_WINDOWS do
-		local frame = _G[T.string_format("ChatFrame%s", i)]
+	for _, name in ipairs(_G.CHAT_FRAMES) do
+		local frame = _G[name]
+		local id = frame:GetID()
+
+		if E.private.chat.enable then
+			CH:FCFTab_UpdateColors(CH:GetTab(_G[name]))
+		end
 
 		-- move general bottom left
-		if i == 1 then
+		if id == 1 then
 			frame:ClearAllPoints()
-			frame:Point("BOTTOMLEFT", LeftChatToggleButton, "TOPLEFT", 1, 3)
-		elseif i == 3 then
+			frame:Point('BOTTOMLEFT', _G.LeftChatToggleButton, 'TOPLEFT', 1, 3)
+		elseif id == 3 then
 			frame:ClearAllPoints()
-			frame:Point("BOTTOMLEFT", RightChatDataPanel, "TOPLEFT", 1, 3)
+			frame:Point('BOTTOMLEFT', _G.RightChatDataPanel, 'TOPLEFT', 1, 3)
 		end
 
 		FCF_SavePositionAndDimensions(frame)
 		FCF_StopDragging(frame)
-
-		-- set default Elvui font size
-		FCF_SetChatWindowFontSize(nil, frame, 13)
+		FCF_SetChatWindowFontSize(nil, frame, 12)
 
 		-- rename windows general because moved to chat #3
-		if i == 1 then
+		if id == 1 then
 			FCF_SetWindowName(frame, GENERAL)
-		elseif i == 2 then
+		elseif id == 2 then
 			FCF_SetWindowName(frame, GUILD_EVENT_LOG)
-		elseif i == 3 then
-			FCF_SetWindowName(frame, LOOT.." / "..TRADE)
+		elseif id == 3 then
+			FCF_SetWindowName(frame, LOOT..' / '..TRADE)
 		end
 	end
 
-	-- keys taken from `ChatTypeGroup` but doesnt add: "OPENING", "TRADESKILLS", "PET_INFO", "COMBAT_MISC_INFO", "COMMUNITIES_CHANNEL", "PET_BATTLE_COMBAT_LOG", "PET_BATTLE_INFO", "TARGETICONS"
-	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+	-- keys taken from `ChatTypeGroup` but doesnt add: 'OPENING', 'TRADESKILLS', 'PET_INFO', 'COMBAT_MISC_INFO', 'COMMUNITIES_CHANNEL', 'PET_BATTLE_COMBAT_LOG', 'PET_BATTLE_INFO', 'TARGETICONS'
+	local chatGroup = { 'SYSTEM', 'CHANNEL', 'SAY', 'EMOTE', 'YELL', 'WHISPER', 'PARTY', 'PARTY_LEADER', 'RAID', 'RAID_LEADER', 'RAID_WARNING', 'INSTANCE_CHAT', 'INSTANCE_CHAT_LEADER', 'GUILD', 'OFFICER', 'MONSTER_SAY', 'MONSTER_YELL', 'MONSTER_EMOTE', 'MONSTER_WHISPER', 'MONSTER_BOSS_EMOTE', 'MONSTER_BOSS_WHISPER', 'ERRORS', 'AFK', 'DND', 'IGNORED', 'BG_HORDE', 'BG_ALLIANCE', 'BG_NEUTRAL', 'ACHIEVEMENT', 'GUILD_ACHIEVEMENT', 'BN_WHISPER', 'BN_INLINE_TOAST_ALERT' }
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(ChatFrame1, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
 	-- keys taken from `ChatTypeGroup` which weren't added above to ChatFrame1
-	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	chatGroup = { 'COMBAT_XP_GAIN', 'COMBAT_HONOR_GAIN', 'COMBAT_FACTION_CHANGE', 'SKILL', 'LOOT', 'CURRENCY', 'MONEY' }
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(ChatFrame3, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame3, v)
 	end
 
-	ChatFrame_AddChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_AddChannel(ChatFrame3, TRADE)
+	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
+	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT" }
-	for i = 1, MAX_WOW_CHAT_CHANNELS do
-		T.table_insert(chatGroup, "CHANNEL"..i)
+	chatGroup = { 'SAY', 'EMOTE', 'YELL', 'WHISPER', 'PARTY', 'PARTY_LEADER', 'RAID', 'RAID_LEADER', 'RAID_WARNING', 'INSTANCE_CHAT', 'INSTANCE_CHAT_LEADER', 'GUILD', 'OFFICER', 'ACHIEVEMENT', 'GUILD_ACHIEVEMENT', 'COMMUNITIES_CHANNEL' }
+	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
+		tinsert(chatGroup, 'CHANNEL'..i)
 	end
 	for _, v in ipairs(chatGroup) do
 		ToggleChatColorNamesByClassGroup(true, v)
 	end
 
 	-- Adjust Chat Colors
-	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
-	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
-	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
+	ChangeChatColor('CHANNEL1', 195/255, 230/255, 232/255) -- General
+	ChangeChatColor('CHANNEL2', 232/255, 158/255, 121/255) -- Trade
+	ChangeChatColor('CHANNEL3', 232/255, 228/255, 121/255) -- Local Defense
 
 	if E.Chat then
-		E.Chat:PositionChat(true)
+		E.Chat:PositionChats()
 		if E.db['RightChatPanelFaded'] then
 			RightChatToggleButton:Click()
 		end
@@ -130,6 +176,32 @@ local function SetupChat()
 		end
 	end
 	
+	E.db["chat"]["tabSelector"] = "BOX1"
+	E.db["chat"]["tabSelectorColor"]["r"] = 0
+	E.db["chat"]["tabSelectorColor"]["g"] = 0.7843137254902
+	E.db["chat"]["tabSelectorColor"]["b"] = 1
+	E.db["chat"]["tabFont"] = "Expressway"
+	E.db["chat"]["separateSizes"] = true
+	E.db["chat"]["useCustomTimeColor"] = true	
+	E.db["chat"]["customTimeColor"]["r"] = 0
+	E.db["chat"]["customTimeColor"]["g"] = 0.7843137254902
+	E.db["chat"]["customTimeColor"]["b"] = 1
+	E.db["chat"]["editBoxPosition"] = "ABOVE_CHAT"
+	E.db["chat"]["panelTabTransparency"] = true
+	E.db["chat"]["panelColor"]["a"] = 0.60000002384186
+	E.db["chat"]["panelColor"]["r"] = 0.058823529411765
+	E.db["chat"]["panelColor"]["g"] = 0.058823529411765
+	E.db["chat"]["panelColor"]["b"] = 0.058823529411765
+	E.db["chat"]["font"] = "Expressway"
+	E.db["chat"]["fontSize"] = 12
+	E.db["chat"]["tabFontOutline"] = "OUTLINE"
+	E.db["chat"]["panelHeight"] = 165
+	E.db["chat"]["panelWidthRight"] = 430
+	E.db["chat"]["chatHistory"] = false
+	E.db["chat"]["panelHeightRight"] = 165
+	E.db["chat"]["noAlertInCombat"] = true
+	E.db["chat"]["socialQueueMessages"] = true
+	E.db["chat"]["panelWidth"] = 430	
 	E.db["chat"]["emotionIcons"] = true
 	E.db["chat"]["lfgIcons"] = false
 	E.db["chat"]["keywordSound"] = "Whisper Alert"
@@ -148,6 +220,12 @@ local function SetupChat()
 	E.db["chat"]["fadeUndockedTabs"] = true
 	E.db["chat"]["fadeTabsNoBackdrop"] = true
 	E.db["chat"]["chatHistory"] = true
+	E.db["chat"]["keywords"] = "%MYNAME%, ElvUI, KlixUI"
+	E.db["chat"]["fontOutline"] = "OUTLINE"
+	E.db["chat"]["tabFontSize"] = 12
+	E.db["chat"]["hideVoiceButtons"] = false
+	E.db["chat"]["hideChatToggles"] = false	
+
 	if T.IsAddOnLoaded("ElvUI_ChatTweaks") then
 		E.db["chat"]["copyChatLines"] = false
 		E.db["chat"]["timeStampFormat"] = "NONE"
@@ -177,8 +255,12 @@ local function SetupChat()
 end
 
 function KUI:SetupLayout(layout)
-	
-	-- UI scales
+
+	if not E.db.movers then
+		E.db.movers = {}
+	end
+
+	-- UI Scales
 	if E.screenheight == 1080 then E.db["general"]["UIScale"] = 0.711 end
 	if E.screenheight == 1440 then E.db["general"]["UIScale"] = 0.533 end
 	
@@ -190,12 +272,13 @@ function KUI:SetupLayout(layout)
 	E.private["general"]["pixelPerfect"] = true
 	E.private["general"]["chatBubbles"] = "backdrop"
 	E.private["general"]["chatBubbleFont"] = "Expressway"
-	E.private["general"]["chatBubbleFontSize"] = 12
+	E.private["general"]["chatBubbleFontSize"] = 10
 	E.private["general"]["chatBubbleFontOutline"] = "OUTLINE"
 	E.private["general"]["chatBubbleName"] = true
 	E.private["general"]["classColorMentionsSpeech"] = true
 	E.private["general"]["normTex"] = "Klix"
 	E.private["general"]["glossTex"] = "Klix"
+	
 	if T.IsAddOnLoaded("XLoot") then
 		E.private["general"]["loot"] = false
 		E.private["general"]["lootRoll"] = false
@@ -211,24 +294,24 @@ function KUI:SetupLayout(layout)
 	E.global["general"]["animateConfig"] = false
 	E.global["general"]["smallerWorldMap"] = false
 	E.global["general"]["commandBarSetting"] = "DISABLED"
+	E.global["general"]["WorldMapCoordinates"]["enable"] = false
+	E.global["general"]["showMissingTalentAlert"] = false	
 
 	--[[----------------------------------
 	--	ProfileDB - General
 	--]]----------------------------------
 	E.db["general"]["font"] = "Expressway"
-	E.db["general"]["fontSize"] = 11
+	E.db["general"]["fontSize"] = 12
 	E.db["general"]["valuecolor"] = {r = KUI.r, g = KUI.g, b = KUI.b}
 	E.db["general"]["bordercolor"] = {r = 0/255, g = 0/255, b = 0/255}
 	E.db["general"]["backdropcolor"] = {r = 18/255, g = 18/255, b = 18/255}
-	E.db["general"]["backdropfadecolor"] = {r = 18/255, g = 18/255, b = 18/255, a = 0.60}
+	E.db["general"]["backdropfadecolor"] = {r = 18/255, g = 18/255, b = 18/255, a = 0.55}
 	E.db["general"]["loginmessage"] = false
 	E.db["general"]["afk"] = true
 	E.db["general"]["stickyFrames"] = true
 	E.db["general"]["autoRepair"] = "GUILD"
 	E.db["general"]["autoRoll"] = false
 	E.db["general"]["autoAcceptInvite"] = false
-	E.db["general"]["vendorGrays"] = true
-	E.db["general"]["vendorGraysDetails"] = true
 	E.db["general"]["interruptAnnounce"] = "SAY"
 	E.db["general"]["bottomPanel"] = false
 	E.db["general"]["topPanel"] = false
@@ -236,27 +319,48 @@ function KUI:SetupLayout(layout)
 	E.db["general"]["enhancedPvpMessages"] = true
 	E.db["general"]["objectiveFrameHeight"] = 500
 	E.db["general"]["bonusObjectivePosition"] = "LEFT"
-	E.db["general"]["threat"]["enable"] = false
 	E.db["general"]["numberPrefixStyle"] = "ENGLISH"
 	E.db["general"]["talkingHeadFrameScale"] = 0.7
 	E.db["general"]["talkingHeadFrameBackdrop"] = true
 	E.db["general"]["decimalLenght"] = 1
 	E.db["general"]["taintLog"] = false
-	E.db["general"]["vehicleSeatIndicatorSize"] = 72
+	E.db["general"]["vehicleSeatIndicatorSize"] = 76
+	
 	if E.myclass == "SHAMAN" then
 		E.db["general"]["totems"]["enable"] = true
 	else
 		E.db["general"]["totems"]["enable"] = false
 	end
-	E.db["general"]["totems"]["growthDirection"] = "VERTICAL"
+	
+	E.db["general"]["totems"]["growthDirection"] = "HORIZONTAL"
 	E.db["general"]["totems"]["size"] = 40
 	E.db["general"]["totems"]["spacing"] = 3
+	E.db["general"]["minimap"]["icons"]["calendar"]["hide"] = true
+	E.db["general"]["minimap"]["icons"]["classHall"]["hide"] = false
+	E.db["general"]["minimap"]["icons"]["classHall"]["position"] = "BOTTOMRIGHT"
+	E.db["general"]["minimap"]["icons"]["classHall"]["scale"] = 0.7
+	if E.db.KlixUI.maps.minimap.rectangle then
+		E.db["general"]["minimap"]["icons"]["classHall"]["xOffset"] = -2
+		E.db["general"]["minimap"]["icons"]["classHall"]["yOffset"] = 45
+	else
+		E.db["general"]["minimap"]["icons"]["classHall"]["xOffset"] = 0
+		E.db["general"]["minimap"]["icons"]["classHall"]["yOffset"] = -4
+	end
+	local minimapIcons = E.db["general"]["minimap"]["icons"]
+	local lfgIcon = minimapIcons["lfgEye"] and "lfgEye" or (minimapIcons["battlefield"] and "battlefield")
+	if lfgIcon then
+		E.db["general"]["minimap"]["icons"][lfgIcon]["position"] = "BOTTOMLEFT"
+		E.db["general"]["minimap"]["icons"][lfgIcon]["scale"] = 0.75
+		E.db["general"]["minimap"]["icons"][lfgIcon]["xOffset"] = 4
+		E.db["general"]["minimap"]["icons"][lfgIcon]["yOffset"] = 4
+	end
+	E.db["general"]["minimap"]["icons"]["mail"]["position"] = "TOPRIGHT"
 	E.db["general"]["minimap"]["icons"]["mail"]["scale"] = 1
 	E.db["general"]["minimap"]["icons"]["mail"]["xOffset"] = -8
 	E.db["general"]["minimap"]["icons"]["mail"]["yOffset"] = -4
 	E.db["general"]["minimap"]["resetZoom"]["enable"] = true
 	E.db["general"]["minimap"]["resetZoom"]["time"] = 5
-	E.db["general"]["minimap"]["size"] = 150
+	E.db["general"]["minimap"]["size"] = 160
 	E.db["general"]["minimap"]["locationText"] = "MOUSEOVER"
 	E.db["general"]["minimap"]["locationFontSize"] = 12
 	E.db["general"]["minimap"]["locationFontOutline"] = "OUTLINE"
@@ -277,16 +381,17 @@ function KUI:SetupLayout(layout)
 	else
 		KUI:SetMoverPosition("MinimapMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -10)
 	end
-	KUI:SetMoverPosition("TotemBarMover", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 432, 30)
+	
+	KUI:SetMoverPosition("TotemBarMover", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 480, 10)
 	
 	--[[----------------------------------
 	--	ProfileDB - Minimap Buttons KlixUI
 	--]]----------------------------------
 	if KUI.IsDeveloper() then
-		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["iconSize"] = 16.5
-		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["buttonsPerRow"] = 9
+		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["iconSize"] = 23
+		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["buttonsPerRow"] = 6
 	else
-		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["iconSize"] = 20
+		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["iconSize"] = 24
 		E.db["KlixUI"]["maps"]["minimap"]["buttons"]["buttonsPerRow"] = 6
 	end
 	
@@ -297,6 +402,7 @@ function KUI:SetupLayout(layout)
 		E.private["auras"]["masque"]["buffs"] = true
 		E.private["auras"]["masque"]["debuffs"] = true
 	end
+
 	E.db["auras"]["fadeThreshold"] = 10
 	E.db["auras"]["font"] = "Expressway"
 	E.db["auras"]["fontSize"] = 12
@@ -315,56 +421,53 @@ function KUI:SetupLayout(layout)
 	E.db["auras"]["debuffs"]["maxWraps"] = 2
 	
 	-- Cooldown Settings
-	E.db["auras"]["cooldown"]["override"] = true
-	E.db["auras"]["cooldown"]["useIndicatorColor"] = true
-	E.db["auras"]["cooldown"]["hoursIndicator"]["r"] = 0.4
-	E.db["auras"]["cooldown"]["minutesIndicator"]["b"] = 0.9176470588235294
-	E.db["auras"]["cooldown"]["minutesIndicator"]["g"] = 0.7764705882352941
-	E.db["auras"]["cooldown"]["minutesIndicator"]["r"] = 0.2470588235294118
-	E.db["auras"]["cooldown"]["secondsIndicator"]["b"] = 0
-	E.db["auras"]["cooldown"]["expireIndicator"]["g"] = 0
-	E.db["auras"]["cooldown"]["expireIndicator"]["b"] = 0
-	E.db["auras"]["cooldown"]["daysIndicator"]["g"] = 0.4
-	E.db["auras"]["cooldown"]["daysIndicator"]["r"] = 0.4
-	E.db["auras"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
-	E.db["auras"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
-	E.db["auras"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
-	E.db["auras"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
-	E.db["auras"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
-	E.db["auras"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
-	E.db["auras"]["cooldown"]["secondsColor"]["r"] = 1
-	E.db["auras"]["cooldown"]["secondsColor"]["g"] = 1
-	E.db["auras"]["cooldown"]["secondsColor"]["b"] = 1
-	E.db["auras"]["cooldown"]["minutesColor"]["r"] = 1
-	E.db["auras"]["cooldown"]["minutesColor"]["g"] = 1
-	E.db["auras"]["cooldown"]["hoursColor"]["b"] = 1
-	E.db["auras"]["cooldown"]["hoursColor"]["r"] = 1
-	E.db["auras"]["cooldown"]["hoursColor"]["g"] = 1
-	E.db["auras"]["cooldown"]["hoursColor"]["b"] = 1
-	
-	if T.IsAddOnLoaded('ElvUI_VisualAuraTimers') then
-	E.db["auras"]["timeXOffset"] = 0
-	E.db["auras"]["timeYOffset"] = -8
-	E.db["auras"]["buffs"]["verticalSpacing"] = 24
-	E.db["auras"]["debuffs"]["verticalSpacing"] = 24
+	if HasLegacyCooldownSettings("auras") then
+		E.db["auras"]["cooldown"]["override"] = true
+		E.db["auras"]["cooldown"]["useIndicatorColor"] = true
+		E.db["auras"]["cooldown"]["hoursIndicator"]["r"] = 0.4
+		E.db["auras"]["cooldown"]["minutesIndicator"]["b"] = 0.9176470588235294
+		E.db["auras"]["cooldown"]["minutesIndicator"]["g"] = 0.7764705882352941
+		E.db["auras"]["cooldown"]["minutesIndicator"]["r"] = 0.2470588235294118
+		E.db["auras"]["cooldown"]["secondsIndicator"]["b"] = 0
+		E.db["auras"]["cooldown"]["expireIndicator"]["g"] = 0
+		E.db["auras"]["cooldown"]["expireIndicator"]["b"] = 0
+		E.db["auras"]["cooldown"]["daysIndicator"]["g"] = 0.4
+		E.db["auras"]["cooldown"]["daysIndicator"]["r"] = 0.4
+		E.db["auras"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
+		E.db["auras"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
+		E.db["auras"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
+		E.db["auras"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
+		E.db["auras"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
+		E.db["auras"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
+		E.db["auras"]["cooldown"]["secondsColor"]["r"] = 1
+		E.db["auras"]["cooldown"]["secondsColor"]["g"] = 1
+		E.db["auras"]["cooldown"]["secondsColor"]["b"] = 1
+		E.db["auras"]["cooldown"]["minutesColor"]["r"] = 1
+		E.db["auras"]["cooldown"]["minutesColor"]["g"] = 1
+		E.db["auras"]["cooldown"]["hoursColor"]["b"] = 1
+		E.db["auras"]["cooldown"]["hoursColor"]["r"] = 1
+		E.db["auras"]["cooldown"]["hoursColor"]["g"] = 1
+		E.db["auras"]["cooldown"]["hoursColor"]["b"] = 1
 	else
+		SetLegacyCooldownFont("auras", "Expressway", 16, "OUTLINE")
+	end
 	E.db["auras"]["timeXOffset"] = 0
 	E.db["auras"]["timeYOffset"] = -1
 	E.db["auras"]["buffs"]["verticalSpacing"] = 16
 	E.db["auras"]["debuffs"]["verticalSpacing"] = 16
-	end
 	
 	if T.IsAddOnLoaded('XIV_Databar') then
-		KUI:SetMoverPosition("BuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -164, -25)
-		KUI:SetMoverPosition("DebuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -164, -143)
+		KUI:SetMoverPosition("BuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -174, -25)
+		KUI:SetMoverPosition("DebuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -174, -143)
 	else
-		KUI:SetMoverPosition("BuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -164, -10)
-		KUI:SetMoverPosition("DebuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -164, -128)
+		KUI:SetMoverPosition("BuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -174, -10)
+		KUI:SetMoverPosition("DebuffsMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -174, -128)
 	end
 	
 	--[[----------------------------------
 	--	ProfileDB - Bags
 	--]]----------------------------------
+	-- check if BagsAddons are enabled
 	if T.IsAddOnLoaded("AdiBags")
 	 or T.IsAddOnLoaded("ArkInventory")
 	 or T.IsAddOnLoaded("Baggins")
@@ -381,6 +484,7 @@ function KUI:SetupLayout(layout)
 	else
 		E.private["bags"]["enable"] = true
 	end
+
 	E.db["bags"]["bagSize"] = 28
 	E.db["bags"]["bagWidth"] = 400
 	E.db["bags"]["bankSize"] = 28
@@ -401,6 +505,7 @@ function KUI:SetupLayout(layout)
 	E.db["bags"]["countFontOutline"] = "OUTLINE"
 	E.db["bags"]["itemLevelThreshold"] = 100
 	E.db["bags"]["transparent"] = true
+	
 	if KUI:IsDeveloper() then 
 		E.db["bags"]["split"]["player"] = false
 		E.db["bags"]["split"]["bank"] = false
@@ -408,6 +513,7 @@ function KUI:SetupLayout(layout)
 		E.db["bags"]["split"]["player"] = true
 		E.db["bags"]["split"]["bank"] = true
 	end
+	
 	E.db["bags"]["split"]["bag1"] = true
 	E.db["bags"]["split"]["bag2"] = true
 	E.db["bags"]["split"]["bag3"] = true
@@ -419,28 +525,34 @@ function KUI:SetupLayout(layout)
 	E.db["bags"]["split"]["bag9"] = true
 	E.db["bags"]["split"]["bag10"] = true
 	E.db["bags"]["split"]["bag11"] = true
-	E.db["bags"]["vendorGrays"]["details"] = true
+	E.db["bags"]["vendorGrays"]["enable"] = true
+	E.db["bags"]["vendorGrays"]["details"] = true 
 		
 	-- Cooldown Settings
-	E.db["bags"]["cooldown"]["override"] = true
-	E.db["bags"]["cooldown"]["fonts"] = {
-		["enable"] = true,
-		["font"] = "Expressway",
-		["fontSize"] = 20,
-	}
-	E.db["bags"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
-	E.db["bags"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
-	E.db["bags"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
-	E.db["bags"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
-	E.db["bags"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
-	E.db["bags"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
-	E.db["bags"]["cooldown"]["secondsColor"]["b"] = 0
-	E.db["bags"]["cooldown"]["daysColor"]["r"] = 0.4
-	E.db["bags"]["cooldown"]["daysColor"]["g"] = 0.4
-	E.db["bags"]["cooldown"]["hoursColor"]["r"] = 0.4
+	if HasLegacyCooldownSettings("bags") then
+		E.db["bags"]["cooldown"]["override"] = true
+		E.db["bags"]["cooldown"]["fonts"] = {
+			["enable"] = true,
+			["font"] = "Expressway",
+			["fontSize"] = 20,
+		}
+		E.db["bags"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
+		E.db["bags"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
+		E.db["bags"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
+		E.db["bags"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
+		E.db["bags"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
+		E.db["bags"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
+		E.db["bags"]["cooldown"]["secondsColor"]["b"] = 0
+		E.db["bags"]["cooldown"]["daysColor"]["r"] = 0.4
+		E.db["bags"]["cooldown"]["daysColor"]["g"] = 0.4
+		E.db["bags"]["cooldown"]["hoursColor"]["r"] = 0.4
+	else
+		SetLegacyCooldownFont("bags", "Expressway", 20)
+	end
+
 	
-	KUI:SetMoverPosition("ElvUIBagMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -10, 30)
-	KUI:SetMoverPosition("ElvUIBankMover", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 10, 30)
+	KUI:SetMoverPosition("ElvUIBagMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -10, 40)
+	KUI:SetMoverPosition("ElvUIBankMover", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 10, 40)
 	
 	--[[----------------------------------
 	--	ProfileDB - DataBars
@@ -448,7 +560,7 @@ function KUI:SetupLayout(layout)
 	-- ExperienceBar
 	E.db["databars"]["experience"]["enable"] = true
 	E.db["databars"]["experience"]["mouseover"] = false
-	E.db["databars"]["experience"]["width"] = 371
+	E.db["databars"]["experience"]["width"] = 162
 	E.db["databars"]["experience"]["height"] = 10
 	E.db["databars"]["experience"]["font"] = "Expressway"
 	E.db["databars"]["experience"]["fontOutline"] = "OUTLINE"
@@ -462,7 +574,7 @@ function KUI:SetupLayout(layout)
 	-- ReputationBar 
 	E.db["databars"]["reputation"]["enable"] = true
 	E.db["databars"]["reputation"]["mouseover"] = false
-	E.db["databars"]["reputation"]["width"] = 371
+	E.db["databars"]["reputation"]["width"] = 162
 	E.db["databars"]["reputation"]["height"] = 10
 	E.db["databars"]["reputation"]["font"] = "Expressway"
 	E.db["databars"]["reputation"]["fontOutline"] = "OUTLINE"
@@ -472,9 +584,50 @@ function KUI:SetupLayout(layout)
 	E.db["databars"]["reputation"]["hideInVehicle"] = false
 	E.db["databars"]["reputation"]["hideInCombat"] = false
 	E.db["databars"]["reputation"]["reverseFill"] = false
+	-- AzeriteBar
+	if E.db["databars"]["azerite"] then
+		E.db["databars"]["azerite"]["enable"] = true
+		E.db["databars"]["azerite"]["mouseover"] = false
+		E.db["databars"]["azerite"]["width"] = 162
+		E.db["databars"]["azerite"]["height"] = 10
+		E.db["databars"]["azerite"]["font"] = "Expressway"
+		E.db["databars"]["azerite"]["fontOutline"] = "OUTLINE"
+		E.db["databars"]["azerite"]["textFormat"] = "NONE"
+		E.db["databars"]["azerite"]["textSize"] = 12
+		E.db["databars"]["azerite"]["orientation"] = "HORIZONTAL"
+		E.db["databars"]["azerite"]["hideInVehicle"] = false
+		E.db["databars"]["azerite"]["hideInCombat"] = false
+		E.db["databars"]["azerite"]["reverseFill"] = false
+	end
+	-- HonorBar
+	E.db["databars"]["honor"]["enable"] = true
+	E.db["databars"]["honor"]["mouseover"] = false
+	E.db["databars"]["honor"]["width"] = 162
+	E.db["databars"]["honor"]["height"] = 10
+	E.db["databars"]["honor"]["font"] = "Expressway"
+	E.db["databars"]["honor"]["fontOutline"] = "OUTLINE"
+	E.db["databars"]["honor"]["textFormat"] = "NONE"
+	E.db["databars"]["honor"]["textSize"] = 12
+	E.db["databars"]["honor"]["orientation"] = "HORIZONTAL"
+	E.db["databars"]["honor"]["hideInVehicle"] = false
+	E.db["databars"]["honor"]["hideInCombat"] = false
+	E.db["databars"]["honor"]["hideOutsidePvP"] = false
+	E.db["databars"]["honor"]["reverseFill"] = false
 	
-	KUI:SetMoverPosition("ExperienceBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 62)
-	KUI:SetMoverPosition("ReputationBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 72)
+	-- Bar Movers
+	if T.IsAddOnLoaded('XIV_Databar') then
+		KUI:SetMoverPosition("ArtifactBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -200)
+		KUI:SetMoverPosition("AzeriteBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -200)
+		KUI:SetMoverPosition("HonorBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -189)
+		KUI:SetMoverPosition("ReputationBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -178)
+		KUI:SetMoverPosition("ExperienceBarMover", "TOP", E.UIParent, "TOP", 0, -25)
+	else
+		KUI:SetMoverPosition("ArtifactBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -173)
+		KUI:SetMoverPosition("AzeriteBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -173)
+		KUI:SetMoverPosition("HonorBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -184)
+		KUI:SetMoverPosition("ReputationBarMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -10, -173)
+		KUI:SetMoverPosition("ExperienceBarMover", "TOP", E.UIParent, "TOP", 0, -2)
+	end
 	
 	--[[----------------------------------
 	--	ProfileDB - NamePlate
@@ -490,20 +643,24 @@ function KUI:SetupLayout(layout)
 	E.db["nameplates"]["statusbar"] = "Klix"
 	E.db["nameplates"]["smoothbars"] = true
 	
-	-- Cooldowns
-	E.db["nameplates"]["cooldown"]["override"] = true
-	E.db["nameplates"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
-	E.db["nameplates"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
-	E.db["nameplates"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
-	E.db["nameplates"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
-	E.db["nameplates"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
-	E.db["nameplates"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
-	E.db["nameplates"]["cooldown"]["secondsColor"]["b"] = 0
-	E.db["nameplates"]["cooldown"]["fonts"]["enable"] = true
-	E.db["nameplates"]["cooldown"]["fonts"]["font"] = "Expressway"
-	E.db["nameplates"]["cooldown"]["daysColor"]["g"] = 0.4
-	E.db["nameplates"]["cooldown"]["daysColor"]["r"] = 0.4
-	E.db["nameplates"]["cooldown"]["hoursColor"]["r"] = 0.4
+	-- Cooldown Settings
+	if HasLegacyCooldownSettings("nameplates") then
+		E.db["nameplates"]["cooldown"]["override"] = true
+		E.db["nameplates"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
+		E.db["nameplates"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
+		E.db["nameplates"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
+		E.db["nameplates"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
+		E.db["nameplates"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
+		E.db["nameplates"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
+		E.db["nameplates"]["cooldown"]["secondsColor"]["b"] = 0
+		E.db["nameplates"]["cooldown"]["fonts"]["enable"] = true
+		E.db["nameplates"]["cooldown"]["fonts"]["font"] = "Expressway"
+		E.db["nameplates"]["cooldown"]["daysColor"]["g"] = 0.4
+		E.db["nameplates"]["cooldown"]["daysColor"]["r"] = 0.4
+		E.db["nameplates"]["cooldown"]["hoursColor"]["r"] = 0.4
+	else
+		SetLegacyCooldownFont("nameplates", "Expressway", 16)
+	end
 	
 	-- Player
 	E.db["nameplates"]["units"]["PLAYER"]["enable"] = false
@@ -661,7 +818,7 @@ function KUI:SetupLayout(layout)
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["buffs"]["countFontOutline"] = 'OUTLINE'
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["buffs"]["countFontSize"] = 9
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["buffs"]["durationPosition"] = 'CENTER'
-	E.db["nameplates"]["units"]["ENEMY_NPC"]["buffs"]["priority"] = 'Blacklist,RaidBuffsElvUI,PlayerBuffs,TurtleBuffs,CastByUnit'
+	E.db["nameplates"]["units"]["ENEMY_NPC"]["buffs"]["priority"] = "Blacklist,RaidBuffsElvUI,PlayerBuffs,TurtleBuffs,CastByUnit"
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["debuffs"]["numAuras"] = 8
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["debuffs"]["size"] = 24
 	E.db["nameplates"]["units"]["ENEMY_NPC"]["debuffs"]["yOffset"] = 33
@@ -716,11 +873,16 @@ function KUI:SetupLayout(layout)
 	E.db["tooltip"]["healthBar"]["font"] = "Expressway"
 	E.db["tooltip"]["healthBar"]["fontSize"] = 11
 	E.db["tooltip"]["visibility"]["combat"] = true
+		
+	KUI:SetMoverPosition("TooltipMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -9, 156)
 	
-	if T.IsAddOnLoaded("ClassicThreatMeter") then
-		KUI:SetMoverPosition("TooltipMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -9, 213)
+	--[[----------------------------------
+	--	Skins - Layout
+	--]]----------------------------------
+	if T.IsAddOnLoaded("ls_Toasts") or E.db.KlixUI.toasts.enable then
+		E.private["skins"]["blizzard"]["alertframes"] = false
 	else
-		KUI:SetMoverPosition("TooltipMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -9, 156)
+		E.private["skins"]["blizzard"]["alertframes"] = true
 	end
 	
 	--[[----------------------------------
@@ -742,14 +904,39 @@ function KUI:SetupLayout(layout)
 	KUI:SetMoverPosition("SocialMenuMover", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 10, 194)
 	KUI:SetMoverPosition("CM_MOVER", "BOTTOM", E.UIParent, "BOTTOM", 0, 150)
 	KUI:SetMoverPosition("TopCenterContainerMover", "TOP", E.UIParent, "TOP", 0, -10)
-
+	KUI:SetMoverPosition("VehicleLeaveButton", "TOPRIGHT", E.UIParent, "TOPRIGHT", -129, -129)
+	KUI:SetMoverPosition("UIWidgetTopContainer", "TOP", E.UIParent, "TOP", 0, -50)
+	
 	E:StaggeredUpdateAll(nil, true)
 
 	PluginInstallStepComplete.message = KUI.Title..L["Layout Set"]
 	PluginInstallStepComplete:Show()
 end
 
+	--[[----------------------------------
+	--	UnitFrames
+	--]]----------------------------------
 function KUI:SetupUnitframes(layout)
+
+	if not E.db.movers then
+		E.db.movers = {}
+	end
+
+	local units = E.db["unitframe"] and E.db["unitframe"]["units"]
+	if not units then return end
+
+	-- Current ElvUI uses raid1/raid3; keep the old installer paths working without rewriting the whole block.
+	if units["raid1"] then
+		units["raid"] = units["raid1"]
+	end
+
+	if units["raid3"] then
+		units["raid40"] = units["raid3"]
+	end
+
+	local raidMover = _G["ElvUF_RaidMover"] and "ElvUF_RaidMover" or (_G["ElvUF_Raid1Mover"] and "ElvUF_Raid1Mover")
+	local raid40Mover = _G["ElvUF_Raid40Mover"] and "ElvUF_Raid40Mover" or (_G["ElvUF_Raid3Mover"] and "ElvUF_Raid3Mover")
+	
 	--[[----------------------------------
 	--	UnitFrames - General
 	--]]----------------------------------
@@ -779,6 +966,9 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["colors"]["health_backdrop"] = { r = 18/255, g = 18/255, b = 18/255 }
 	E.db["unitframe"]["colors"]["tapped"] = { r = 195/255, g = 202/255, b = 217/255 }
 	E.db["unitframe"]["colors"]["disconnected"] = { r = 195/255, g = 202/255, b = 217/255 }
+	E.db["unitframe"]["colors"]["power_backdrop"]["r"] = 0.12549019607843
+	E.db["unitframe"]["colors"]["power_backdrop"]["g"] = 0.12549019607843
+	E.db["unitframe"]["colors"]["power_backdrop"]["b"] = 0.12549019607843	
 	E.db["unitframe"]["colors"]["power"]["MANA"] = { r = 79/255, g = 115/255, b = 161/255 }
 	E.db["unitframe"]["colors"]["power"]["RAGE"] = { r = 199/255, g = 64/255, b = 64/255 }
 	E.db["unitframe"]["colors"]["power"]["FOCUS"] = { r = 181/255, g = 110/255, b = 69/255 }
@@ -800,36 +990,45 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["colors"]["classResources"]["MONK[6]"] = { r = 0/255, g = 255/255, b = 150/255 }
 	
 	-- Frame Glow
-	E.db["unitframe"]["colors"]["frameGlow"]["targetGlow"]["enable"] = false
-	E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["enable"] = false
-	E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["class"] = true
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["a"] = 0.5
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["b"] = 0
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["g"] = 0
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["r"] = 0
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["class"] = true
-	E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["texture"] = "Klix1"
+    E.db["unitframe"]["colors"]["frameGlow"]["targetGlow"]["enable"] = false
+    E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["enable"] = true
+    E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["color"]["b"] = 0.070588235294118
+    E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["color"]["g"] = 0.070588235294118
+    E.db["unitframe"]["colors"]["frameGlow"]["mainGlow"]["color"]["r"] = 0.070588235294118
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["a"] = 0.5
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["b"] = 0
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["g"] = 0
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["color"]["r"] = 0
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["class"] = true
+    E.db["unitframe"]["colors"]["frameGlow"]["mouseoverGlow"]["texture"] = "Klix1"
 
 	-- Cooldown Settings
-	E.db["unitframe"]["cooldown"]["override"] = true
-	E.db["unitframe"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
-	E.db["unitframe"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
-	E.db["unitframe"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
-	E.db["unitframe"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
-	E.db["unitframe"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
-	E.db["unitframe"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
-	E.db["unitframe"]["cooldown"]["secondsColor"]["b"] = 0
-	E.db["unitframe"]["cooldown"]["fonts"]["enable"] = true
-	E.db["unitframe"]["cooldown"]["fonts"]["font"] = "Expressway"
-	E.db["unitframe"]["cooldown"]["fonts"]["fontSize"] = 16
-	E.db["unitframe"]["cooldown"]["hoursColor"]["r"] = 0.4
-	E.db["unitframe"]["cooldown"]["daysColor"]["g"] = 0.4
-	E.db["unitframe"]["cooldown"]["daysColor"]["r"] = 0.4
-	
+	if HasLegacyCooldownSettings("unitframe") then
+		E.db["unitframe"]["cooldown"]["override"] = true
+		E.db["unitframe"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
+		E.db["unitframe"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
+		E.db["unitframe"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
+		E.db["unitframe"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
+		E.db["unitframe"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
+		E.db["unitframe"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
+		E.db["unitframe"]["cooldown"]["secondsColor"]["b"] = 0
+		E.db["unitframe"]["cooldown"]["fonts"]["enable"] = true
+		E.db["unitframe"]["cooldown"]["fonts"]["font"] = "Expressway"
+		E.db["unitframe"]["cooldown"]["fonts"]["fontSize"] = 16
+		E.db["unitframe"]["cooldown"]["hoursColor"]["r"] = 0.4
+		E.db["unitframe"]["cooldown"]["daysColor"]["g"] = 0.4
+		E.db["unitframe"]["cooldown"]["daysColor"]["r"] = 0.4
+	else
+		SetLegacyCooldownFont("unitframe", "Expressway", 16)
+	end
 	
 	-- Player
 	E.db["unitframe"]["units"]["player"]["width"] = 250
-	E.db["unitframe"]["units"]["player"]["height"] = 33
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() then
+		E.db["unitframe"]["units"]["player"]["height"] = 32
+	else
+		E.db["unitframe"]["units"]["player"]["height"] = 33
+	end
 	E.db["unitframe"]["units"]["player"]["orientation"] = "LEFT"
 	E.db["unitframe"]["units"]["player"]["threatStyle"] = "NONE"
 	E.db["unitframe"]["units"]["player"]["healPrediction"]["enable"] = true
@@ -842,19 +1041,29 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["player"]["health"]["yOffset"] = 0
 	E.db["unitframe"]["units"]["player"]["name"]["text_format"] = ""
 	E.db["unitframe"]["units"]["player"]["portrait"]["enable"] = false
-	E.db["unitframe"]["units"]["player"]["power"]["enable"] = true
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() and T.IsAddOnLoaded("WeakAuras") then
+		E.db["unitframe"]["units"]["player"]["power"]["enable"] = false
+	else
+		E.db["unitframe"]["units"]["player"]["power"]["enable"] = true
+	end
 	E.db["unitframe"]["units"]["player"]["power"]["text_format"] = ""
 	E.db["unitframe"]["units"]["player"]["power"]["position"] = "CENTER"
 	E.db["unitframe"]["units"]["player"]["power"]["attachTextTo"] = "Power"
-	E.db["unitframe"]["units"]["player"]["power"]["height"] = 33
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() then
+		E.db["unitframe"]["units"]["player"]["power"]["height"] = 32
+	else
+		E.db["unitframe"]["units"]["player"]["power"]["height"] = 33
+	end
 	E.db["unitframe"]["units"]["player"]["power"]["xOffset"] = 0
 	E.db["unitframe"]["units"]["player"]["power"]["yOffset"] = 0
 	E.db["unitframe"]["units"]["player"]["power"]["detachFromFrame"] = true
+	
 	if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
 		E.db["unitframe"]["units"]["player"]["power"]["detachedWidth"] = 246
 	else
 		E.db["unitframe"]["units"]["player"]["power"]["detachedWidth"] = 247
 	end
+	
 	E.db["unitframe"]["units"]["player"]["power"]["druidMana"] = false
 	E.db["unitframe"]["units"]["player"]["power"]["strataAndLevel"]["useCustomStrata"] = true
 	E.db["unitframe"]["units"]["player"]["buffs"]["enable"] = false
@@ -894,11 +1103,13 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["player"]["castbar"]["strataAndLevel"]["frameStrata"] = "MEDIUM"
 	E.db["unitframe"]["units"]["player"]["classbar"]["enable"] = true
 	E.db["unitframe"]["units"]["player"]["classbar"]["detachFromFrame"] = true
+	
 	if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
 		E.db["unitframe"]["units"]["player"]["classbar"]["detachedWidth"] = 246
 	else
 		E.db["unitframe"]["units"]["player"]["classbar"]["detachedWidth"] = 247
 	end
+	
 	E.db["unitframe"]["units"]["player"]["classbar"]["height"] = 10
 	E.db["unitframe"]["units"]["player"]["classbar"]["autoHide"] = false
 	E.db["unitframe"]["units"]["player"]["classbar"]["fill"] = "filled"
@@ -927,6 +1138,7 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["player"]["pvpIcon"]["xOffset"] = 4
 	E.db["unitframe"]["units"]["player"]["pvpIcon"]["yOffset"] = 4
 	E.db["unitframe"]["units"]["player"]["pvpIcon"]["scale"] = 0.4
+	
 	if not E.db["unitframe"]["units"]["player"]["customTexts"] then E.db["unitframe"]["units"]["player"]["customTexts"] = {} end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["player"]["customTexts"] = {}
@@ -954,7 +1166,11 @@ function KUI:SetupUnitframes(layout)
 	
 	-- Target
 	E.db["unitframe"]["units"]["target"]["width"] = 250
-	E.db["unitframe"]["units"]["target"]["height"] = 33
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() then
+		E.db["unitframe"]["units"]["target"]["height"] = 32
+	else
+		E.db["unitframe"]["units"]["target"]["height"] = 33
+	end
 	E.db["unitframe"]["units"]["target"]["rangeCheck"] = false
 	E.db["unitframe"]["units"]["target"]["orientation"] = "RIGHT"
 	E.db["unitframe"]["units"]["target"]["threatStyle"] = "NONE"
@@ -1029,6 +1245,7 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["target"]["pvpIcon"]["xOffset"] = 4
 	E.db["unitframe"]["units"]["target"]["pvpIcon"]["yOffset"] = -4
 	E.db["unitframe"]["units"]["target"]["pvpIcon"]["scale"] = 0.4
+	
 	if not E.db["unitframe"]["units"]["target"]["customTexts"] then E.db["unitframe"]["units"]["target"]["customTexts"] = {} end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["target"]["customTexts"] = {}
@@ -1057,7 +1274,11 @@ function KUI:SetupUnitframes(layout)
 	-- TargetTarget
 	E.db["unitframe"]["units"]["targettarget"]["enable"] = true
 	E.db["unitframe"]["units"]["targettarget"]["width"] = 90
-	E.db["unitframe"]["units"]["targettarget"]["height"] = 33
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() then
+		E.db["unitframe"]["units"]["targettarget"]["height"] = 32
+	else
+		E.db["unitframe"]["units"]["targettarget"]["height"] = 33
+	end
 	E.db["unitframe"]["units"]["targettarget"]["rangeCheck"] = false
 	E.db["unitframe"]["units"]["targettarget"]["buffs"]["enable"] = false
 	E.db["unitframe"]["units"]["targettarget"]["debuffs"]["enable"] = false
@@ -1074,10 +1295,14 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["targettarget"]["raidicon"]["yOffset"] = 8
 	E.db["unitframe"]["units"]["targettarget"]["portrait"]["enable"] = false
 	E.db["unitframe"]["units"]["targettarget"]["infoPanel"]["enable"] = false
+	
 	if not E.db["unitframe"]["units"]["targettarget"]["customTexts"] then E.db["unitframe"]["units"]["targettarget"]["customTexts"] = {} end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["targettarget"]["customTexts"] = {}
-	--[[
+	
+	-- TargetTargetTarget
+	E.db["unitframe"]["units"]["targettargettarget"]["enable"] = false
+	
 	-- Focus
 	E.db["unitframe"]["units"]["focus"]["enable"] = true
 	E.db["unitframe"]["units"]["focus"]["width"] = 250
@@ -1122,10 +1347,14 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["focustarget"]["debuffs"]["enable"] = false
 	E.db["unitframe"]["units"]["focustarget"]["name"]["position"] = "CENTER"
 	E.db["unitframe"]["units"]["focustarget"]["name"]["text_format"] = "[name:long]"
-	]]
+	
 	-- Pet
 	E.db["unitframe"]["units"]["pet"]["width"] = 90
-	E.db["unitframe"]["units"]["pet"]["height"] = 33
+	if KUI:IsDeveloper() and KUI:IsDeveloperRealm() then
+		E.db["unitframe"]["units"]["pet"]["height"] = 32
+	else
+		E.db["unitframe"]["units"]["pet"]["height"] = 33
+	end
 	E.db["unitframe"]["units"]["pet"]["rangeCheck"] = false
 	E.db["unitframe"]["units"]["pet"]["threatStyle"] = "NONE"
 	E.db["unitframe"]["units"]["pet"]["healPrediction"] = false
@@ -1183,7 +1412,7 @@ function KUI:SetupUnitframes(layout)
 	
 	-- PetTarget
 	E.db["unitframe"]["units"]["pettarget"]["enable"] = false
-	--[[
+	
 	-- Arena
 	E.db["unitframe"]["units"]["arena"]["enable"] = true
 	E.db["unitframe"]["units"]["arena"]["width"] = 225
@@ -1242,6 +1471,7 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["boss"]["name"]["attachTextTo"] = "Health"
 	E.db["unitframe"]["units"]["boss"]["name"]["xOffset"] = 4
 	E.db["unitframe"]["units"]["boss"]["name"]["yOffset"] = 0
+	E.db["unitframe"]["units"]["boss"]["portrait"]["enable"] = false
 	E.db["unitframe"]["units"]["boss"]["buffs"]["enable"] = false
 	E.db["unitframe"]["units"]["boss"]["buffs"]["perrow"] = 3
 	E.db["unitframe"]["units"]["boss"]["buffs"]["numrows"] = 1
@@ -1271,12 +1501,14 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["boss"]["castbar"]["height"] = 10
 	E.db["unitframe"]["units"]["boss"]["castbar"]["icon"] = false
 	E.db["unitframe"]["units"]["boss"]["castbar"]["format"] = ""
+	E.db["unitframe"]["units"]["boss"]["infoPanel"]["enable"] = false
+	
 	if not E.db["unitframe"]["units"]["boss"]["customTexts"] then E.db["unitframe"]["units"]["boss"]["customTexts"] = {} end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["boss"]["customTexts"] = {}
 
 	KUI:SetMoverPosition("BossHeaderMover", "TOPRIGHT", E.UIParent, "TOPRIGHT", -370, -285)
-	]]
+	
 	-- Party
 	E.db["unitframe"]["units"]["party"]["width"] = 160
 	E.db["unitframe"]["units"]["party"]["height"] = 22
@@ -1351,6 +1583,7 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["party"]["targetsGroup"]["enable"] = false
 	E.db["unitframe"]["units"]["party"]["petsGroup"]["enable"] = false
 	E.db["unitframe"]["units"]["party"]["visibility"] = "[@raid6,exists][nogroup] hide;show"
+	
 	if E.db["unitframe"]["units"]["party"]["customTexts"] then E.db["unitframe"]["units"]["party"]["customTexts"] = nil end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["party"]["customTexts"] = {}
@@ -1415,6 +1648,7 @@ function KUI:SetupUnitframes(layout)
 	E.db["unitframe"]["units"]["raid"]["roleIcon"]["xOffset"] = 2
 	E.db["unitframe"]["units"]["raid"]["roleIcon"]["yOffset"] = 0
 	E.db["unitframe"]["units"]["raid"]["portrait"]["enable"] = false
+	
 	if not E.db["unitframe"]["units"]["raid"]["customTexts"] then E.db["unitframe"]["units"]["raid"]["customTexts"] = {} end
 	-- Delete old customTexts/ Create empty table
 	E.db["unitframe"]["units"]["raid"]["customTexts"] = {}
@@ -1494,8 +1728,8 @@ function KUI:SetupUnitframes(layout)
 		-- Player
 		KUI:SetMoverPosition("ElvUF_PlayerMover", "BOTTOM", E.UIParent, "BOTTOM", -265, 281)
 		KUI:SetMoverPosition("PlayerPowerBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 281)
-		KUI:SetMoverPosition("ComboBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 304)
-		KUI:SetMoverPosition("ClassBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 304)
+		KUI:SetMoverPosition("ComboBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 303)
+		KUI:SetMoverPosition("ClassBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 303)
 		KUI:SetMoverPosition("ElvUF_PlayerCastbarMover", "BOTTOM", E.UIParent, "BOTTOM", -265, 264)
 		-- Target/TargetofTarget
 		KUI:SetMoverPosition("ElvUF_TargetMover", "BOTTOM", E.UIParent, "BOTTOM", 265, 281)
@@ -1511,8 +1745,12 @@ function KUI:SetupUnitframes(layout)
 		KUI:SetMoverPosition("ElvUF_FocusTargetMover", "BOTTOM", E.UIParent, "BOTTOM", 265, 264)
 		--Group
 		KUI:SetMoverPosition("ElvUF_PartyMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 658)
-		KUI:SetMoverPosition("ElvUF_RaidMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 915)
-		KUI:SetMoverPosition("ElvUF_Raid40Mover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 920)
+		if raidMover then
+			KUI:SetMoverPosition(raidMover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 915)
+		end
+		if raid40Mover then
+			KUI:SetMoverPosition(raid40Mover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 920)
+		end
 		
 		--[[----------------------------------
 		--	Chat - DPS
@@ -1588,11 +1826,12 @@ function KUI:SetupUnitframes(layout)
 		else
 			KUI:SetMoverPosition("SpecializationBarMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -293, 194)
 		end
+		
 		-- Player
 		KUI:SetMoverPosition("ElvUF_PlayerMover", "BOTTOM", E.UIParent, "BOTTOM", -265, 281)
 		KUI:SetMoverPosition("PlayerPowerBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 281)
-		KUI:SetMoverPosition("ComboBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 304)
-		KUI:SetMoverPosition("ClassBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 304)
+		KUI:SetMoverPosition("ComboBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 303)
+		KUI:SetMoverPosition("ClassBarMover", "BOTTOM", E.UIParent, "BOTTOM", 0, 303)
 		KUI:SetMoverPosition("ElvUF_PlayerCastbarMover", "BOTTOM", E.UIParent, "BOTTOM", -265, 264)
 		-- Target/TargetofTarget
 		KUI:SetMoverPosition("ElvUF_TargetMover", "BOTTOM", E.UIParent, "BOTTOM", 265, 281)
@@ -1608,8 +1847,12 @@ function KUI:SetupUnitframes(layout)
 		KUI:SetMoverPosition("ElvUF_FocusTargetMover", "BOTTOM", E.UIParent, "BOTTOM", 265, 264)
 		-- Group
 		KUI:SetMoverPosition("ElvUF_PartyMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 234)
-		KUI:SetMoverPosition("ElvUF_RaidMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 379)
-		KUI:SetMoverPosition("ElvUF_Raid40Mover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 401)
+		if raidMover then
+			KUI:SetMoverPosition(raidMover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 379)
+		end
+		if raid40Mover then
+			KUI:SetMoverPosition(raid40Mover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 10, 401)
+		end
 		
 		--[[----------------------------------
 		--	Chat - DPS1
@@ -1704,8 +1947,12 @@ function KUI:SetupUnitframes(layout)
 		KUI:SetMoverPosition("ElvUF_FocusTargetMover", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -485, 310)
 		-- Group
 		KUI:SetMoverPosition("ElvUF_PartyMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 706, 264)
-		KUI:SetMoverPosition("ElvUF_RaidMover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 756, 360)
-		KUI:SetMoverPosition("ElvUF_Raid40Mover", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 756, 360)
+		if raidMover then
+			KUI:SetMoverPosition(raidMover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 756, 360)
+		end
+		if raid40Mover then
+			KUI:SetMoverPosition(raid40Mover, "TOPLEFT", E.UIParent, "BOTTOMLEFT", 756, 360)
+		end
 
 		--[[----------------------------------
 		--	Chat - HEALER
@@ -1805,7 +2052,15 @@ function KUI:SetupUnitframes(layout)
 	PluginInstallStepComplete:Show()
 end
 
+	--[[----------------------------------
+	--	ActionBars
+	--]]----------------------------------
 function KUI:SetupActionbars(layout)
+	
+	if not E.db.movers then
+		E.db.movers = {}
+	end
+	
 	--[[----------------------------------
 	--	ActionBars - General
 	--]]----------------------------------
@@ -1817,27 +2072,21 @@ function KUI:SetupActionbars(layout)
 	else
 		E.db["actionbar"]["hotkeytext"] = true
 	end
-	E.db["actionbar"]["macrotext"] = false
+	E.db["actionbar"]["macrotext"] = true
 	E.db["actionbar"]["lockActionBars"] = true
 	E.db["actionbar"]["globalFadeAlpha"] = 0
 	E.db["actionbar"]["desaturateOnCooldown"] = true
 	E.db["actionbar"]["transparent"] = true
 
-	-- Cooldowns
-	E.db["actionbar"]["cooldown"]["override"] = true
-	E.db["actionbar"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
-	E.db["actionbar"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
-	E.db["actionbar"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
-	E.db["actionbar"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
-	E.db["actionbar"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
-	E.db["actionbar"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
-	E.db["actionbar"]["cooldown"]["secondsColor"]["b"] = 0
-	E.db["actionbar"]["cooldown"]["daysColor"]["r"] = 0.4
-	E.db["actionbar"]["cooldown"]["daysColor"]["g"] = 0.4
-	E.db["actionbar"]["cooldown"]["fonts"]["enable"] = true
-	E.db["actionbar"]["cooldown"]["fonts"]["font"] = "Expressway"
-	E.db["actionbar"]["cooldown"]["fonts"]["fontSize"] = 20
-	E.db["actionbar"]["cooldown"]["hoursColor"]["r"] = 0.4
+	-- Cooldown Settings
+	if HasLegacyCooldownSettings("actionbar") then
+		E.db["actionbar"]["cooldown"]["fonts"]["enable"] = true
+		E.db["actionbar"]["cooldown"]["fonts"]["font"] = "Expressway"
+		E.db["actionbar"]["cooldown"]["fonts"]["fontOutline"] = "OUTLINE"
+		E.db["actionbar"]["cooldown"]["fonts"]["fontSize"] = 20
+	else
+		SetLegacyCooldownFont("actionbar", "Expressway", 20, "OUTLINE")
+	end
 
 	if T.IsAddOnLoaded("Masque") then
 		E.private["actionbar"]["masque"]["stanceBar"] = true
@@ -1848,6 +2097,28 @@ function KUI:SetupActionbars(layout)
 	--[[----------------------------------
 	--	ActionBars - layout
 	--]]----------------------------------
+	
+	-- Cooldown Settings
+	if HasLegacyCooldownSettings("actionbar") then
+		E.db["actionbar"]["cooldown"]["override"] = true
+		E.db["actionbar"]["cooldown"]["hhmmColor"]["r"] = 0.431372549019608
+		E.db["actionbar"]["cooldown"]["hhmmColor"]["g"] = 0.431372549019608
+		E.db["actionbar"]["cooldown"]["hhmmColor"]["b"] = 0.431372549019608
+		E.db["actionbar"]["cooldown"]["mmssColor"]["r"] = 0.56078431372549
+		E.db["actionbar"]["cooldown"]["mmssColor"]["g"] = 0.56078431372549
+		E.db["actionbar"]["cooldown"]["mmssColor"]["b"] = 0.56078431372549
+		E.db["actionbar"]["cooldown"]["secondsColor"]["b"] = 0
+		E.db["actionbar"]["cooldown"]["daysColor"]["r"] = 0.4
+		E.db["actionbar"]["cooldown"]["daysColor"]["g"] = 0.4
+		E.db["actionbar"]["cooldown"]["fonts"]["enable"] = true
+		E.db["actionbar"]["cooldown"]["fonts"]["font"] = "Expressway"
+		E.db["actionbar"]["cooldown"]["fonts"]["fontOutline"] = "OUTLINE"
+		E.db["actionbar"]["cooldown"]["fonts"]["fontSize"] = 20
+		E.db["actionbar"]["cooldown"]["hoursColor"]["r"] = 0.4
+	else
+		SetLegacyCooldownFont("actionbar", "Expressway", 20, "OUTLINE")
+	end
+
 	E.db["actionbar"]["bar1"]["enabled"] = true
 	E.db["actionbar"]["bar1"]["mouseover"] = false
 	E.db["actionbar"]["bar1"]["buttons"] = 8
@@ -1862,6 +2133,9 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar1"]["alpha"] = 1
 	E.db["actionbar"]["bar1"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar1"]["showGrid"] = true
+	E.db["actionbar"]["bar1"]["font"] = "Expressway"
+	E.db["actionbar"]["bar1"]["fontSize"] = 12
+	E.db["actionbar"]["bar1"]["fontOutline"] = "OUTLINE"
 	
 	E.db["actionbar"]["bar2"]["enabled"] = true
 	E.db["actionbar"]["bar2"]["mouseover"] = false
@@ -1877,6 +2151,9 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar2"]["alpha"] = 1
 	E.db["actionbar"]["bar2"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar2"]["showGrid"] = true
+	E.db["actionbar"]["bar2"]["font"] = "Expressway"
+	E.db["actionbar"]["bar2"]["fontSize"] = 12
+	E.db["actionbar"]["bar2"]["fontOutline"] = "OUTLINE"
 
 	E.db["actionbar"]["bar3"]["enabled"] = true
 	E.db["actionbar"]["bar3"]["mouseover"] = false
@@ -1892,6 +2169,9 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar3"]["alpha"] = 1
 	E.db["actionbar"]["bar3"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar3"]["showGrid"] = true
+	E.db["actionbar"]["bar3"]["font"] = "Expressway"
+	E.db["actionbar"]["bar3"]["fontSize"] = 12
+	E.db["actionbar"]["bar3"]["fontOutline"] = "OUTLINE"
 	
 	if KUI:IsDeveloper() then 
 		E.db["actionbar"]["bar4"]["enabled"] = true
@@ -1911,6 +2191,9 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar4"]["alpha"] = 1
 	E.db["actionbar"]["bar4"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar4"]["showGrid"] = true
+	E.db["actionbar"]["bar4"]["font"] = "Expressway"
+	E.db["actionbar"]["bar4"]["fontSize"] = 12
+	E.db["actionbar"]["bar4"]["fontOutline"] = "OUTLINE"
 	
 	if KUI:IsDeveloper() then 
 		E.db["actionbar"]["bar5"]["enabled"] = true
@@ -1930,14 +2213,11 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar5"]["alpha"] = 1
 	E.db["actionbar"]["bar5"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar5"]["showGrid"] = true
+	E.db["actionbar"]["bar5"]["font"] = "Expressway"
+	E.db["actionbar"]["bar5"]["fontSize"] = 12
+	E.db["actionbar"]["bar5"]["fontOutline"] = "OUTLINE"
 	
 	E.db["actionbar"]["bar6"]["enabled"] = true
-	if KUI:IsDeveloper() then
-		E.db["actionbar"]["bar6"]["mouseover"] = false
-	else
-		E.db["actionbar"]["bar6"]["mouseover"] = true
-	end
-	E.db["actionbar"]["bar6"]["buttons"] = 12
 	E.db["actionbar"]["bar6"]["buttonsPerRow"] = 12
 	E.db["actionbar"]["bar6"]["point"] = "BOTTOMLEFT"
 	E.db["actionbar"]["bar6"]["backdrop"] = false
@@ -1949,6 +2229,9 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["bar6"]["alpha"] = 1
 	E.db["actionbar"]["bar6"]["inheritGlobalFade"] = false
 	E.db["actionbar"]["bar6"]["showGrid"] = true
+	E.db["actionbar"]["bar6"]["font"] = "Expressway"
+	E.db["actionbar"]["bar6"]["fontSize"] = 12
+	E.db["actionbar"]["bar6"]["fontOutline"] = "OUTLINE"
 	
 	E.db["actionbar"]["barPet"]["enabled"] = true
 	E.db["actionbar"]["barPet"]["mouseover"] = false
@@ -1987,61 +2270,57 @@ function KUI:SetupActionbars(layout)
 	E.db["actionbar"]["microbar"]["buttonsPerRow"] = 12
 	E.db["actionbar"]["microbar"]["alpha"] = 1
 	
+	E.db["actionbar"]["extraActionButton"]["alpha"] = 1
+	E.db["actionbar"]["extraActionButton"]["scale"] = 0.75
+	E.db["actionbar"]["extraActionButton"]["inheritGlobalFade"] = false
+	
 	KUI:SetMoverPosition("ShiftAB", "TOPLEFT", E.UIParent, "BOTTOMLEFT", 959, 172)
 	KUI:SetMoverPosition("MicrobarMover", "TOPLEFT", E.UIParent, "TOPLEFT", 10, -10)
-	
-	if layout == "dps" then
+
 		--[[----------------------------------
 		--	Movers - DPS
-		--]]----------------------------------
+		--]]----------------------------------	
+	if layout == "dps" then
 		KUI:SetMoverPosition("ElvAB_1", "BOTTOM", E.UIParent, "BOTTOM", 0, 248)
 		KUI:SetMoverPosition("ElvAB_2", "BOTTOM", E.UIParent, "BOTTOM", 0, 217)
 		KUI:SetMoverPosition("ElvAB_3", "BOTTOM", E.UIParent, "BOTTOM", 0, 186)
 		KUI:SetMoverPosition("ElvAB_4", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 411, 8)
 		KUI:SetMoverPosition("ElvAB_5", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -411, 8)
-		KUI:SetMoverPosition("ElvAB_6", "BOTTOM", E.UIParent, "BOTTOM", 0, 30)		
+		KUI:SetMoverPosition("ElvAB_6", "BOTTOM", E.UIParent, "BOTTOM", 0, 26)		
 		KUI:SetMoverPosition("PetAB", "BOTTOM", E.UIParent, "BOTTOM", 0, 165)
-		KUI:SetMoverPosition("KuiMiddleDTPanel", "BOTTOM", E.UIParent, "BOTTOM", 0, 8)
+		KUI:SetMoverPosition("BossButton", "BOTTOM", E.UIParent, "BOTTOM", 0, 90)
+		KUI:SetMoverPosition("ZoneAbility", "BOTTOM", E.UIParent, "BOTTOM", 0, 90)
 		
 		--[[----------------------------------
 		--	ActionBars - DPS
 		--]]----------------------------------
-		if KUI:IsDeveloper() then
-			E.db["actionbar"]["bar6"]["mouseover"] = false
-		else
-			E.db["actionbar"]["bar6"]["mouseover"] = true
-		end
+		E.db["actionbar"]["bar6"]["mouseover"] = false
 		E.db["actionbar"]["bar6"]["buttons"] = 12
 	
-	elseif layout == "dps1" then
 		--[[----------------------------------
-		--	Movers - DPS
+		--	Movers - DPS1
 		--]]----------------------------------
+	elseif layout == "dps1" then
 		KUI:SetMoverPosition("ElvAB_1", "BOTTOM", E.UIParent, "BOTTOM", 0, 248)
 		KUI:SetMoverPosition("ElvAB_2", "BOTTOM", E.UIParent, "BOTTOM", 0, 217)
 		KUI:SetMoverPosition("ElvAB_3", "BOTTOM", E.UIParent, "BOTTOM", 0, 186)
 		KUI:SetMoverPosition("ElvAB_4", "BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 415, 8)
 		KUI:SetMoverPosition("ElvAB_5", "BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -415, 8)
-		KUI:SetMoverPosition("ElvAB_6", "BOTTOM", E.UIParent, "BOTTOM", 0, 30)		
+		KUI:SetMoverPosition("ElvAB_6", "BOTTOM", E.UIParent, "BOTTOM", 0, 26)		
 		KUI:SetMoverPosition("PetAB", "BOTTOM", E.UIParent, "BOTTOM", 0, 165)
 		KUI:SetMoverPosition("BossButton", "BOTTOM", E.UIParent, "BOTTOM", 0, 90)
 		KUI:SetMoverPosition("ZoneAbility", "BOTTOM", E.UIParent, "BOTTOM", 0, 90)
-		KUI:SetMoverPosition("KuiMiddleDTPanel", "BOTTOM", E.UIParent, "BOTTOM", 0, 8)
 		
 		--[[----------------------------------
-		--	ActionBars - DPS
+		--	ActionBars - DPS1
 		--]]----------------------------------
-		if KUI:IsDeveloper() then
-			E.db["actionbar"]["bar6"]["mouseover"] = false
-		else
-			E.db["actionbar"]["bar6"]["mouseover"] = true
-		end
+		E.db["actionbar"]["bar6"]["mouseover"] = false
 		E.db["actionbar"]["bar6"]["buttons"] = 12	
-	
-	elseif layout == "healer" then
+
 		--[[----------------------------------
 		--	Movers - HEALER
 		--]]----------------------------------
+	elseif layout == "healer" then
 		KUI:SetMoverPosition("ElvAB_1", "BOTTOM", E.UIParent, "BOTTOM", -124, 30)
 		KUI:SetMoverPosition("ElvAB_2", "BOTTOM", E.UIParent, "BOTTOM", 124, 30)
 		KUI:SetMoverPosition("ElvAB_3", "BOTTOM", E.UIParent, "BOTTOM", -124, 61)
@@ -2066,75 +2345,98 @@ function KUI:SetupActionbars(layout)
 end
 
 function KUI:SetupDts(layout)
+
+	if not E.db.movers then
+		E.db.movers = {}
+	end
+	
+	--[[----------------------------------
+	--	GlobalDB - Datatexts
+	--]]----------------------------------
+	E.global["datatexts"]["settings"]["Gold"]["goldFormat"] = "CONDENSED"
+	E.global["datatexts"]["settings"]["Gold"]["goldCoins"] = false
+	
 	--[[----------------------------------
 	--	ProfileDB - Datatexts
 	--]]----------------------------------
 	E.db["datatexts"]["font"] = "Expressway"
-	E.db["datatexts"]["fontSize"] = 12
+	E.db["datatexts"]["panelTransparency"] = false
+	E.db["datatexts"]["minimapPanels"] = false
+	E.db["datatexts"]["fontSize"] = 11
 	E.db["datatexts"]["fontOutline"] = "OUTLINE"
 	E.db["datatexts"]["time24"] = true
 	E.db["datatexts"]["goldFormat"] = "CONDENSED"
-	E.db["datatexts"]["goldCoins"] = false
+	E.db["datatexts"]["goldCoins"] = true
 	E.db["datatexts"]["noCombatHover"] = true
-	E.db["datatexts"]["panelTransparency"] = true
 	E.db["datatexts"]["wordWrap"] = true
-	E.db["datatexts"]["battleground"] = false
 
-	E.db["datatexts"]["leftChatPanel"] = false
-	E.db["datatexts"]["rightChatPanel"] = false
-	E.db["datatexts"]["minimapPanels"] = false
-	E.db["datatexts"]["minimapTop"] = false
-	E.db["datatexts"]["minimapTopLeft"] = false
-	E.db["datatexts"]["minimapTopRight"] = false
-	E.db["datatexts"]["minimapBottom"] = true
-	E.db["datatexts"]["minimapBottomLeft"] = false
-	E.db["datatexts"]["minimapBottomRight"] = false
-	
 	-- Define the default ElvUI datatexts panels
-	E.db["datatexts"]["panels"]["LeftChatDataPanel"]["left"] = ""
-	E.db["datatexts"]["panels"]["LeftChatDataPanel"]["middle"] = ""
-	E.db["datatexts"]["panels"]["LeftChatDataPanel"]["right"] = ""
-	E.db["datatexts"]["panels"]["RightChatDataPanel"]["left"] = ""
-	E.db["datatexts"]["panels"]["RightChatDataPanel"]["middle"] = ""
-	E.db["datatexts"]["panels"]["RightChatDataPanel"]["right"] = ""
-	E.db["datatexts"]["panels"]["LeftMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["RightMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["BottomMiniPanel"] = "Time (KUI)"
-	E.db["datatexts"]["panels"]["TopMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["BottomLeftMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["BottomRightMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["TopRightMiniPanel"] = ""
-	E.db["datatexts"]["panels"]["TopLeftMiniPanel"] = ""
+	E.db["datatexts"]["panels"]["MinimapPanel"]["enable"] = false
+	E.db["datatexts"]["panels"]["LeftChatDataPanel"]["enable"] = false
+	E.db["datatexts"]["panels"]["RightChatDataPanel"]["enable"] = false
+	E.db["datatexts"]["panels"]["LeftChatDataPanel"]["panelTransparency"] = true	
+	E.db["datatexts"]["panels"]["RightChatDataPanel"]["panelTransparency"] = true	
+
+	E.db["datatexts"]["panels"]["LeftChatDataPanel"][1] = "Spec Switch (KUI)"	
+	E.db["datatexts"]["panels"]["LeftChatDataPanel"][2] = "Item Level (KUI)"	
+	E.db["datatexts"]["panels"]["LeftChatDataPanel"][3] = "BfA Missions (KUI)"
 	
-	-- Define the KlixUI datatexts panels
-	E.db["datatexts"]["panels"]["KuiLeftChatDTPanel"]["left"] = "Combat Time"
-	E.db["datatexts"]["panels"]["KuiLeftChatDTPanel"]["middle"] = "Durability"
-	E.db["datatexts"]["panels"]["KuiLeftChatDTPanel"]["right"] = "DPS"
-	E.db["datatexts"]["panels"]["KuiRightChatDTPanel"]["left"] = "System (KUI)"
-	E.db["datatexts"]["panels"]["KuiRightChatDTPanel"]["middle"] = "Bags"
+	E.db["datatexts"]["panels"]["RightChatDataPanel"][1] = "System"	
+	E.db["datatexts"]["panels"]["RightChatDataPanel"][2] = "Bags"	
 	if T.IsAddOnLoaded("ElvUI_EnhancedCurrency") then
-		E.db["datatexts"]["panels"]["KuiRightChatDTPanel"]["right"] = "Enhanced Currency"
+		E.db["datatexts"]["panels"]["RightChatDataPanel"][3] = "Enhanced Currency"
 	else
-		E.db["datatexts"]["panels"]["KuiRightChatDTPanel"]["right"] = "Gold"
+		E.db["datatexts"]["panels"]["RightChatDataPanel"][3] = "Gold"
 	end
+
+	-- Create custom KlixUI Middle DTPanels
+	E.DataTexts:BuildPanelFrame("KUI_MiddlePanel")
 	
-	if layout == "dps" then
-		-- Define the KlixUI middle datatexts panel
-		if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
-			E.db["KlixUI"]["datatexts"]["middle"]["width"] = 370
-		else
-			E.db["KlixUI"]["datatexts"]["middle"]["width"] = 373
-		end
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["panelTransparency"] = true
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["enable"] = true
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["backdrop"] = true
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["width"] = 371
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["height"] = 21
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["fonts"]["enable"] = false
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["fonts"]["font"] = "Expressway"
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["fonts"]["fontSize"] = 11
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["fonts"]["fontOutline"] = "OUTLINE"
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["frameStrata"] = "LOW"
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["name"] = "KUI InfoBar Middle"
+	E.global["datatexts"]["customPanels"]["KUI_MiddlePanel"]["mouseover"] = false
+
+	E.db["datatexts"]["panels"]["KUI_MiddlePanel"] = {
+		[1] = "Guild",
+		[2] = "Time (KUI)",
+		[3] = "Friends",
+		["enable"] = true,
+	}
+
+	-- Create custom KlixUI Time DTPanels
+	E.DataTexts:BuildPanelFrame("KUI_TimePanel")
 	
-	elseif layout == "healer" then
-		-- define the KlixUI middle datatexts panel
-		if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
-			E.db["KlixUI"]["datatexts"]["middle"]["width"] = 494
-		else
-			E.db["KlixUI"]["datatexts"]["middle"]["width"] = 495
-		end
-	end
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["panelTransparency"] = true
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["enable"] = true
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["backdrop"] = false
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["width"] = 160
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["fonts"]["enable"] = false
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["fonts"]["font"] = "Expressway"
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["fonts"]["fontSize"] = 12
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["fonts"]["fontOutline"] = "OUTLINE"
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["frameStrata"] = "High"
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["name"] = "KUI InfoBar Time"
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["mouseover"] = false
+	E.global["datatexts"]["customPanels"]["KUI_TimePanel"]["height"] = 30
+
+	E.db["datatexts"]["panels"]["KUI_TimePanel"] = {
+		[1] = "Time (KUI)",	
+		["enable"] = false,
+	}	
 		
+	-- KlixUI Databar Movers
+	E.db["movers"]["DTPanelKUI_MiddlePanelMover"] = "BOTTOM,ElvUIParent,BOTTOM,0,4"
+	E.db["movers"]["DTPanelKUI_TimePanelMover"] = "TopRight,ElvUIParent,TopRight,40,-135"	
+	
 	E:StaggeredUpdateAll(nil, true)
 
 	PluginInstallStepComplete.message = KUI.Title..L["DataTexts Set"]
@@ -2159,12 +2461,6 @@ local function SetupAddons()
 	if T.IsAddOnLoaded('BigWigs') then
 		KUI:LoadBigWigsProfile()
 		T.table_insert(addonNames, 'BigWigs')
-	end
-	
-	-- ClassicThreatMeter
-	if T.IsAddOnLoaded('ClassicThreatMeter') then
-		KUI:LoadClassicThreatMeterProfile()
-		T.table_insert(addonNames, 'Classic Threat Meter')
 	end
 	
 	-- DBM
@@ -2236,7 +2532,9 @@ local function InstallComplete()
 	T.ReloadUI()
 end
 
--- ElvUI PlugIn installer
+	--[[----------------------------------
+	-- KlixUI Installer
+	--]]----------------------------------
 KUI.installTable = {
 	["Name"] = "|cfff960d9KlixUI|r",
 	["Title"] = L["|cfff960d9KlixUI|r Installation"],
@@ -2254,20 +2552,20 @@ KUI.installTable = {
 			PluginInstallFrame.Option1:SetText(L["Skip Process"])
 		end,
 		[2] = function()
-			PluginInstallFrame.SubTitle:SetText("Profiles")
-			PluginInstallFrame.Desc1:SetText("This part of the installation process lets you create a new profile or install |cfff960d9KlixUI|r settings to your current profile.")
-			PluginInstallFrame.Desc2:SetText("|cffff8000Your currently active ElvUI profile is:|r |cfff960d9"..ElvUI[1].data:GetCurrentProfile().."|r")
-			PluginInstallFrame.Desc3:SetText(L['Importance: |cffff006bVery High|r'])
+			PluginInstallFrame.SubTitle:SetText(L["Profiles"])
+			PluginInstallFrame.Desc1:SetText(L["This part of the installation process lets you create a new profile or install |cfff960d9KlixUI|r settings to your current profile."])
+			PluginInstallFrame.Desc2:SetFormattedText(L["|cffff8000Your currently active ElvUI profile is:|r %s."], "|cfff960d9"..ElvUI[1].data:GetCurrentProfile().."|r")
+			PluginInstallFrame.Desc3:SetText(L["Importance: |cffff006bVery High|r"])
 			PluginInstallFrame.Option1:Show()
 			PluginInstallFrame.Option1:SetScript("OnClick", function() KUI:NewProfile(false) end)
-			PluginInstallFrame.Option1:SetText("Use Current")
+			PluginInstallFrame.Option1:SetText(L["Current"])
 			PluginInstallFrame.Option2:Show()
 			PluginInstallFrame.Option2:SetScript("OnClick", function() KUI:NewProfile(true, "KlixUI") end)
 			PluginInstallFrame.Option2:SetText("Create New")
 		end,
 		[3] = function()
 			PluginInstallFrame.SubTitle:SetText(L["CVars"])
-			PluginInstallFrame.Desc1:SetText(L["This part of the installation process sets up your World of Warcraft default options it is recommended you should do this step for everything to behave properly."])
+			PluginInstallFrame.Desc1:SetFormattedText(L["This part of the installation process sets up your World of Warcraft default options it is recommended you should do this step for everything to behave properly."])
 			PluginInstallFrame.Desc2:SetText(L["Please click the button below to setup your CVars."])
 			PluginInstallFrame.Desc3:SetText(L["Importance: |cffff0000High|r"])
 			PluginInstallFrame.Option1:Show()

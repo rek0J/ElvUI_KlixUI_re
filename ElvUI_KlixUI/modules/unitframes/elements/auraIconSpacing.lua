@@ -29,12 +29,8 @@ end
 function KUF:UpdateAuraSettings()
 	local auraSpacing = E.db.KlixUI.unitframes.AuraIconSpacing.spacing or 1
 
-	for unit, unitName in T.pairs(UF.units) do
+	for unitName, unitframe in T.pairs(UF.units) do
 		local spacing = E.db.KlixUI.unitframes.AuraIconSpacing.units[unitName] and auraSpacing or E.Spacing
-		local frameNameUnit = E:StringTitle(unitName)
-		frameNameUnit = frameNameUnit:gsub("t(arget)", "T%1")
-
-		local unitframe = _G["ElvUF_"..frameNameUnit]
 		if unitframe then
 			SetAuraSpacingAndUpdate(unitframe, unitName, spacing)
 		end
@@ -42,10 +38,7 @@ function KUF:UpdateAuraSettings()
 
 	for unit, unitgroup in T.pairs(UF.groupunits) do
 		local spacing = E.db.KlixUI.unitframes.AuraIconSpacing.units[unitgroup] and auraSpacing or E.Spacing
-		local frameNameUnit = E:StringTitle(unit)
-		frameNameUnit = frameNameUnit:gsub("t(arget)", "T%1")
-
-		local unitframe = _G["ElvUF_"..frameNameUnit]
+		local unitframe = UF[unit]
 		if unitframe then
 			SetAuraSpacingAndUpdate(unitframe, unitgroup, spacing)
 		end
@@ -58,12 +51,18 @@ function KUF:UpdateAuraSettings()
 		for i = 1, header:GetNumChildren() do
 			local group = T.select(i, header:GetChildren())
 			--group is Tank/Assist Frames, but for Party/Raid we need to go deeper
-			SetAuraSpacingAndUpdate(group, name, spacing)
+			if group then
+				SetAuraSpacingAndUpdate(group, name, spacing)
+			end
 
-			for j = 1, group:GetNumChildren() do
-				--Party/Raid unitbutton
-				local unitbutton = T.select(j, group:GetChildren())
-				SetAuraSpacingAndUpdate(unitbutton, name, spacing)
+			if group then
+				for j = 1, group:GetNumChildren() do
+					--Party/Raid unitbutton
+					local unitbutton = T.select(j, group:GetChildren())
+					if unitbutton then
+						SetAuraSpacingAndUpdate(unitbutton, name, spacing)
+					end
+				end
 			end
 		end
 	end

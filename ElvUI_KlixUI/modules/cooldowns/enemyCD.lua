@@ -3,28 +3,61 @@ local EC = KUI:NewModule('EnemyCooldown', "AceEvent-3.0", "AceConsole-3.0")
 
 local enemy_spells = {
 	-- Interrupts and Silences
-	[1766] = 10,	-- Kick
-	[6552] = 10,	-- Pummel
-	[2139] = 30,	-- Counterspell
-	[19647] = 30,	-- Spell Lock
+	[57994] = 12,	-- Wind Shear
+	[47528] = 15,	-- Mind Freeze
+	[106839] = 15,	-- Skull Bash
+	[116705] = 15,	-- Spear Hand Strike
+	[96231] = 15,	-- Rebuke
+	[1766] = 15,	-- Kick
+	[6552] = 15,	-- Pummel
+	[147362] = 24,	-- Counter Shot
+	[2139] = 24,	-- Counterspell
+	[19647] = 24,	-- Spell Lock
+	[115781] = 24,	-- Optical Blast
 	[15487] = 45,	-- Silence
+	[47476] = 60,	-- Strangulate
+	[78675] = 60,	-- Solar Beam
 	-- Crowd Controls
-	[20066] = 60,	-- Repentance
+	[115078] = 15,	-- Paralysis
+	[20066] = 15,	-- Repentance
+	[187650] = 30,	-- Freezing Trap
 	[8122] = 30,	-- Psychic Scream
+	[30283] = 30,	-- Shadowfury
+	[107570] = 30,	-- Storm Bolt
+	[51514] = 30,	-- Hex
 	[5484] = 40,	-- Howl of Terror
-	[19386] = 120,	-- Wyvern Sting
-	[6789] = 120,	-- Death Coil
+	[108194] = 45,	-- Asphyxiate
+	[19386] = 45,	-- Wyvern Sting
+	[113724] = 45,	-- Ring of Frost
+	[119381] = 45,	-- Leg Sweep
+	[64044] = 45,	-- Psychic Horror
+	[6789] = 45,	-- Mortal Coil
 	[853] = 60,		-- Hammer of Justice
 	-- Defense abilities
-	[1856] = 300,	-- Vanish
-	[18499] = 30,	-- Berserker Rage
+	[48707] = 60,	-- Anti-Magic Shell
+	[31224] = 90,	-- Cloak of Shadows
+	[46924] = 90,	-- Bladestorm
+	[287081] = 60,	-- Lichborne
+	[213664] = 120,	-- Nimble Brew
+	[47585] = 120,	-- Dispersion
+	[1856] = 120,	-- Vanish
 	[7744] = 120,	-- Will of the Forsaken (Racial)
+	[186265] = 180,	-- Aspect of the Turtle
+	[33206] = 180,	-- Pain Suppression
 }
 
 local _, type = T.IsInInstance();
 local icons = {}
 
 local EnemyCDAnchor = T.CreateFrame("Frame", "EnemyCDAnchor", UIParent)
+
+local function SanitizeEnemySpells()
+	for spellID in T.pairs(enemy_spells) do
+		if not T.GetSpellInfo(spellID) then
+			enemy_spells[spellID] = nil
+		end
+	end
+end
 
 local OnEnter = function(self)
 	if T.IsShiftKeyDown() then
@@ -140,18 +173,12 @@ function EC:Initialize()
 	if not E.db.KlixUI.cooldowns.enemy.enable then return end
 	
 	EC.db = E.db.KlixUI.cooldowns.enemy
+	SanitizeEnemySpells()
 	
 	local addon = T.CreateFrame("Frame")
 	addon:SetScript("OnEvent", OnEvent)
 	addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	addon:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	
-	for spell in T.pairs(enemy_spells) do
-		local name = T.GetSpellInfo(spell)
-		if not name then
-			T.print("|cffff0000WARNING: spell ID ["..T.tostring(spell).."] no longer exists! Report this to Shestak.|r")
-		end
-	end
 	
 	EnemyCDAnchor:SetPoint("BOTTOM", UIParent, "BOTTOM", 221, 341)
 	
@@ -166,16 +193,11 @@ function EC:Initialize()
 	_G.SLASH_EnemyCD1 = "/testecd"
 	_G.SLASH_EnemyCD2 = "/tecd"
 	T.SlashCmdList.EnemyCD = function()
-		StartTimer(T.UnitName("player"), 1766)
+		StartTimer(T.UnitName("player"), 47528)
 		StartTimer(T.UnitName("player"), 19647)
-		StartTimer(T.UnitName("player"), 6552)
-		StartTimer(T.UnitName("player"), 853)
+		StartTimer(T.UnitName("player"), 47476)
+		StartTimer(T.UnitName("player"), 51514)
 	end
 end
 
-
-local function InitializeCallback()
-	EC:Initialize()
-end
-
-KUI:RegisterModule(EC:GetName(), InitializeCallback)
+KUI:RegisterModule(EC:GetName())

@@ -3,7 +3,14 @@ local MI = KUI:GetModule("KuiMisc")
 local LSM = E.LSM or E.Libs.LSM
 
 local UIParent = UIParent
+local LE_REALM_RELATION_COALESCED = LE_REALM_RELATION_COALESCED
+local LE_REALM_RELATION_VIRTUAL = LE_REALM_RELATION_VIRTUAL
 local UNKNOWN = UNKNOWN
+
+local LOCALE = {
+	FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL,
+	INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL,
+}
 
 local function Getcolor()
 	local reaction = T.UnitReaction("mouseover", "player") or 5
@@ -35,6 +42,10 @@ function MI:LoadnameHover()
 	if not E.db.KlixUI.nameHover.enable then return end
 
 	local db = E.db.KlixUI.nameHover
+	local function GetMouseFocus()
+		return (T.GetMouseFocus and T.GetMouseFocus()) or (E.GetMouseFocus and E:GetMouseFocus())
+	end
+
 	local tooltip = T.CreateFrame("frame", nil)
 	tooltip:SetFrameStrata("TOOLTIP")
 	tooltip.text = tooltip:CreateFontString(nil, "OVERLAY")
@@ -42,8 +53,10 @@ function MI:LoadnameHover()
 
 	-- Show unit name at mouse
 	tooltip:SetScript("OnUpdate", function(tt)
-		if T.GetMouseFocus() and T.GetMouseFocus():IsForbidden() then tt:Hide() return end
-		if T.GetMouseFocus() and T.GetMouseFocus():GetName() ~= "WorldFrame" then tt:Hide() return end
+		local mouseFocus = GetMouseFocus()
+		if not mouseFocus then tt:Hide() return end
+		if mouseFocus.IsForbidden and mouseFocus:IsForbidden() then tt:Hide() return end
+		if mouseFocus.GetName and mouseFocus:GetName() ~= "WorldFrame" then tt:Hide() return end
 		if not T.UnitExists("mouseover") then tt:Hide() return end
 
 		local x, y = T.GetCursorPosition()
@@ -52,10 +65,13 @@ function MI:LoadnameHover()
 	end)
 
 	tooltip:SetScript("OnEvent", function(tt)
-		if T.GetMouseFocus():GetName() ~= "WorldFrame" then return end
+		local mouseFocus = GetMouseFocus()
+		if not mouseFocus then return end
+		if mouseFocus.IsForbidden and mouseFocus:IsForbidden() then return end
+		if mouseFocus.GetName and mouseFocus:GetName() ~= "WorldFrame" then return end
 		
 		local localeClass, class = T.UnitClass("mouseover")
-		local name = T.UnitName("mouseover") or UNKNOWN
+		local name, realm = T.UnitName("mouseover") or UNKNOWN
 		local guildName, guildRankName, _, guildRealm = T.GetGuildInfo("mouseover")
 		local pvpName = T.UnitPVPName("mouseover")
 		local relationship = T.UnitRealmRelationship("mouseover");
@@ -102,6 +118,16 @@ function MI:LoadnameHover()
 			end
 		else
 			suffix = ""
+		end
+		
+		if (realm and realm ~= "" and db.realm) then
+			if (T.IsShiftKeyDown() or db.realmAlways) then
+				name = name.."|cfff960d9 - "..realm.."|r"
+			elseif (relationship == LE_REALM_RELATION_COALESCED) then
+				name = name.."|cfff960d9"..LOCALE.FOREIGN_SERVER_LABEL.."|r"
+			elseif (relationship == LE_REALM_RELATION_VIRTUAL) then
+				name = name.."|cfff960d9"..LOCALE.INTERACTIVE_SERVER_LABEL.."|r"
+			end
 		end
 		
 		if AFK then prefix = "|cffff0000<AFK>|r " end

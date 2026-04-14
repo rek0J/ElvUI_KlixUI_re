@@ -1,6 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
-local S = E:GetModule("Skins")
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
 local backdrop = {
 	bgFile = E.media.normTex,

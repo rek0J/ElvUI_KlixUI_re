@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local RMA = KUI:NewModule("RaidMarkers", "AceHook-3.0", "AceEvent-3.0")
 
 local GameTooltip = _G.GameTooltip
@@ -42,7 +42,7 @@ function RMA:CreateButtons()
 		local button = T.CreateFrame("Button", T.string_format("KUI_RaidMarkerBarButton%d", k), RMA.frame, "SecureActionButtonTemplate")
 		button:SetHeight(RMA.db.buttonSize)
 		button:SetWidth(RMA.db.buttonSize)
-		button:SetTemplate('Transparent')
+		button:CreateBackdrop('Transparent')
 		button:Styling()
 		button:CreateIconShadow()
 
@@ -77,7 +77,7 @@ function RMA:UpdateWorldMarkersAndTooltips()
 
 		if target and not worldmarker then
 			button:SetScript("OnEnter", function(self)
-				self:SetBackdropBorderColor(.7, .7, 0)
+				self.backdrop:SetBackdropBorderColor(.7, .7, 0)
 				if RMA.db.notooltip then return end
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
 				GameTooltip:SetText(L["Raid Markers"])
@@ -91,7 +91,7 @@ function RMA:UpdateWorldMarkersAndTooltips()
 			button:SetAttribute(T.string_format("%smacrotext1", modifier), worldmarker == 0 and "/cwm all" or T.string_format("/cwm %d\n/wm %d", worldmarker, worldmarker))
 
 			button:SetScript("OnEnter", function(self)
-				self:SetBackdropBorderColor(.7, .7, 0)
+				self.backdrop:SetBackdropBorderColor(.7, .7, 0)
 				if RMA.db.notooltip then return end
 				GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
 				GameTooltip:SetText(L["Raid Markers"])
@@ -103,7 +103,7 @@ function RMA:UpdateWorldMarkersAndTooltips()
 		end
 
 		button:SetScript("OnLeave", function(self)
-			self:SetBackdropBorderColor(0, 0, 0)
+			self.backdrop:SetBackdropBorderColor(0, 0, 0)
 			GameTooltip:Hide()
 			if RMA.db.mouseover then
 				RMA.frame:SetAlpha(0)
@@ -175,10 +175,43 @@ end
 function RMA:Backdrop()
 	if RMA.db.backdrop then
 		self.frame.backdrop:Show()
-		self.frame.backdrop:Styling()
 	else
 		self.frame.backdrop:Hide()
 	end
+end
+
+function RMA:AutoMark()
+	if T.IsAddOnLoaded("DejaAutoMark") or not E.db.KlixUI.raidmarkers.automark.enable then return end
+	if T.IsInRaid() then 
+		return
+	elseif T.IsInGroup() then
+		local ROLEMARKS = {["TANK"] = RMA.db.automark.tankMark, ["HEALER"] = RMA.db.automark.healerMark}
+		for i = 1, 5 do 
+			local role = T.UnitGroupRolesAssigned("party"..i)
+			if ROLEMARKS[role]then 
+				T.SetRaidTarget("party"..i, ROLEMARKS[role])
+				--KUI:Print(i, role)
+			end 
+		end
+		local currentSpecID, currentSpecName = T.GetSpecializationInfo(T.GetSpecialization())
+		--KUI:Print("Your current spec:", currentSpecName)
+		--KUI:Print("Your current spec ID:", currentSpecID)
+		local roleToken = T.GetSpecializationRoleByID(currentSpecID)
+		--KUI:Print(roleToken)
+		if ROLEMARKS[roleToken]then 
+			T.SetRaidTarget("player", ROLEMARKS[roleToken])
+		end
+	else
+		T.SetRaidTarget("player", 0)
+	end
+end
+
+function RMA:GROUP_ROSTER_UPDATE()
+	RMA:AutoMark()
+end
+
+function RMA:INSPECT_READY()
+	RMA:AutoMark()
 end
 
 function RMA:Initialize()
@@ -194,6 +227,9 @@ function RMA:Initialize()
 	RMA:Make("Kui_RaidFlare8", "/clearworldmarker 8\n/worldmarker 8", "Skull Flare")
 
 	RMA:Make("Kui_ClearRaidFlares", "/clearworldmarker 0", "Clear All Flares")
+
+	RMA:RegisterEvent("GROUP_ROSTER_UPDATE")
+    RMA:RegisterEvent("INSPECT_READY")
 	
 	self.frame = T.CreateFrame("Frame", KUI.Title.."RaidMarkerBar", E.UIParent, "SecureHandlerStateTemplate")
 	self.frame:SetResizable(false)
@@ -201,11 +237,7 @@ function RMA:Initialize()
 	self.frame:SetFrameStrata('LOW')
 	self.frame:CreateBackdrop('Transparent')
 	self.frame:ClearAllPoints()
-	if T.IsAddOnLoaded("ClassicThreatMeter") then
-		self.frame:Point("BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -10, 252)
-	else
-		self.frame:Point("BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -10, 194)
-	end
+	self.frame:SetPoint("BOTTOMRIGHT", E.UIParent, "BOTTOMRIGHT", -10, 194)
 	self.frame.buttons = {}
 	
 	self:HookScript(self.frame, 'OnEnter', 'Bar_OnEnter');
@@ -224,6 +256,7 @@ function RMA:Initialize()
 		self:UpdateBar()
 		self:UpdateWorldMarkersAndTooltips()
 		self:UpdateMouseover()
+		self:AutoMark()
 	end
 
 	self:ForUpdateAll()

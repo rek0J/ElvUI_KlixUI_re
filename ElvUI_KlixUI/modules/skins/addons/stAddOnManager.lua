@@ -1,5 +1,5 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 
 local function styleProjectAzilroka()
 	if E.private.KlixUI.skins.addonSkins.pa ~= true or not T.IsAddOnLoaded("ProjectAzilroka") then return end

@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local M = E:GetModule('Minimap')
 
 local init = false
@@ -17,8 +17,8 @@ local function setRestricted(zone)
 	if zone then
 		inRestrictedArea = true
 	end
-	xMap.text:SetText("-")
-	yMap.text:SetText("-")
+	--xMap.text:SetText("-")
+	--yMap.text:SetText("-")
 	return
 end
 
@@ -58,13 +58,13 @@ local function CreateKuiMaplocation()
 
 	panel = T.CreateFrame('Frame', 'KuiLocationPanel', _G['MinimapCluster'])
 	panel:SetFrameStrata("BACKGROUND")
-	panel:Point("CENTER", E.UIParent, "CENTER", 0, 0)
-	panel:Size(206, 22)
+	panel:SetPoint("CENTER", E.UIParent, "CENTER", 0, 0)
+	panel:SetSize(206, 22)
 
 	xMap = T.CreateFrame('Frame', "MapCoordinatesX", panel)
-	xMap:SetTemplate('Transparent')
-	xMap:Point('LEFT', panel, 'LEFT', 2, 0)
-	xMap:Size(38, 22)
+	xMap:CreateBackdrop('Transparent')
+	xMap:SetPoint('LEFT', panel, 'LEFT', 2, 0)
+	xMap:SetSize(38, 22)
 	xMap:Styling()
 	
 	xMap.text = xMap:CreateFontString(nil, "OVERLAY")
@@ -72,9 +72,9 @@ local function CreateKuiMaplocation()
 	xMap.text:SetAllPoints(xMap)
 
 	location = T.CreateFrame('Frame', "KuiLocationText", panel)
-	location:SetTemplate('Transparent')
-	location:Point('CENTER', panel, 'CENTER', 0, 0)
-	location:Size(126, 22)
+	location:CreateBackdrop('Transparent')
+	location:SetPoint('CENTER', panel, 'CENTER', 0, 0)
+	location:SetSize(126, 22)
 	location:Styling()
 	
 	location.text = location:CreateFontString(nil, "OVERLAY")
@@ -82,9 +82,9 @@ local function CreateKuiMaplocation()
 	location.text:SetAllPoints(location)
 
 	yMap = T.CreateFrame('Frame', "MapCoordinatesY", panel)
-	yMap:SetTemplate('Transparent')
-	yMap:Point('RIGHT', panel, 'RIGHT', -2, 0)
-	yMap:Size(38, 22)
+	yMap:CreateBackdrop('Transparent')
+	yMap:SetPoint('RIGHT', panel, 'RIGHT', -2, 0)
+	yMap:SetSize(38, 22)
 	yMap:Styling()
 
 	yMap.text = yMap:CreateFontString(nil, "OVERLAY")
@@ -96,8 +96,8 @@ hooksecurefunc(M, 'Update_ZoneText', function()
 	if E.db.KlixUI.maps.minimap.topbar.locationtext == "LOCATION" then
 		location.text:SetTextColor(M:GetLocTextColor())
 		location.text:SetText(T.string_sub(T.GetMinimapZoneText(), 1, 25))
-	elseif E.db.KlixUI.maps.minimap.topbar.locationtext == "VERSION" then
-		location.text:SetText(KUI.Title.. "v"..KUI.Version)
+	--elseif E.db.KlixUI.maps.minimap.topbar.locationtext == "VERSION" then
+		--location.text:SetText(KUI.Title.. "v"..KUI.Version)
 	end
 
 	getPos(1)
@@ -111,16 +111,17 @@ hooksecurefunc(M, 'UpdateSettings', function()
 		CreateKuiMaplocation()
 	end
 
-	local holder = _G.MMHolder
+	local holder = _G.ElvUI_MinimapHolder or _G.MMHolder or _G.Minimap
+	if not holder then return end -- MoP Classic: skip if holder is missing
 	panel:ClearAllPoints()
 	if E.db.KlixUI.maps.minimap.rectangle then
 		panel:SetPoint('BOTTOMLEFT', holder, 'TOPLEFT', -3, -(E.MinimapSize/8))
 	else
 		panel:SetPoint('BOTTOMLEFT', holder, 'TOPLEFT', -3, SPACING)
 	end
-	panel:Size(holder:GetWidth() + (E.PixelMode and 5 or 7), 22) 
+	panel:SetSize(holder:GetWidth() + (E.PixelMode and 5 or 7), 22) 
 	panel:Show()
-	location:Width(holder:GetWidth() - 77)
+	--location:Width(holder:GetWidth() - 77)
 
 	local point, relativeTo, relativePoint, xOfs, yOfs = holder:GetPoint()
 	if E.db.general.minimap.locationText == "ABOVE" then

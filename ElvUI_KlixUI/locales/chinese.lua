@@ -150,6 +150,7 @@ Rey
 Vauxine]]
 L["Testing & Inspiration:"] = "测试&启发"
 L["ELVUI_KUI_TESTING"] = [[Kringel
+Dlarge
 Akiao
 Obscurrium
 Benik
@@ -160,6 +161,7 @@ TukUI/ElvUI社区]]
 L["Other Support:"] = "其它支持"
 L["ELVUI_KUI_SPECIAL"] = [[Kringel - 完成德语地区的插件本地化工作，一直在我的Discord中提供帮助和支持!
 Wilzor - 提供许多新特性的建议，并帮助编写一些代码 (AutoOpen Bags ID)
+Dlarge - for help keep KlixUI up to date for ElvUI Versions and updated other Addons
 以及TukUI/ElvUI社区的众多成员 :)]]
 
 -- Actionbars
@@ -937,6 +939,9 @@ L["Hide Raid"] = true
 L["Show/Hide raids on recommended dungeons."] = true
 L["Hide PvP"] = true
 L["Show/Hide PvP zones, Arenas and BGs on recommended dungeons and zones."] = true
+L["Toggle Datatexts"] = "开关咨询文字"
+L["Toggle WorldMap"] = "开关世界地图"
+L["Send position to chat"] = "发送玩家当前位置到聊天框"
 L["KUI_LOCPANEL_IGNOREMISSINGINFO"] = [[Due to how client functions some item info may become unavailable for a period of time. This mostly happens to toys info.
 When called the menu will wait for all information being available before showing up. This may resul in menu opening after some concidarable amount of time, depends on how fast the server will answer info requests.
 By enabling this option you'll make the menu ignore items with missing info, resulting in them not showing up in the list.]]
@@ -1540,6 +1545,12 @@ L["Specialization"] = "专精"
 L["Only show the traits for your current specialization."] = "只显示当前专精"
 L["Compact"] = "紧凑"
 L["Only show icons in the azerite tooltip."] = "只在艾泽里特鼠标提示中显示图标"
+L["Corruption"] = "腐蚀术"
+L["Show the name and level of corruption on item tooltips."] = true
+L["Append"] = true
+L["Swap position of the tooltip."] = true
+L["English"] = true
+L["Swap between English and native Corruption name."] = true
 L["Raid Progression"] = "团队副本进度"
 L["Shows raid progress of a character in the tooltip.\n|cffff8000Note: The visibility of the raid progress can be changed in the display option.|r"] = "在鼠标提示中显示团队副本进度..\n|cffff8000注意:可在显示设置中选择是否显示团队副本进度.|r"
 L["Display"] = "显示"
@@ -1551,6 +1562,7 @@ L["Difficulty Style"] = "难度样式"
 L["RAID_BOD"] = "BoD"
 L["RAID_COS"] = "CoS"
 L["RAID_EP"] = "EP"
+L["RAID_NWC"] = "NWC"
 L["Name Hover"] = "角色名悬停"
 L["Shows the unit name, at the cursor, when hovering over a target."] = "当鼠标悬停在目标上时，在光标处显示目标名"
 L["Guild Name"] = "公会名称"

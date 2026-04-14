@@ -1,57 +1,30 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KDB = KUI:NewModule('KuiDatabars', 'AceHook-3.0', 'AceEvent-3.0')
-local LSM = E.LSM or E.Libs.LSM
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local DB = E:GetModule('DataBars')
+local KDB = KUI:NewModule('KuiDatabars')
+
+--Cache global variables
+--Lua functions
+local _G = _G
+local pairs = pairs
+--WoW API / Variables
+local C_Timer_After = C_Timer.After
+-- GLOBALS:
 
 function KDB:StyleBackdrops()
-	local db = E.db.KlixUI.databars
-	
-	if E.db.KlixUI.general.style then
-		if db.style then
-			-- Experience
-			local experience = _G["ElvUI_ExperienceBar"]
-			if experience then
-				experience.statusBar:Styling()
-			end
-			
-			-- Reputation
-			local reputation = _G["ElvUI_ReputationBar"]
-			if reputation then
-				reputation.statusBar:Styling()
-			end
+	for _, bar in pairs(DB.StatusBars) do
+		if bar and bar.db.enable then
+			if bar.backdrop then
+				bar.backdrop:Styling()
 		end
+	end
 	end
 end
 
-function KDB:EnableDisable()
-    -- these functions have both enable/disable checks
-    KDB:HookXPText()
-    KDB:HookXPTooltip()
-    KDB:HookRepText()
-    KDB:HookRepTooltip()
-
-    if not E.db.KlixUI.databars.enable or T.IsAddOnLoaded("ElvUI_ProgressiveDataBarsColors") then
-        KDB:UnhookAll() -- make sure no hooks are left behind
-    end
-end
-
-function KDB:Round(num, idp)
-    if num <= 0.1 then
-        return 0.1
-    end
-    local mult = 10^(idp or 0)
-    return T.math_floor(num * mult + 0.5) / mult
-end
-
 function KDB:Initialize()
-	T.C_Timer_After(1, KDB.StyleBackdrops)
-	
-	KDB:EnableDisable()
-	KDB:LoadWatchedFaction()
-	KDB:UpdateFactionColors()
+	local db = E.db.KlixUI.databars
+	KUI:RegisterDB(self, 'databars')
+
+	T.C_Timer_After(1, KDB.StyleBackdrops)	
 end
 
-local function InitializeCallback()
-	KDB:Initialize()
-end
-
-KUI:RegisterModule(KDB:GetName(), InitializeCallback)
+KUI:RegisterModule(KDB:GetName())

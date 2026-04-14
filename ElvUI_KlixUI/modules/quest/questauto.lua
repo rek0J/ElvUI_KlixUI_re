@@ -27,7 +27,7 @@ end
 
 function QA:CheckQuestData()
     if QA.db.dailiesonly then return end
-    if ( not QA.db.pvp ) then return end
+    if T.QuestFlagsPVP() and ( not QA.db.pvp ) then return end
 
     return true
 end
@@ -140,7 +140,7 @@ function QA:QUEST_COMPLETE()
 end
 
 function QA:Initialize()
-	if not E.db.KlixUI.quest.auto.enable or T.IsAddOnLoaded("AAP-Classic") or T.IsAddOnLoaded("Guidelime") then return end
+	if not E.db.KlixUI.quest.auto.enable or T.IsAddOnLoaded("AAP-Core") then return end
 
 	QA.db = E.db.KlixUI.quest.auto
 	
@@ -155,8 +155,4 @@ function QA:Initialize()
 	self:RegisterEvent("QUEST_COMPLETE")
 end
 
-local function InitializeCallback()
-	QA:Initialize()
-end
-
-KUI:RegisterModule(QA:GetName(), InitializeCallback)
+KUI:RegisterModule(QA:GetName())

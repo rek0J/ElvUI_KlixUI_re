@@ -22,7 +22,7 @@ function addon:ADDON_LOADED(loaded_addon)
 
     -- create item link container
     addon.link = _G.StaticPopup1:CreateFontString(nil, 'ARTWORK', 'GameFontHighlight')
-    addon.link:SetPoint('CENTER', _G.StaticPopup1EditBox)
+    addon.link:Point('CENTER', _G.StaticPopup1EditBox)
     addon.link:Hide()
 
     _G.StaticPopup1:HookScript('OnHide', function(self)

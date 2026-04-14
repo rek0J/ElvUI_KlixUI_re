@@ -1,8 +1,20 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
-local S = E:GetModule("Skins")
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
-local r, g, b = T.unpack(E.media.rgbvaluecolor)
+--Cache global variables
+--Lua functions
+local _G = _G
+local unpack = unpack
+local select = select
+--WoW API / Variables
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
+local GetInboxText = GetInboxText
+local GetInboxInvoiceInfo = GetInboxInvoiceInfo
+--GLOBALS:
+
+local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 
 local function styleMail()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.mail ~= true or E.private.KlixUI.skins.blizzard.mail ~= true then return end
@@ -12,8 +24,8 @@ local function styleMail()
 	
 	if E.db.KlixUI.maps.minimap.mail then
 		-- Change the Minimap Mail icon
-		MiniMapMailIcon:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Mail")
-		MiniMapMailIcon:SetSize(22, 22)
+		_G.MiniMapMailIcon:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Mail")
+		_G.MiniMapMailIcon:SetSize(22, 22)
 		MiniMapMailFrame:Raise()
 
 		if not E.db.KlixUI.maps.minimap.buttons.moveMail then
@@ -25,8 +37,8 @@ local function styleMail()
 
 					MiniMapMailFrame.highlight.tex = MiniMapMailFrame.highlight:CreateTexture("OVERLAY")
 					MiniMapMailFrame.highlight.tex:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Mail")
-					MiniMapMailFrame.highlight.tex:SetPoint("TOPLEFT", MiniMapMailIcon, "TOPLEFT", -2, 2)
-					MiniMapMailFrame.highlight.tex:SetPoint("BOTTOMRIGHT", MiniMapMailIcon, "BOTTOMRIGHT", 2, -2)
+			                MiniMapMailFrame.highlight.tex:SetPoint("TOPLEFT", _G.MiniMapMailIcon, "TOPLEFT", -2, 2)
+			                MiniMapMailFrame.highlight.tex:SetPoint("BOTTOMRIGHT", _G.MiniMapMailIcon, "BOTTOMRIGHT", 2, -2)
 					MiniMapMailFrame.highlight.tex:SetVertexColor(r, g, b)
 
 					KUI:CreatePulse(MiniMapMailFrame, 1, 1)
@@ -39,7 +51,7 @@ local function styleMail()
 	MailFrame:Styling()
 
 	-- InboxFrame
-	for i = 1, INBOXITEMS_TO_DISPLAY do
+	for i = 1, _G.INBOXITEMS_TO_DISPLAY do
 		local bg = _G["MailItem"..i]
 		bg:StripTextures()
 
@@ -50,48 +62,30 @@ local function styleMail()
 
 		local b = _G["MailItem"..i.."Button"]
 		b:StripTextures()
-		b:SetTemplate("Transparent", true)
+		b:CreateBackdrop("Transparent", true)
 		b:StyleButton()
 	end
 
-	-- SendMailFrame
+
+	-- SendMailFrame (Retail-only frame guard)
 	local SendMailFrame = _G.SendMailFrame
 	local SendMailScrollFrame = _G.SendMailScrollFrame
-	SendMailScrollFrame:SetTemplate("Transparent")
+	if SendMailScrollFrame then
+		SendMailScrollFrame:CreateBackdrop("Transparent")
 
-	for i = 4, 7 do
-		T.select(i, SendMailFrame:GetRegions()):Hide()
-	end
-
-	T.select(4, SendMailScrollFrame:GetRegions()):Hide()
-	_G["SendMailBodyEditBox"]:SetPoint("TOPLEFT", 2, -2)
-	_G["SendMailBodyEditBox"]:SetWidth(278)
-
-	for i = 1, ATTACHMENTS_MAX_SEND do
-		local b = _G["SendMailAttachment"..i]
-		if not b.skinned then
-			b:StripTextures()
-			b:SetTemplate("Transparent", true)
-			b:Styling()
-			b:StyleButton()
-			b.skinned = true
-			hooksecurefunc(b.IconBorder, "SetVertexColor", function(self, r, g, b)
-				self:GetParent():SetBackdropBorderColor(r, g, b)
-				self:SetTexture("")
-			end)
-			hooksecurefunc(b.IconBorder, "Hide", function(self)
-				self:GetParent():SetBackdropBorderColor(unpack(E.media.bordercolor))
-			end)
+		for i = 4, 7 do
+			T.select(i, SendMailFrame:GetRegions()):Hide()
 		end
-		local t = b:GetNormalTexture()
-		if t then
-			t:SetTexCoord(T.unpack(E.TexCoords))
-			t:SetInside()
-		end
+
+		T.select(4, SendMailScrollFrame:GetRegions()):Hide()
+		if _G.SendMailBodyEditBox then
+			_G.SendMailBodyEditBox:SetPoint("TOPLEFT", 2, -2)
+			_G.SendMailBodyEditBox:SetWidth(278)
+		end -- MoP Classic: SendMailBodyEditBox may not exist, skip if missing
 	end
 
 	-- OpenMailFrame
-	local OpenMailFrame = _G["OpenMailFrame"]
+	local OpenMailFrame = _G.OpenMailFrame
 	OpenMailFrame:Styling()
 
 	OpenMailFrame:SetPoint("TOPLEFT", _G.InboxFrame, "TOPRIGHT", 5, 0)
@@ -101,7 +95,7 @@ local function styleMail()
 	_G.OpenMailHorizontalBarLeft:Hide()
 
 	local OpenMailScrollFrame = _G.OpenMailScrollFrame
-	OpenMailScrollFrame:SetTemplate("Transparent")
+	OpenMailScrollFrame:CreateBackdrop("Transparent")
 	OpenMailScrollFrame:SetPoint("TOPLEFT", 17, -83)
 	OpenMailScrollFrame:SetWidth(304)
 
@@ -120,7 +114,7 @@ local function styleMail()
 	_G.OpenMailInvoiceAmountReceived:SetPoint("TOPRIGHT", _G.OpenMailArithmeticLine, "BOTTOMRIGHT", -14, -5)
 
 	hooksecurefunc("OpenMail_Update", function()
-		if ( not _G.InboxFrame.openMailID ) then
+		if not _G.InboxFrame.openMailID then
 			return
 		end
 

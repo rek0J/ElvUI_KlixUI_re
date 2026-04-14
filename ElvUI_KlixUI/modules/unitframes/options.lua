@@ -1,7 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KUF = KUI:GetModule("KuiUnits")
 local KEI = KUI:GetModule('KuiEliteIcon')
---local KUIC = KUI:GetModule('KuiCastbar')
 local UF = E:GetModule("UnitFrames")
 
 local isEnabled = E.private["unitframe"].enable and true or false
@@ -24,6 +23,7 @@ local PointNames = {
 	["TOPRIGHT"] = "TOPRIGHT",
 }
 
+-- Unitsframe Table
 local function UnitFramesTable()
 	E.Options.args.KlixUI.args.modules.args.unitframes = {
 		order = 35,
@@ -37,18 +37,36 @@ local function UnitFramesTable()
 				type = "header",
 				name = KUI:cOption(L["UnitFrames"]),
 			},
+		-- General Tab	
 			general = {
 				order = 2,
 				type = "group",
 				name = L["General"],
 				args = {
+					style = {
+						order = 1,
+						type = "toggle",
+						name = L["|cfff960d9KlixUI|r Style"],
+						get = function(info) return E.db.KlixUI.unitframes[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.unitframes[ info[#info] ] = value; E:StaticPopup_Show('PRIVATE_RL') end,
+					},
 					powerBar = {
 						type = 'toggle',
-						order = 1,
+						order = 2,
 						name = L['Power Bar'],
 						desc = L['This will enable/disable the |cfff960d9KlixUI|r powerbar modification.|r'],
 						get = function(info) return E.db.KlixUI.unitframes.powerBar end,
 						set = function(info, value) E.db.KlixUI.unitframes.powerBar = value; E:StaticPopup_Show("PRIVATE_RL") end,
+					},
+					healerMana = {
+						type = 'toggle',
+						order = 3,
+						name = L['Healer Mana'],
+						desc = L['Only show the mana of the healer when in a party group.'],
+						hidden = function() return T.IsAddOnLoaded("ElvUI_HealerMana") end,
+						disabled = function() return T.IsAddOnLoaded("ElvUI_HealerMana") or not E.db.unitframe.units.party.power.enable end,
+						get = function(info) return E.db.KlixUI.unitframes.healerMana end,
+						set = function(info, value) E.db.KlixUI.unitframes.healerMana = value; E:StaticPopup_Show("PRIVATE_RL") end,
 					},
 					space1 = {
 						order = 9,
@@ -112,8 +130,10 @@ local function UnitFramesTable()
 							},
 						},
 					},
+
 				},
 			},
+
 			auras = {
 				order = 3,
 				type = "group",
@@ -201,10 +221,26 @@ local function UnitFramesTable()
 						get = function(info) return E.db.KlixUI.unitframes.textures[ info[#info] ] end,
 						set = function(info, value) E.db.KlixUI.unitframes.textures[ info[#info] ] = value; KUF:ChangePowerBarTexture() end,
 					},
+					spacer1 = {
+						order = 5,
+						type = 'header',
+						name = '',
+					},
+					castbar = {
+						type = 'select', dialogControl = 'LSM30_Statusbar',
+						order = 6,
+						name = L['Castbar'],
+						desc = L['This applies on all available castbars.'],
+						values = AceGUIWidgetLSMlists.statusbar,
+						get = function(info) return E.db.KlixUI.unitframes.textures[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.unitframes.textures[ info[#info] ] = value; KUIC:CastBarHooks(); end,
+					},
 				},
 			},
+
+		-- EliteIcon Tab
 			eliteicon = {
-				order = 9,
+				order = 8,
 				type = "group",
 				name = L["Elite Icon"],
 				get = function(info) return E.db.KlixUI.unitframes.eliteicon[ info[#info] ] end,
@@ -288,8 +324,10 @@ local function UnitFramesTable()
 					},
 				},
 			},
+		
+		-- AttackIcon Tab
 			attackicon = {
-				order = 10,
+				order = 9,
 				type = 'group',
 				name = L['Attack Icon'],
 				get = function(info) return E.db.KlixUI.unitframes.attackicon[ info[#info] ] end,
@@ -371,6 +409,8 @@ local function UnitFramesTable()
 					},
 				},
 			},
+			
+		-- Icons Tab	
 			icons = {
 				order = 15,
 				type = 'group',

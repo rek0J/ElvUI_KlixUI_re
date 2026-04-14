@@ -13,24 +13,32 @@ B.Frames = {
 	"FriendsFriendsFrame",
 	"GameMenuFrame",
 	"GossipFrame",
+	"GuildInviteFrame",
 	"GuildRegistrarFrame",
 	"HelpFrame",
 	"InterfaceOptionsFrame",
 	"ItemTextFrame",
+	"LFDRoleCheckPopup",
+	"LFGDungeonReadyDialog",
+	"LFGDungeonReadyStatus",
 	"LootFrame",
 	"MailFrame",
 	"MerchantFrame",
 	"OpenMailFrame",
+	"PVEFrame",
 	"PetStableFrame",
 	"PetitionFrame",
+	"PVPReadyDialog",
 	"QuestFrame",
-	"QuestLogFrame",
+	"QuestLogPopupDetailFrame",
+	"RaidBrowserFrame",
 	"RaidInfoFrame",
 	"RaidParentFrame",
 	"ReadyCheckFrame",
 	"ReportCheatingDialog",
-	"ScrollOfResurrectionSelectionFrame",
+	"RolePollPopup",
 	"SpellBookFrame",
+	"SplashFrame",
 	"StackSplitFrame",
 	"StaticPopup1",
 	"StaticPopup2",
@@ -66,7 +74,6 @@ B.AddonsList = {
 	["Blizzard_ChallengesUI"] = { "ChallengesKeystoneFrame" }, -- 'ChallengesLeaderboardFrame'
 	["Blizzard_Collections"] = { "CollectionsJournal", "WardrobeFrame" },
 	["Blizzard_Communities"] = { "CommunitiesFrame" },
-	["Blizzard_CraftUI"] = { "CraftFrame" },
 	["Blizzard_EncounterJournal"] = { "EncounterJournal" },
 	["Blizzard_GarrisonUI"] = {
 		"GarrisonLandingPage", "GarrisonMissionFrame", "GarrisonCapacitiveDisplayFrame",
@@ -87,7 +94,7 @@ B.AddonsList = {
 	["Blizzard_OrderHallUI"] = { "OrderHallTalentFrame" },
 	["Blizzard_QuestChoice"] = { "QuestChoiceFrame" },
 	["Blizzard_ScrappingMachineUI"] = { "ScrappingMachineFrame" },
-	["Blizzard_TalentUI"] = { "TalentFrame" },
+	["Blizzard_TalentUI"] = { "PlayerTalentFrame" },
 	["Blizzard_TradeSkillUI"] = { "TradeSkillFrame" },
 	["Blizzard_TrainerUI"] = { "ClassTrainerFrame" },
 	["Blizzard_VoidStorageUI"] = { "VoidStorageFrame" },
@@ -116,6 +123,10 @@ B.SpecialDefaults = {
 }
 
 B.OriginalDefaults = {}
+
+local function IsBlizzMoveSupported()
+	return E.Retail or E.TBC
+end
 
 local function OnDragStart(self)
 	if T.UnitAffectingCombat("player") then return end -- Not allowed to move in combat, cause reasons.
@@ -173,7 +184,13 @@ local function LoadPosition(self)
 		self:SetPoint(a,b,c,d,e, true)
 	end
 
-	if B.ExlusiveFrames[Name] then for _, name in T.pairs(B.ExlusiveFrames[Name]) do _G[name]:Hide() end end -- If this frame has others that should not be shown at the same time, hide those
+	if B.ExlusiveFrames[Name] then
+		for _, name in T.pairs(B.ExlusiveFrames[Name]) do
+			if _G[name] then
+				_G[name]:Hide()
+			end
+		end
+	end -- If this frame has others that should not be shown at the same time, hide those
 end
 
 --Hooking this to movable frames' SetPoint.
@@ -218,20 +235,14 @@ function B:Addons(event, addon)
 	if B.addonCount == #B.AddonsList then B:UnregisterEvent(event) end
 end
 
-local ToDelete = {
-	["CalendarViewEventFrame"] = true,
-	["CalendarViewHolidayFrame"] = true,
-}
-
-
 function B:ErrorFrameSize()
 	_G["UIErrorsFrame"]:SetSize(B.db.errorframe.width, B.db.errorframe.height) --512 x 60
 end
 
-function B:RUReset()
-	local a = E.db.KlixUI.misc.rumouseover and 0 or 1
-	_G.RaidUtility_ShowButton:SetAlpha(a)
-end
+local ToDelete = {
+	["CalendarViewEventFrame"] = true,
+	["CalendarViewHolidayFrame"] = true,
+}
 
 function B:Initialize()
 	if T.IsAddOnLoaded("ElvUI_SLE") then return end
@@ -248,7 +259,11 @@ function B:Initialize()
 		if E.private.KlixUI.module.blizzmove.points[Name] then E.private.KlixUI.module.blizzmove.points[Name] = nil end
 	end
 
-	if E.private.KlixUI.module.blizzmove.enable then
+	if IsBlizzMoveSupported() and _G.PVPReadyDialog then
+		_G.PVPReadyDialog:Hide()
+	end
+
+	if IsBlizzMoveSupported() and E.private.KlixUI.module.blizzmove.enable then
 		for Name, _ in T.pairs(B.TempOnly) do --Remove these from saved variables so the script will not attempt to mess with them, cause they are not ment to be moved permanently
 			if E.private.KlixUI.module.blizzmove.points[Name] then E.private.KlixUI.module.blizzmove.points[Name] = nil end
 		end
@@ -268,69 +283,20 @@ function B:Initialize()
 		end
 	end
 
-	--Removing stuff from auto positioning
-	self:Hook('UIParent_ManageFramePosition', function()
-		for i = 1, #B.Frames do
-			local frame = _G[B.Frames[i]]
-			if frame and frame:IsShown() then LoadPosition(frame) end
-		end
-	end, true)
+	if IsBlizzMoveSupported() then
+		--Removing stuff from auto positioning
+		self:Hook('UIParent_ManageFramePosition', function()
+			for i = 1, #B.Frames do
+				local frame = _G[B.Frames[i]]
+				if frame and frame:IsShown() then LoadPosition(frame) end
+			end
+		end, true)
+	end
 
 	B:ErrorFrameSize()
 	function B:ForUpdateAll()
 		B.db = E.db.KlixUI.blizzard
 		B:ErrorFrameSize()
-	end
-	
-	--- Mover Creation ---
-	_G.UIErrorsFrame:ClearAllPoints()
-	_G.UIErrorsFrame:SetPoint("TOP", 0, -130)
-	E:CreateMover(_G.UIErrorsFrame, "UIErrorsFrameMover", L["Error Frame"], nil, nil, nil, "ALL,GENERAL,KLIXUI")
-	
-	--Raid Utility
-	if _G.RaidUtility_ShowButton then
-		E:CreateMover(_G.RaidUtility_ShowButton, "RaidUtility_Mover", L["Raid Utility"], nil, nil, nil, "ALL,RAID,KLIXUI")
-		local mover = _G.RaidUtility_Mover
-		local frame = _G.RaidUtility_ShowButton
-		if E.db.movers == nil then E.db.movers = {} end
-
-		mover:HookScript("OnDragStart", function(self) 
-			frame:ClearAllPoints()
-			frame:SetPoint("CENTER", self)
-		end)
-
-		local function Enter(self)
-			if not E.db.KlixUI.misc.rumouseover then return end
-			self:SetAlpha(1)
-		end
-
-		local function Leave(self)
-			if not E.db.KlixUI.misc.rumouseover then return end
-			self:SetAlpha(0)
-		end
-
-		local function dropfix()
-			local point, anchor, point2, x, y = mover:GetPoint()
-			frame:ClearAllPoints()
-			if T.string_find(point, "BOTTOM") then
-				frame:SetPoint(point, anchor, point2, x, y)
-			else
-				frame:SetPoint(point, anchor, point2, x, y)
-			end
-		end
-
-		mover:HookScript("OnDragStop", dropfix)
-
-		if E.db.movers.RaidUtility_Mover == nil then
-			frame:ClearAllPoints()
-			frame:SetPoint("TOP", E.UIParent, "TOP", -400, E.Border)
-		else
-			dropfix()
-		end
-		frame:RegisterForDrag("")
-		frame:HookScript("OnEnter", Enter)
-		frame:HookScript("OnLeave", Leave)
-		Leave(frame)
 	end
 end
 

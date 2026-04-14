@@ -19,10 +19,13 @@ KUI.MBL = "Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\KlixMB.blp"
 KUI.MBL1 = "Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\KlixMB1.blp"
 KUI.ElvUIV = tonumber(E.version)
 KUI.ElvUIX = tonumber(GetAddOnMetadata("ElvUI_KlixUI", "X-ElvVersion"))
---KUI.ClassColor = E.myclass == "PRIEST" and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass])
---KUI.resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution"); --only used for now in our install.lua line 779
---KUI.screenwidth, KUI.screenheight = GetPhysicalScreenSize();
 BINDING_HEADER_KLIXUI = KUI.Title
+BINDING_HEADER_KLIXUI_RAIDFLARE = KUI.Title..' Raid Flare'
+BINDING_HEADER_KLIXUI_GAME_MENU = KUI.Title..' '..MAINMENU_BUTTON
+BINDING_HEADER_KLIXUI_EMBED = KUI.Title..' Embed'
+BINDING_NAME_KLIXUI_GAME_MENU = MAINMENU_BUTTON
+BINDING_NAME_KLIXUI_HIDE_EMBED = 'Hide Embed Window'
+BINDING_NAME_KLIXUI_SHOW_EMBED = 'Show Embed Window'
 KUI.WoWPatch, KUI.WoWBuild, KUI.WoWPatchReleaseDate, KUI.TocVersion = GetBuildInfo()
 KUI.WoWBuild = select(2, GetBuildInfo()) KUI.WoWBuild = tonumber(KUI.WoWBuild)
 KUI.Discord = "https://discord.gg/GbQbDRX"
@@ -62,13 +65,26 @@ function KUI:InitializeModules()
 end
 
 function KUI:AddOptions()
-	for _, func in Toolkit.pairs(KUI.Config) do
+	for _, func in Toolkit.ipairs(KUI.Config) do
 		func()
 	end
 end
 
 function KUI:DasOptions()
-	E:ToggleOptionsUI(); LibStub("AceConfigDialog-3.0-ElvUI"):SelectGroup("ElvUI", "KlixUI")
+	local ACD = LibStub("AceConfigDialog-3.0-ElvUI", true)
+	local status = ACD and ACD.Status and ACD.Status.ElvUI
+	if status and status.status and status.status.groups then
+		status.status.groups.selected = "KlixUI"
+	end
+
+	local toggleOptions = E.ToggleOptions or E.ToggleOptionsUI
+	if toggleOptions then
+		toggleOptions(E, "KlixUI")
+	end
+
+	if ACD then
+		ACD:SelectGroup("ElvUI", "KlixUI")
+	end
 end
 
 -- Copied from ElvUI
@@ -77,7 +93,7 @@ function KUI:ErrorOn(msg)
 	if (msg == 'on') then
 		Toolkit.DisableAllAddOns()
 		Toolkit.EnableAddOn("ElvUI")
-		Toolkit.EnableAddOn("ElvUI_OptionsUI")
+		Toolkit.EnableAddOn("ElvUI_Options")
 		Toolkit.EnableAddOn("ElvUI_KlixUI")
 		Toolkit.SetCVar("scriptErrors", 1)
 		Toolkit.ReloadUI()
@@ -94,6 +110,8 @@ function KUI:LoadCommands()
 	self:RegisterChatCommand("klix", "DasOptions")
 	self:RegisterChatCommand("klixui", "DasOptions")
 	self:RegisterChatCommand("kuierror", "ErrorOn")
+	self:RegisterChatCommand("kuidbg", "DebugCommand")
+	self:RegisterChatCommand("kuidebug", "DebugCommand")
 end
 
 function KUI:Init()
@@ -119,31 +137,29 @@ function KUI:Init()
 	self:SetupProfileCallbacks()
 	self:RegisterKuiMedia()
 	self:LoadCommands()
-	--[[if E.db.KlixUI.general.splashScreen then
+	if E.db.KlixUI.general.splashScreen then
 		self:SplashScreen()
-	end]]
+	end
 	if E.db.KlixUI.general.GameMenuButton then
 		self:BuildGameMenu()
 	end
 	
 	-- Check version for changelog popup!
 	E:Delay(6, function()
-		KUI:CheckVersion()
+		self:CheckVersion()
 	end)
 	
+	local kuiInstallComplete = E.private.KlixUI and E.private.KlixUI.install_complete
+	local shouldQueueInstall = E.private.install_complete == E.version and (E.db.KlixUI.installed == nil or kuiInstallComplete ~= KUI.Version)
+
 	-- Initiate installation process if ElvUI install is complete and our plugin install has not yet been run
-	if E.private.install_complete == E.version and E.db.KlixUI.installed == nil then
+	if shouldQueueInstall then
 		E:GetModule("PluginInstaller"):Queue(KUI.installTable)
 	end
-	
-	-- Create gold table if it dosent exist
-	if not E.private.KlixUI.characterGoldsSorting[E.myrealm] then
-		E.private.KlixUI.characterGoldsSorting[E.myrealm] = {}
-	end
 
-	-- Tun the setup again when a profile gets deleted.
+	-- run the setup when ElvUI install is finished and again when a profile gets deleted.
 	local profileKey = ElvDB.profileKeys[E.myname..' - '..E.myrealm]
-	if ElvDB.profileKeys and profileKey == nil then
+	if shouldQueueInstall or (ElvDB.profileKeys and profileKey == nil) then
 		E:GetModule("PluginInstaller"):Queue(KUI.installTable)
 	end
 	

@@ -4,7 +4,7 @@ if E.db.KlixUI == nil then E.db.KlixUI = {} end
 
 --This function holds the options table which will be inserted into the ElvUI config
 local function Core()
-	local name = "|cfffe7b2cElvUI|r"..T.string_format(": |cff99ff33%s|r",E.version).." + |cfff960d9KlixUI|r"..T.string_format(": |cff99ff33%s|r", KUI.Version)
+	local name = "|cff1784d1ElvUI|r"..T.string_format(": |cff99ff33%s|r",E.version).." + |cfff960d9KlixUI|r"..T.string_format(": |cff99ff33%s|r", KUI.Version)
 	E.Options.name = name
 	local ACD = LibStub("AceConfigDialog-3.0-ElvUI")
 	
@@ -23,7 +23,8 @@ local function Core()
 		}
 		return config
 	end
-	
+
+        -- KlixUI Faq	
 	local function CreateQuestion(i, text)
 		local question = {
 			type = 'group', name = '', order = i, guiInline = true,
@@ -35,11 +36,11 @@ local function Core()
 	end
 	
 	E.Options.args.KlixUI = {
-		order = 216,
+		order = 6,
 		type = 'group',
 		name = KUI.Title,
 		childGroups = "tab",
-		desc = L["A plugin for |cfffe7b2cElvUI|r by Klix (EU-Twisting Nether)"],
+		desc = L["A plugin for |cff1784d1ElvUI|r by Klix (EU-Twisting Nether)"],
 		args = {
 			name = {
 				order = 1,
@@ -58,13 +59,21 @@ local function Core()
 				type = 'execute',
 				name = L['Install'],
 				desc = L['Run the installation process.'],
-				func = function() E:GetModule('PluginInstaller'):Queue(KUI.installTable); E:ToggleOptionsUI(); end,
+				customWidth = 140,
+				func = function()
+					local toggleOptions = E.ToggleOptions or E.ToggleOptionsUI
+					E:GetModule('PluginInstaller'):Queue(KUI.installTable)
+					if toggleOptions then
+						toggleOptions(E)
+					end
+				end,
 			},
 			reloadui = {
 				order = 4,
 				type = "execute",
 				name = L["Reload"],
 				desc = L['Reaload the UI'],
+				customWidth = 140,
 				func = function() T.ReloadUI() end,
 			},
 			changelog = {
@@ -72,47 +81,36 @@ local function Core()
 				type = "execute",
 				name = L["Changelog"],
 				desc = L['Open the changelog window.'],
-				func = function() KUI:ToggleChangeLog(); E:ToggleOptionsUI() end,
+				customWidth = 140,
+				func = function()
+					local toggleOptions = E.ToggleOptions or E.ToggleOptionsUI
+					KUI:ToggleChangeLog()
+					if toggleOptions then
+						toggleOptions(E)
+					end
+				end
 			},
-			modulesButton = CreateButton(6, L["Modules"], "modules"),
-			mediaButtonKlix = {
-				order = 7,
-				type = "execute",
-				name = L["Media"],
-				func = function() LibStub("AceConfigDialog-3.0-ElvUI"):SelectGroup("ElvUI", "KlixUI", "media") end,
-				disabled = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-				hidden = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-			},
-			mediaButtonSLE = {
-				order = 7,
-				type = "execute",
-				name = L["Media"],
-				func = function() LibStub("AceConfigDialog-3.0-ElvUI"):SelectGroup("ElvUI", "sle", "media") end,
-				disabled = function() return not T.IsAddOnLoaded("ElvUI_SLE") end,
-				hidden = function() return not T.IsAddOnLoaded("ElvUI_SLE") end,
-			},
-			skinsButton = CreateButton(8, L["Skins & AddOns"], "skins"),
 			discordButton = {
 				order = 9,
 				type = "execute",
 				name = L["|cfff960d9KlixUI|r Discord"],
+				customWidth = 140,
 				func = function() E:StaticPopup_Show("KLIXUI_CREDITS", nil, nil, "https://discord.gg/GbQbDRX") end,
 			},
 			authorButton = {
 				order = 10,
 				type = "execute",
 				name = L["Contact Author"],
+				customWidth = 140,
 				func = function() E:StaticPopup_Show("KLIXUI_CREDITS", nil, nil, "Klix#1645") end,
 			},
-			spacer2 = {
-				order = 11,
-				type = 'header',
-				name = '',
-			},
+
+	-- Generell Settings Tab
 			general = {
 				order = 15,
 				type = 'group',
 				name = L['General'],
+				--guiInline = true,
 				get = function(info) return E.db.KlixUI.general[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.general[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
 				args = {
@@ -168,12 +166,28 @@ local function Core()
 							end
 						end,
 					},
+					teamStats = {
+						order = 8,
+						type = "toggle",
+						name = L["Team Stats"],
+						desc = L["Show the teamstats frame when clicking the teamstats minimap button."],
+						disabled = function() return not KUI:IsDeveloper() and not KUI:IsDeveloperRealm() end,
+					},
+					splashScreenButton = {
+						order = 20,
+						type = "execute",
+						name = L["Test SplashScreen"],
+						hidden = function() return not KUI:IsDeveloper() and not KUI:IsDeveloperRealm() end,
+						func = function() KUI:ShowSplashScreen() end,
+					},
 				},
 			},
+
 			tweaks = {
 				order = 20,
 				type = 'group',
 				name = L['Tweaks'],
+				--guiInline = true,
 				args = {
 					speedyLoot = {
 						order = 1,
@@ -212,10 +226,19 @@ local function Core()
 								desc = L["Enable/Disable sounds when a cut scene pops.\n|cffff8000Note: This will only enable if you have your sound disabled.|r"],
 								disabled = function() return E.global.KlixUI.cinematic.kill end,
 							},
+							talkingheadSound = {
+								order = 3,
+								type = "toggle",
+								name = L["Talkinghead Sound"],
+								desc = L["Enable/Disable sounds when the talkingheadframe pops.\n|cffff8000Note: This will only enable if you have your sound disabled."],
+								disabled = function() return E.global.KlixUI.cinematic.kill or E.db.KlixUI.misc.talkingHead end,
+							},
 						},
 					},
 				},
 			},
+	
+		-- Module Tab
 			modules = {
 				order = 20,
 				type = "group",
@@ -225,10 +248,13 @@ local function Core()
 					info = {
 						type = "description",
 						order = 1,
-						name = L["Here you find the options for all the different |cfff960d9KlixUI|r modules.\nPlease use the dropdown to navigate through the modules."],
+						--name = L["Here you find the options for all the different |cfff960d9KlixUI|r modules.\nPlease use the dropdown to navigate through the modules."],
+						name = L[" "],
 					},
 				},
 			},
+		
+		-- Information Tab
 			info = {
 				order = 2000,
 				type = 'group',
@@ -246,6 +272,8 @@ local function Core()
 							content = { order = 1, type = 'description', fontSize = 'medium', name = L["KUI_DESC"]..E.NewSign },
 						},
 					},
+					
+				-- Faq Tab
 					faq = {
 						type = 'group',
 						name = 'FAQ',
@@ -280,6 +308,8 @@ local function Core()
 							},
 						},
 					},
+				
+				-- Links Tab			
 					links = {
 						type = 'group',
 						name = L["Links"],
@@ -386,6 +416,8 @@ local function Core()
 							},
 						},
 					},
+					
+				-- Credits Tab
 					credits = {
 						order = 400,
 						type = 'group',
@@ -395,12 +427,29 @@ local function Core()
 								order = 1,
 								type = "description",
 								name = L["ELVUI_KUI_CREDITS"]..'\n\n\n'..L["Submodules & Coding:"]..'\n\n'..L["ELVUI_KUI_CODERS"]..'\n\n\n'..L["ELVUI_KUI_DONORS_TITLE"]..'\n\n'..L["ELVUI_KUI_DONORS"]..'\n\n\n'..L["Testing & Inspiration:"]..'\n\n'..L["ELVUI_KUI_TESTING"]..'\n\n\n'..L["Other Support:"]..'\n\n'..L["ELVUI_KUI_SPECIAL"],
-							},
-						},
 					},
 				},
 			},
+				
+			tools = {
+				order = 300,
+				type = "group",
+				name = L["Tools"],
+				hidden = function() return not(KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				args = {
+					converter = {
+						order = 1,
+						type = "execute",
+						name = L["Table Dumper"],
+						desc = L["A tool for dumping table data (this table must be a global variable)"],
+						func = function() KUI:OpenTableDumper() end,
+					           }
+			     	              }
+		                	}	
+				}
+			}
 		},
 	}
 end
+
 T.table_insert(KUI.Config, Core)

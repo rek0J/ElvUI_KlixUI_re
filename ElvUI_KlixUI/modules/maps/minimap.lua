@@ -1,6 +1,6 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local MM = KUI:NewModule("KuiMinimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
-local KS = KUI:GetModule("KuiSkins")
+local KS = KUI:GetModule('KuiSkins')
 local M = E:GetModule('Minimap')
 local LCG = LibStub('LibCustomGlow-1.0')
 local LSM = E.LSM or E.Libs.LSM
@@ -8,11 +8,17 @@ local LSM = E.LSM or E.Libs.LSM
 local Minimap = _G.Minimap
 local MiniMapMailFrame = _G.MiniMapMailFrame
 local cluster = _G.MinimapCluster
-local r, g, b = unpack(E.media.rgbvaluecolor)
+local r, g, b = unpack(E["media"].rgbvaluecolor)
+local Calendar_GetNumPendingInvites = T.C_Calendar_GetNumPendingInvites or _G.CalendarGetNumPendingInvites or (_G.C_Calendar and _G.C_Calendar.GetNumPendingInvites)
 
 function MM:CheckMail()
-	local mail = MiniMapMailFrame:IsShown() and true or false
-	if mail then
+	local inv = Calendar_GetNumPendingInvites and Calendar_GetNumPendingInvites() or 0
+	local mail = _G["MiniMapMailFrame"]:IsShown() and true or false
+	if inv > 0 and mail then -- New invites and mail
+		LCG.PixelGlow_Start(Minimap.backdrop, {255/255, 0/255, 0/255, 1}, nil, -0.25, nil, 1)
+	elseif inv > 0 and not mail then -- New invites and no mail
+		LCG.PixelGlow_Start(Minimap.backdrop, {255/255, 255/255, 0/255, 1}, nil, -0.25, nil, 1)
+	elseif inv == 0 and mail then -- No invites and new mail
 		if E.db.KlixUI.maps.minimap.glowAlways then
 			LCG.PixelGlow_Start(Minimap.backdrop, {0/255, 255/255, 0/255, 1}, nil, -0.25, nil, 1)
 		else
@@ -27,6 +33,47 @@ function MM:CheckMail()
 	end
 end
 
+function MM:ChangeMiniMapButtons()
+	if E.db.KlixUI.maps.minimap.styleButton ~= true or E.db.KlixUI.maps.minimap.buttons.moveGarrison then return end
+
+	local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
+	
+	if GarrisonLandingPageMinimapButton then
+		local scale = E.db.general.minimap.icons.classHall.scale or 1
+
+		GarrisonLandingPageMinimapButton:SetScale(scale) -- needs to be set.
+		GarrisonLandingPageMinimapButton.LoopingGlow:Size(GarrisonLandingPageMinimapButton:GetSize()*1)
+		GarrisonLandingPageMinimapButton:HookScript("OnEvent", function(self)
+			self:GetNormalTexture():SetAtlas(nil)
+			self:SetNormalTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Home")
+			self:GetNormalTexture():SetBlendMode("ADD")
+			self:GetNormalTexture():ClearAllPoints()
+			self:GetNormalTexture():SetPoint("CENTER", 0, 1)
+			self:GetNormalTexture():SetVertexColor(r, g, b)
+
+			self:SetHighlightTexture("")
+			
+			self:SetPushedTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Home")
+			self:GetPushedTexture():SetBlendMode("ADD")
+			self:GetPushedTexture():ClearAllPoints()
+			self:GetPushedTexture():SetPoint("CENTER", 1, 0)
+			self:GetPushedTexture():SetVertexColor(r, g, b)
+		end)
+	end
+end
+
+function MM:GarrisonButtonPosition()
+	if E.db.KlixUI.maps.minimap.styleButton then
+		E.db["general"]["minimap"]["icons"]["classHall"]["scale"] = 0.7
+		E.db["general"]["minimap"]["icons"]["classHall"]["xOffset"] = 0
+		E.db["general"]["minimap"]["icons"]["classHall"]["yOffset"] = -4
+	else
+		E.db["general"]["minimap"]["icons"]["classHall"]["scale"] = 0.6
+		E.db["general"]["minimap"]["icons"]["classHall"]["xOffset"] = -4
+		E.db["general"]["minimap"]["icons"]["classHall"]["yOffset"] = 0
+	end
+end
+
 function MM:MiniMapPing()
 	if E.db.KlixUI.maps.minimap.ping.enable ~= true then return end
 
@@ -36,7 +83,7 @@ function MM:MiniMapPing()
 	
 	MM.pingpanel = T.CreateFrame('Frame', "KUI_PingPanel", Minimap)
 	MM.pingpanel:SetAllPoints()
-	MM.pingpanel.text = KS:CreateFS(MM.pingpanel, 10, "", false, pos, xOffset, yOffset)
+	--MM.pingpanel.text = KS:CreateFS(MM.pingpanel, 10, "", false, pos, xOffset, yOffset)
 
 	local anim = MM.pingpanel:CreateAnimationGroup()
 	anim:SetScript("OnPlay", function() MM.pingpanel:SetAlpha(1) end)
@@ -85,7 +132,7 @@ end
 function MM:CoordsSize()
 	local size = MM.coordspanel.Text:GetStringWidth()
 	if size ~= MM.coordspanel.WidthValue then
-		MM.coordspanel:Size(size + 4, E.db.KlixUI.maps.minimap.coords.fontSize + 2)
+		MM.coordspanel:SetSize(size + 4, E.db.KlixUI.maps.minimap.coords.fontSize + 2)
 		MM.coordspanel.WidthValue = size + 4
 	end
 end
@@ -97,7 +144,7 @@ end
 
 function MM:CreateCoordsFrame()
 	MM.coordspanel = T.CreateFrame('Frame', "KUI_CoordsPanel", _G["Minimap"])
-	MM.coordspanel:Point("BOTTOM", _G["Minimap"], "BOTTOM", 0, 0)
+	MM.coordspanel:SetPoint("BOTTOM", _G["Minimap"], "BOTTOM", 0, 0)
 	MM.coordspanel.WidthValue = 0
 
 	MM.coordspanel.Text = MM.coordspanel:CreateFontString(nil, "OVERLAY")
@@ -277,10 +324,16 @@ function MM:SkinMiniMap()
 		'MinimapZoomIn',
 		'MiniMapWorldMapButton',
 		'MiniMapMailBorder',
-
+		'MiniMapTracking',
+		'MiniMapInstanceDifficulty',
+		'GuildInstanceDifficulty',
+		'MiniMapChallengeMode',
     }
     for i in T.pairs(frames) do
-        _G[frames[i]]:Kill()
+		local frame = _G[frames[i]]
+		if frame and frame.Kill then
+			frame:Kill()
+		end
     end
 	
 	Minimap:SetMaskTexture('Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\rectangle')
@@ -300,30 +353,15 @@ function MM:SkinMiniMap()
 		Minimap.mshadow:SetOutside(Minimap, E.mult, -(E.MinimapSize/8*E.mult))
 	end
 	
-	local BottomMiniPanel = _G.BottomMiniPanel
-	BottomMiniPanel:ClearAllPoints()
-	BottomMiniPanel:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, E.MinimapSize/8)
-	
-	local TopMiniPanel = _G.TopMiniPanel
-	TopMiniPanel:ClearAllPoints()
-	TopMiniPanel:SetPoint("TOP", Minimap, "TOP", 0, -E.MinimapSize/8)
-	
-	local TopLeftMiniPanel = _G.TopLeftMiniPanel
-	TopLeftMiniPanel:ClearAllPoints()
-	TopLeftMiniPanel:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, -E.MinimapSize/8)
-	
-	local TopRightMiniPanel = _G.TopRightMiniPanel
-	TopRightMiniPanel:ClearAllPoints()
-	TopRightMiniPanel:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, -E.MinimapSize/8)
-	
-	local BottomLeftMiniPanel = _G.BottomLeftMiniPanel
-	BottomLeftMiniPanel:ClearAllPoints()
-	BottomLeftMiniPanel:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, E.MinimapSize/8)
-	
-	local BottomRightMiniPanel = _G.BottomRightMiniPanel
-	BottomRightMiniPanel:ClearAllPoints()
-	BottomRightMiniPanel:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 0, E.MinimapSize/8)
 end
+
+    -- new BlipTexture thx @ Merathilis
+-- function MM:SetBlipTexture()
+	-- if E.db.KlixUI.maps.minimap.blip.enable ~= true then return end
+
+	-- Minimap:SetBlipTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\Blip-Nandini")
+-- end
+
 
 function MM:Initialize()
 	if E.private.general.minimap.enable ~= true then return end
@@ -331,11 +369,9 @@ function MM:Initialize()
 	-- Add a check if the backdrop is there
 	if not Minimap.backdrop then
 		Minimap:CreateBackdrop("Default", true)
-		Minimap.backdrop:SetBackdrop({
-			edgeFile = E.LSM:Fetch("statusbar", "KlixGradient"), edgeSize = E:Scale(2),
-			insets = {left = E:Scale(2), right = E:Scale(2), top = E:Scale(2), bottom = E:Scale(2)},
-		})
 	end
+
+	--self:SetBlipTexture() -- new BlipTexture thx @ Merathilis	 
 	
 	hooksecurefunc(M, 'UpdateSettings', MM.UpdateSettings)
 	
@@ -344,7 +380,9 @@ function MM:Initialize()
 	end
 	
 	MM:UpdateSettings()
-	MM:MiniMapPing()
+	MM:ChangeMiniMapButtons()
+	MM:GarrisonButtonPosition()
+	--MM:MiniMapPing() -- Find a way to fix this sooonish (split up map modules in seperate files maybe)
 	MM:HideMinimapRegister()
 	if not T.IsAddOnLoaded("ElvUI_CompassPoints") then
 		MM:CreateCardinalFrame()
@@ -354,10 +392,11 @@ function MM:Initialize()
 	end
 	
 	if E.db.KlixUI.maps.minimap.glow then
+		self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", "CheckMail")
 		self:RegisterEvent("UPDATE_PENDING_MAIL", "CheckMail")
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckMail")
-		self:HookScript(MiniMapMailFrame, "OnHide", "CheckMail")
-		self:HookScript(MiniMapMailFrame, "OnShow", "CheckMail")
+		self:HookScript(_G["MiniMapMailFrame"], "OnHide", "CheckMail")
+		self:HookScript(_G["MiniMapMailFrame"], "OnShow", "CheckMail")
 	end
 end
 

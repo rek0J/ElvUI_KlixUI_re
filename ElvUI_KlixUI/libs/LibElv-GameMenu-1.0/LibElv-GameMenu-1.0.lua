@@ -5,7 +5,7 @@ local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 --GLOBALS: CreateFrame
 if not lib then return end
 local E, L, V, P, G = unpack(ElvUI)
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 local TT = E:GetModule("Tooltip")
 local _G = _G
 local tinsert = tinsert
@@ -49,6 +49,10 @@ end
 function lib:UpdateHolder()
 	if not lib.skincheck then lib:CheckForSkin() end
 	local total = #lib.buttons
+	if total == 0 or (not E.Retail and not E.TBC) then
+		lib.Header:Hide()
+		return
+	end
 	LibHolder:SetSize(width, 1 + (height * total))
 	if total > 0 and total <= 5 then
 		lib.Header:Hide()
@@ -87,7 +91,7 @@ function lib:AddMenuButton(data)
 	if not data then return end
 	if _G[data.name] then return end
 	local button = CreateFrame("Button", data.name, _G["GameMenuFrame"], "GameMenuButtonTemplate")
-	button:Size(width, height)
+	button:SetSize(width, height)
 	button:SetScript("OnClick", data.func)
 	button:SetText(data.text)
 
@@ -99,6 +103,8 @@ function lib:AddMenuButton(data)
 end
 
 _G["GameMenuFrame"]:HookScript("OnShow", function()
+	if #lib.buttons == 0 or (not E.Retail and not E.TBC) then return end
+
 	if #lib.buttons <= 5 then
 		_G["GameMenuButtonLogout"]:ClearAllPoints()
 		_G["GameMenuButtonLogout"]:SetPoint("TOP", LibHolder, "BOTTOM", 0, -16)
@@ -109,7 +115,7 @@ _G["GameMenuFrame"]:HookScript("OnShow", function()
 		_G["GameMenuFrameHeader"]:SetPoint("BOTTOM", _G["GameMenuButtonHelp"], "TOP", 0, -25)
 		_G["GameMenuButtonHelp"]:ClearAllPoints()
 		_G["GameMenuButtonHelp"]:SetPoint("TOPLEFT", _G["GameMenuFrame"], "TOPLEFT", 25.5, -31.5)
-		_G["GameMenuFrame"]:Width(menuWidth + 1 + width * columns)
+		_G["GameMenuFrame"]:SetWidth(menuWidth + 1 + width * columns)
 		_G["GameMenuButtonLogout"]:ClearAllPoints()
 		_G["GameMenuButtonLogout"]:SetPoint("TOP", _G["GameMenuButtonAddons"], "BOTTOMLEFT", _G["GameMenuFrame"]:GetWidth()/2 - 25.5, -29)
 	end

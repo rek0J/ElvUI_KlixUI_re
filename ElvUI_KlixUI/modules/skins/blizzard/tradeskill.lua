@@ -1,20 +1,28 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local S = E:GetModule('Skins')
 
 local function styleTradeSkill()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.tradeskill ~= true or E.private.KlixUI.skins.blizzard.tradeskill ~= true then return end
 
 	-- MainFrame
-	local TradeSkillFrame = _G.TradeSkillFrame
-	if TradeSkillFrame.backdrop then
-		TradeSkillFrame.backdrop:Styling()
+	local frame = _G.TradeSkillFrame
+	if not frame then return end
+	frame:Styling()
+
+	if frame.bg1 then
+		frame.bg1:Hide()
 	end
-	
-	if TradeSkillFrame.bg1 then
-		TradeSkillFrame.bg1:Hide()
+
+	if frame.bg2 then
+		frame.bg2:Hide()
 	end
-	if TradeSkillFrame.bg2 then
-		TradeSkillFrame.bg2:Hide()
+
+	-- Reposition Optional Reagentlist due to TradeTabs
+	local optionalReagents = frame.OptionalReagentList
+	if optionalReagents then
+		optionalReagents:ClearAllPoints()
+		optionalReagents:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 40, 0)
+		optionalReagents:Styling()
 	end
 end
 

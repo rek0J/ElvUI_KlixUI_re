@@ -1,7 +1,76 @@
 ﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local LSM = E.LSM or E.Libs.LSM
 
+-- Cache global variables
+-- Lua functions
 local _G = _G
+
+local function SafeNamespace(name)
+	local namespace = rawget(_G, name)
+	if namespace then
+		return namespace
+	end
+
+	namespace = setmetatable({}, {
+		__index = function()
+			return KUI.dummy
+		end,
+	})
+	_G[name] = namespace
+
+	return namespace
+end
+
+local AuraUtil = SafeNamespace("AuraUtil")
+local C_Map = rawget(_G, "C_Map")
+local C_Timer = rawget(_G, "C_Timer")
+local C_Heirloom = rawget(_G, "C_Heirloom")
+-- Deaktiviert: Retail-only C_ APIs, die in MoP Classic nicht existieren
+-- local C_AreaPoiInfo = SafeNamespace("C_AreaPoiInfo")
+-- local C_AzeriteEmpoweredItem = SafeNamespace("C_AzeriteEmpoweredItem")
+-- local C_AzeriteEssence = SafeNamespace("C_AzeriteEssence")
+-- local C_AzeriteItem = SafeNamespace("C_AzeriteItem")
+-- local C_BattleNet = SafeNamespace("C_BattleNet")
+-- local C_Calendar = SafeNamespace("C_Calendar")
+-- local C_CampaignInfo = SafeNamespace("C_CampaignInfo")
+-- local C_ChallengeMode = SafeNamespace("C_ChallengeMode")
+-- local C_ChatInfo = SafeNamespace("C_ChatInfo")
+-- local C_Club = SafeNamespace("C_Club")
+-- local C_CreatureInfo = SafeNamespace("C_CreatureInfo")
+-- local C_CurrencyInfo = SafeNamespace("C_CurrencyInfo")
+-- local C_DateAndTime = SafeNamespace("C_DateAndTime")
+-- local C_EquipmentSet = SafeNamespace("C_EquipmentSet")
+-- local C_FriendList = SafeNamespace("C_FriendList")
+-- local C_Garrison = SafeNamespace("C_Garrison")
+-- local C_Heirloom = SafeNamespace("C_Heirloom")
+-- local C_IslandsQueue = SafeNamespace("C_IslandsQueue")
+-- local C_Item = SafeNamespace("C_Item")
+-- local C_LFGList = SafeNamespace("C_LFGList")
+-- local C_Map = SafeNamespace("C_Map")
+-- local C_MapExplorationInfo = SafeNamespace("C_MapExplorationInfo")
+-- local C_NamePlate = SafeNamespace("C_NamePlate")
+-- local C_NewItems = SafeNamespace("C_NewItems")
+-- local C_PaperDollInfo = SafeNamespace("C_PaperDollInfo")
+-- local C_PetBattles = SafeNamespace("C_PetBattles")
+-- local C_PetJournal = SafeNamespace("C_PetJournal")
+-- local C_QuestLine = SafeNamespace("C_QuestLine")
+-- local C_QuestLog = SafeNamespace("C_QuestLog")
+-- local C_Reputation = SafeNamespace("C_Reputation")
+-- local C_Scenario = SafeNamespace("C_Scenario")
+-- local C_ScrappingMachineUI = SafeNamespace("C_ScrappingMachineUI")
+-- local C_SocialQueue = SafeNamespace("C_SocialQueue")
+-- local C_SpecializationInfo = SafeNamespace("C_SpecializationInfo")
+-- local C_TaskQuest = SafeNamespace("C_TaskQuest")
+-- local C_TaxiMap = SafeNamespace("C_TaxiMap")
+-- local C_Texture = SafeNamespace("C_Texture")
+-- local C_Timer = SafeNamespace("C_Timer")
+-- local C_ToyBox = SafeNamespace("C_ToyBox")
+-- local C_TradeSkillUI = SafeNamespace("C_TradeSkillUI")
+-- local C_Transmog = SafeNamespace("C_Transmog")
+-- local C_TransmogCollection = SafeNamespace("C_TransmogCollection")
+-- local C_VignetteInfo = SafeNamespace("C_VignetteInfo")
+-- local C_WowTokenPublic = SafeNamespace("C_WowTokenPublic")
+
 T.AbbreviateNumbers = AbbreviateNumbers
 T.abs = abs
 T.AcceptQuest = AcceptQuest
@@ -34,18 +103,14 @@ T.BossBanner_BeginAnims = BossBanner_BeginAnims
 T.BreakUpLargeNumbers = BreakUpLargeNumbers
 T.BuyMerchantItem = BuyMerchantItem
 T.BuyTrainerService = BuyTrainerService
-T.C_FriendList_GetFriendInfo = C_FriendList.GetFriendInfo
-T.C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
-T.C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
-T.C_Map_GetMapArtID = C_Map.GetMapArtID
-T.C_Map_GetMapArtLayers = C_Map.GetMapArtLayers
-T.C_Map_GetMapInfo = C_Map.GetMapInfo
-T.C_Map_GetPlayerMapPosition = C_Map.GetPlayerMapPosition
-T.C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures
-T.C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
-T.C_PaperDollInfo_OffhandHasWeapon = C_PaperDollInfo.OffhandHasWeapon
-T.C_Timer_After = C_Timer.After
-T.C_Timer_NewTicker = C_Timer.NewTicker
+-- Only restore wrappers that are present on MoP Classic and already used throughout KlixUI.
+T.C_Map_GetBestMapForUnit = C_Map and C_Map.GetBestMapForUnit or KUI.dummy
+T.C_Map_GetMapInfo = C_Map and C_Map.GetMapInfo or KUI.dummy
+T.C_Map_GetPlayerMapPosition = C_Map and C_Map.GetPlayerMapPosition or KUI.dummy
+T.C_Timer_After = C_Timer and C_Timer.After or KUI.dummy
+T.C_Timer_NewTicker = C_Timer and C_Timer.NewTicker or KUI.dummy
+T.C_Heirloom_IsItemHeirloom = C_Heirloom and C_Heirloom.IsItemHeirloom or KUI.dummy
+T.C_Heirloom_PlayerHasHeirloom = C_Heirloom and C_Heirloom.PlayerHasHeirloom or KUI.dummy
 T.CanAffordMerchantItem = CanAffordMerchantItem
 T.CancelAuction = CancelAuction
 T.CancelDuel = CancelDuel
@@ -171,9 +236,9 @@ T.GetContainerItemQuestInfo = GetContainerItemQuestInfo
 T.GetContainerNumSlots = GetContainerNumSlots
 T.GetCritChance = GetCritChance
 T.GetCritChanceProvidesParryEffect = GetCritChanceProvidesParryEffect
-T.GetCurrencyInfo = GetCurrencyInfo
-T.GetCurrencyListInfo = GetCurrencyListInfo
-T.GetCurrencyListSize = GetCurrencyListSize
+T.GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+T.GetCurrencyListInfo = C_CurrencyInfo.GetCurrencyListInfo
+T.GetCurrencyListSize = C_CurrencyInfo.GetCurrencyListSize
 T.GetCurrentRegion = GetCurrentRegion
 T.GetCurrentTitle = GetCurrentTitle
 T.GetCursorInfo = GetCursorInfo
@@ -224,7 +289,14 @@ T.GetInventoryItemQuality = GetInventoryItemQuality
 T.GetInventoryItemTexture = GetInventoryItemTexture
 T.GetInventorySlotInfo = GetInventorySlotInfo
 T.GetItemClassInfo = GetItemClassInfo
-T.GetItemCooldown = GetItemCooldown
+T.GetItemCooldown = function(...)
+	if GetItemCooldown then
+		local start, duration, enable = GetItemCooldown(...)
+		return start or 0, duration or 0, enable or 0
+	end
+
+	return 0, 0, 0
+end
 T.GetItemCount = GetItemCount
 T.GetItemGem = GetItemGem
 T.GetItemIcon = GetItemIcon
@@ -275,9 +347,12 @@ T.GetMinimapZoneText = GetMinimapZoneText
 T.GetModResilienceDamageReduction = GetModResilienceDamageReduction
 T.GetMoney = GetMoney
 T.GetMoneyString = GetMoneyString
-T.GetMouseFocus = GetMouseFocus
+T.GetMouseFocus = GetMouseFocus or function()
+	return E.GetMouseFocus and E:GetMouseFocus()
+end
 T.GetNetIpTypes = GetNetIpTypes
 T.GetNetStats = GetNetStats
+T.C_QuestLog_GetNextWaypointText = C_QuestLog.GetNextWaypointText
 T.GetNumActiveQuests = GetNumActiveQuests
 T.GetNumAuctionItems = GetNumAuctionItems
 T.GetNumAddOns = GetNumAddOns
@@ -296,10 +371,12 @@ T.GetNumGroupMembers = GetNumGroupMembers
 T.GetNumGuildMembers = GetNumGuildMembers
 T.GetNumLootItems = GetNumLootItems
 T.GetNumMacros = GetNumMacros
+T.C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
+T.C_QuestLog_GetMaxNumQuestsCanAccept = C_QuestLog.GetMaxNumQuestsCanAccept
 T.GetNumQuestChoices = GetNumQuestChoices
 T.GetNumQuestItems = GetNumQuestItems
 T.GetNumQuestLeaderBoards = GetNumQuestLeaderBoards
-T.GetNumQuestLogEntries = GetNumQuestLogEntries
+T.GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
 T.GetNumQuestLogRewardCurrencies = GetNumQuestLogRewardCurrencies
 T.GetNumQuestLogRewardSpells = GetNumQuestLogRewardSpells
 T.GetNumQuestWatches = GetNumQuestWatches
@@ -343,7 +420,7 @@ T.GetQuestLogTitle = GetQuestLogTitle
 T.GetQuestObjectiveInfo = GetQuestObjectiveInfo
 T.GetQuestReward = GetQuestReward
 T.GetQuestLogRewardCurrencyInfo = GetQuestLogRewardCurrencyInfo
-T.GetQuestTagInfo = GetQuestTagInfo
+T.GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
 T.GetQuestUiMapID = GetQuestUiMapID
 T.GetQuestWatchInfo = GetQuestWatchInfo
 T.GetRaidDifficultyID = GetRaidDifficultyID
@@ -726,6 +803,8 @@ KUI.IsDev = {
 	["Klix"] = true,
 	["Klixi"] = true,
 	["Klixx"] = true,
+	["Klixy"] = true,
+	["Tricklez"] = true,
 }
 
 KUI.IsDevRealm = {
@@ -757,6 +836,14 @@ function KUI:cOption(name)
 	return (color):format(name)
 end
 
+function KUI:SplitList(list, variable, cleanup)
+	if cleanup then T.table_wipe(list) end
+
+	for word in variable:gmatch('%S+') do
+		list[word] = true
+	end
+end
+
 function KUI:MismatchText()
 	local text = T.string_format(L["MSG_KUI_ELV_OUTDATED"], KUI.ElvUIV, KUI.ElvUIX)
 	return text
@@ -774,6 +861,8 @@ function KUI:RegisterKuiMedia()
 	E.media.CGB = LSM:Fetch('font', 'Century Gothic Bold')
 	E.media.Days = LSM:Fetch('font', 'Days')
 	E.media.Expressway = LSM:Fetch('font', 'Expressway')
+	E.media.Gilroy = LSM:Fetch('font', 'Gilroy Bold')
+	E.media.Teko = LSM:Fetch('font', 'Teko Bold')
 
 	--Textures
 	E.media.Empty = LSM:Fetch('statusbar', 'Empty')
@@ -781,6 +870,7 @@ function KUI:RegisterKuiMedia()
 	E.media.Klix1 = LSM:Fetch('statusbar', 'Klix1')
 	E.media.Klix2 = LSM:Fetch('statusbar', 'Klix2')
 	E.media.Klix3 = LSM:Fetch('statusbar', 'Klix3')
+	E.media.Klix4 = LSM:Fetch('statusbar', 'Klix4')
 	E.media.KlixRainbow1 = LSM:Fetch('statusbar', 'KlixRainbow1')
 	E.media.KlixRainbow2 = LSM:Fetch('statusbar', 'KlixRainbow2')
 	E.media.KlixGradient = LSM:Fetch("statusbar", "KlixGradient")
@@ -798,7 +888,6 @@ end
 
 KUI.ClassColor = E.myclass == "PRIEST" and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass])
 KUI.ClassColors = {}
-
 KUI.Classes = {}
 
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do KUI.Classes[v] = k end
@@ -829,6 +918,25 @@ end
 KUI.colors = {
 	class = {},
 }
+
+KUI.colors.class = {
+	["DEATHKNIGHT"]	= { 0.77,	0.12,	0.23 },
+	["DEMONHUNTER"]	= { 0.64,	0.19,	0.79 },
+	["DRUID"]		= { 1,		0.49,	0.04 },
+	["HUNTER"]		= { 0.58,	0.86,	0.49 },
+	["MAGE"]		= { 0.2,	0.76,	1 },
+	["MONK"]		= { 0,		1,		0.59 },
+	["PALADIN"]		= { 0.96,	0.55,	0.73 },
+	["PRIEST"]		= { 0.99,	0.99,	0.99 },
+	["ROGUE"]		= { 1,		0.96,	0.41 },
+	["SHAMAN"]		= { 0,		0.44,	0.87 },
+	["WARLOCK"]		= { 0.6,	0.47,	0.85 },
+	["WARRIOR"]		= { 0.9,	0.65,	0.45 },
+}
+
+for class, color in T.pairs(KUI.colors.class) do
+	KUI.colors.class[class] = { r = color[1], g = color[2], b = color[3] }
+end
 
 -- Convert RGB values to Hexdecimal
 -- Here is r, g, b valuesbetween 0~1
@@ -866,18 +974,20 @@ function KUI:SimpleTable(table, item)
 	return false
 end
 
+-- Check Chat channels
 KUI.CheckChat = function(warning)
-	if T.IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+	if T.IsInGroup(_G.LE_PARTY_CATEGORY_INSTANCE) then
 		return "INSTANCE_CHAT"
-	elseif T.IsInRaid(LE_PARTY_CATEGORY_HOME) then
+	elseif T.IsInRaid(_G.LE_PARTY_CATEGORY_HOME) then
 		if warning and (T.UnitIsGroupLeader("player") or T.UnitIsGroupAssistant("player") or T.IsEveryoneAssistant()) then
 			return "RAID_WARNING"
 		else
 			return "RAID"
 		end
-	elseif T.IsInGroup(LE_PARTY_CATEGORY_HOME) then
+	elseif T.IsInGroup(_G.LE_PARTY_CATEGORY_HOME) then
 		return "PARTY"
 	end
+
 	return "SAY"
 end
 
@@ -915,7 +1025,7 @@ function KUI:SetMoverPosition(mover, point, anchor, secondaryPoint, x, y)
 	local frame = _G[mover]
 
 	frame:ClearAllPoints()
-	frame:SetPoint(point, anchor, secondaryPoint, x, y)
+	frame:Point(point, anchor, secondaryPoint, x, y)
 	E:SaveMoverPosition(mover)
 end
 
@@ -997,6 +1107,7 @@ end
 function KUI:MovableButtonSettings(db, key, value, remove, movehere)
 	local str = db[key]
 	if not db or not str or not value then return end
+
 	local found = MovableButton_Match(str, E:EscapeString(value))
 	if found and movehere then
 		local tbl, sv, sm = {T.string_split(",", str)}
@@ -1018,6 +1129,7 @@ end
 
 function KUI:CreateMovableButtons(Order, Name, CanRemove, db, key)
 	local moveItemFrom, moveItemTo
+
 	local config = {
 		order = Order,
 		dragdrop = true,
@@ -1034,13 +1146,9 @@ function KUI:CreateMovableButtons(Order, Name, CanRemove, db, key)
 			KUI:MovableButtonSettings(db, key, moveItemTo, nil, moveItemFrom) --add it in the new spot
 			moveItemFrom, moveItemTo = nil, nil
 		end,
-		stateSwitchGetText = function(info, TEXT)
+		dragGetTitle = function(info, TEXT)
 			local text = T.GetItemInfo(T.tonumber(TEXT))
-			info.userdata.text = text
-			return text
-		end,
-		stateSwitchOnClick = function(info)
-			KUI:MovableButtonSettings(db, key, moveItemFrom)
+			return text or TEXT
 		end,
 		values = function()
 			local str = db[key]
@@ -1055,11 +1163,13 @@ function KUI:CreateMovableButtons(Order, Name, CanRemove, db, key)
 		end,
 		set = function(info, value) end,
 	}
+
 	if CanRemove then --This allows to remove shit
 		config.dragOnClick = function(info)
 			KUI:MovableButtonSettings(db, key, moveItemFrom, true)
 		end
 	end
+
 	return config
 end
 
@@ -1139,6 +1249,7 @@ function table.length(t)
     return count
 end
 
+--SoftGlow
 function KUI:UpdateSoftGlowColor()
 	if KUI["softGlow"] == nil then KUI["softGlow"] = {} end
 
@@ -1154,6 +1265,7 @@ function KUI:UpdateSoftGlowColor()
 end
 hooksecurefunc(E, "UpdateMedia", KUI.UpdateSoftGlowColor)
 
+--Pulse
 function KUI:CreatePulse(frame, speed, alpha, mult)
 	T.assert(frame, "doesn't exist!")
 	
@@ -1166,7 +1278,14 @@ function KUI:CreatePulse(frame, speed, alpha, mult)
 		self.tslu = self.tslu + elapsed
 		if self.tslu > self.speed then
 			self.tslu = 0
-			self:SetAlpha(self.alpha*(alpha or 3/5))
+			local currentAlpha = self.alpha * (alpha or 3/5)
+			if currentAlpha < 0 then
+				currentAlpha = 0
+			elseif currentAlpha > 1 then
+				currentAlpha = 1
+			end
+
+			self:SetAlpha(currentAlpha)
 		end
 		self.alpha = self.alpha - elapsed*self.mult
 		if self.alpha < 0 and self.mult > 0 then
@@ -1178,34 +1297,81 @@ function KUI:CreatePulse(frame, speed, alpha, mult)
 	end)
 end
 
+-- Role Icons
+function KUI:GetRoleTexCoord(role)
+	if role == "TANK" then
+		return .32/9.03, 2.04/9.03, 2.65/9.03, 4.3/9.03
+	elseif role == "DPS" or role == "DAMAGER" then
+		return 2.68/9.03, 4.4/9.03, 2.65/9.03, 4.34/9.03
+	elseif role == "HEALER" then
+		return 2.68/9.03, 4.4/9.03, .28/9.03, 1.98/9.03
+	elseif role == "LEADER" then
+		return .32/9.03, 2.04/9.03, .28/9.03, 1.98/9.03
+	elseif role == "READY" then
+		return 5.1/9.03, 6.76/9.03, .28/9.03, 1.98/9.03
+	elseif role == "PENDING" then
+		return 5.1/9.03, 6.76/9.03, 2.65/9.03, 4.34/9.03
+	elseif role == "REFUSE" then
+		return 2.68/9.03, 4.4/9.03, 5.02/9.03, 6.7/9.03
+	end
+end
+
+function KUI:ReskinRole(self, role)
+	if self.background then self.background:SetTexture("") end
+	local cover = self.cover or self.Cover
+	if cover then cover:SetTexture("") end
+	local texture = self.GetNormalTexture and self:GetNormalTexture() or self.texture or self.Texture or (self.SetTexture and self)
+	if texture then
+		texture:SetTexture(E.media.roleIcons)
+		texture:SetTexCoord(KUI:GetRoleTexCoord(role))
+	end
+
+	local checkButton = self.checkButton or self.CheckButton or self.CheckBox
+	if checkButton then
+		checkButton:SetFrameLevel(self:GetFrameLevel() + 2)
+		checkButton:Point("BOTTOMLEFT", -2, -2)
+	end
+
+	local shortageBorder = self.shortageBorder
+	if shortageBorder then
+		shortageBorder:SetTexture("")
+		local icon = self.incentiveIcon
+		icon:Point("BOTTOMRIGHT")
+		icon:Size(14, 14)
+		icon.texture:SetSize(14, 14)
+		icon.border:SetTexture("")
+	end
+end
+
 local function CreateWideShadow(f)
 	local borderr, borderg, borderb = 0, 0, 0
 	local backdropr, backdropg, backdropb = 0, 0, 0
 
-	local wideshadow = f.wideshadow or T.CreateFrame('Frame', nil, f) -- This way you can replace current shadows.
+	local wideshadow = f.wideshadow or T.CreateFrame('Frame', nil, f, 'BackdropTemplate') -- This way you can replace current shadows.
 	wideshadow:SetFrameLevel(1)
 	wideshadow:SetFrameStrata('BACKGROUND')
 	wideshadow:SetOutside(f, 6, 6)
 	wideshadow:SetBackdrop( { 
 		edgeFile = LSM:Fetch('border', 'ElvUI GlowBorder'), edgeSize = E:Scale(6),
-		insets = {left = E:Scale(8), right = E:Scale(8), top = E:Scale(8), bottom = E:Scale(8)},
+		insets = {left = 8, right = 8, top = 8, bottom = 8},
 	})
 	wideshadow:SetBackdropColor(backdropr, backdropg, backdropb, 0)
 	wideshadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.5)
 	f.wideshadow = wideshadow
 end
 
+--Shadow Overlay
 local function CreateSoftShadow(f)
 	local borderr, borderg, borderb = 0, 0, 0
 	local backdropr, backdropg, backdropb = 0, 0, 0
 
-	local softshadow = f.softshadow or T.CreateFrame('Frame', nil, f) -- This way you can replace current shadows.
+	local softshadow = f.softshadow or T.CreateFrame('Frame', nil, f, 'BackdropTemplate') -- This way you can replace current shadows.
 	softshadow:SetFrameLevel(1)
 	softshadow:SetFrameStrata('BACKGROUND')
 	softshadow:SetOutside(f, 2, 2)
 	softshadow:SetBackdrop( { 
 		edgeFile = LSM:Fetch('border', 'ElvUI GlowBorder'), edgeSize = E:Scale(2),
-		insets = {left = E:Scale(5), right = E:Scale(5), top = E:Scale(5), bottom = E:Scale(5)},
+		insets = {left = 5, right = 5, top = 5, bottom = 5},
 	})
 	softshadow:SetBackdropColor(backdropr, backdropg, backdropb, 0)
 	softshadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.4)
@@ -1216,14 +1382,14 @@ local function CreateSoftGlow(f)
 	if f.sglow then return end
 
 	local r, g, b = KUI:unpackColor(E.db.general.valuecolor)
-	local sglow = T.CreateFrame('Frame', nil, f)
+	local sglow = T.CreateFrame('Frame', nil, f, 'BackdropTemplate')
 
 	sglow:SetFrameLevel(1)
 	sglow:SetFrameStrata(f:GetFrameStrata())
 	sglow:SetOutside(f, 3, 3)
 	sglow:SetBackdrop( { 
 		edgeFile = LSM:Fetch('border', 'ElvUI GlowBorder'), edgeSize = E:Scale(3),
-		insets = {left = E:Scale(5), right = E:Scale(5), top = E:Scale(5), bottom = E:Scale(5)},
+		insets = {left = 5, right = 5, top = 5, bottom = 5},
 	})
 
 	sglow:SetBackdropBorderColor(r, g, b, 0.6)
@@ -1232,6 +1398,7 @@ local function CreateSoftGlow(f)
 	KUI["softGlow"][sglow] = true
 end
 
+--IconShadow
 local function CreateIconShadow(f, alpha)
 	if T.IsAddOnLoaded("Masque") then return end
 	
@@ -1242,7 +1409,7 @@ local function CreateIconShadow(f, alpha)
 	ishadow:SetInside(f, 1, 1)
 	ishadow:SetTexture([[Interface\AddOns\ElvUI_KlixUI\media\textures\overlay]])
 	ishadow:SetVertexColor(1, 1, 1, alpha or 1)
-	ishadow:SetSize(f:GetSize())
+	ishadow:Size(f:GetSize())
 
 	f.ishadow = ishadow
 	
@@ -1258,10 +1425,10 @@ local function Styling(f, useSquares, useGradient, useShadow, shadowOverlayWidth
 	local style = T.CreateFrame("Frame", frameName or nil, f)
 
 	if not(useSquares) and E.db.KlixUI.general.style == "ALL" or E.db.KlixUI.general.style == "SQUARES" then
-		local squares = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER", f)
+		local squares = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER")
 		squares:ClearAllPoints()
-		squares:SetPoint("TOPLEFT", 1, -1)
-		squares:SetPoint("BOTTOMRIGHT", -1, 1)
+		squares:Point("TOPLEFT", 1, -1)
+		squares:Point("BOTTOMRIGHT", -1, 1)
 		squares:SetTexture([[Interface\AddOns\ElvUI_KlixUI\media\textures\squares]], true, true)
 		squares:SetHorizTile(true)
 		squares:SetVertTile(true)
@@ -1271,10 +1438,10 @@ local function Styling(f, useSquares, useGradient, useShadow, shadowOverlayWidth
 	end
 
 	if not(useGradient) then
-		local gradient = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER", f)
+		local gradient = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER")
 		gradient:ClearAllPoints()
-		gradient:SetPoint("TOPLEFT", 1, -1)
-		gradient:SetPoint("BOTTOMRIGHT", -1, 1)
+		gradient:Point("TOPLEFT", 1, -1)
+		gradient:Point("BOTTOMRIGHT", -1, 1)
 		gradient:SetTexture([[Interface\AddOns\ElvUI_KlixUI\media\textures\gradient.tga]])
 		gradient:SetVertexColor(.3, .3, .3, .15)
 
@@ -1282,10 +1449,10 @@ local function Styling(f, useSquares, useGradient, useShadow, shadowOverlayWidth
 	end
 
 	if not(useShadow) and E.db.KlixUI.general.style == "ALL" or E.db.KlixUI.general.style == "SHADOW" then
-		local mshadow = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER", f)
+		local mshadow = f:CreateTexture(f:GetName() and f:GetName().."Overlay" or nil, "BORDER")
 		mshadow:SetInside(f, 0, 0)
-		mshadow:SetWidth(shadowOverlayWidth or 33)
-		mshadow:SetHeight(shadowOverlayHeight or 33)
+		mshadow:Width(shadowOverlayWidth or 33)
+		mshadow:Height(shadowOverlayHeight or 33)
 		mshadow:SetTexture([[Interface\AddOns\ElvUI_KlixUI\media\textures\overlay]])
 		mshadow:SetVertexColor(1, 1, 1, shadowOverlayAlpha or 0.6)
 
@@ -1319,5 +1486,6 @@ while object do
 		addapi(object)
 		handled[object:GetObjectType()] = true
 	end
+
 	object = EnumerateFrames(object)
 end

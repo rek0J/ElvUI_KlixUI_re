@@ -1,5 +1,6 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Include file="skins\load_skins.xml"/>
+	<Include file="toasts\load_toasts.xml"/>
 	<Include file="chat\load_chat.xml"/>
 	<Include file="bags\load_bags.xml"/>
 	<Include file="armory\load_armory.xml"/>
@@ -11,12 +12,15 @@
 	<Include file="locpanel\load_locpanel.xml"/>
 	<Include file="tooltip\load_tooltip.xml"/>
 	<Include file="unitframes\load_unitframes.xml"/>
+	<!--Include file="teamstats\load_teamstats.xml"/-->
 	<Include file="databars\load_databars.xml"/>
 	<Include file="datatexts\load_datatexts.xml"/>
+	<Include file="talents\load_talents.xml"/>
 	<Include file="quest\load_quest.xml"/>
-	<Include file="efl\load_efl.xml"/>
 	<Include file="addonpanel\load_addonpanel.xml"/>
-	<!--Include file="notification\load_notification.xml"/-->
+	<Include file="notification\load_notification.xml"/>
+	<Include file="announcement\load_announcement.xml"/>
+	<Include file="loot\load_loot.xml"/>
 	<Include file="cooldowns\load_cooldowns.xml"/>
 	<Include file="raidmarkers\load_raidmarkers.xml"/>
 	<Include file="reminder\load_reminder.xml"/>

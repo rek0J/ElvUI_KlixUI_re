@@ -16,6 +16,7 @@ function KUI:LoadAddOnSkinsProfile()
 	AS.db['TransparentEmbed'] = false
 	AS.db['TransparentEmbed'] = false
 	AS.db["EmbedRightChat"] = true -- Always embed it to right chat!
+	AS.db["EmbedOoC"] = true
 
 	if IsAddOnLoaded('Recount') then
 		AS.db['EmbedFrameStrata'] = "2-LOW"

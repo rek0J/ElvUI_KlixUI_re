@@ -10,20 +10,20 @@ local function hexToRGB(hex)
 end
 
 local iconValues = {
-    ["none"] = L["No Icons"],
-    ["left"] = L["Left Side"],
-    ["right"] = L["Right Side"],
-    ["both"] = L["Both Sides"],
-    ["only"] = L["Icons Only (No Text)"],
+    ["none"] = "No Icons",
+    ["left"] = "Left Side",
+    ["right"] = "Right Side",
+    ["both"] = "Both Sides",
+    ["only"] = "Icons Only (No Text)",
 };
 
 local animationValues = {
     -- ["shake"] = "Shake",
-    ["verticalUp"] = L["Vertical Up"],
-    ["verticalDown"] = L["Vertical Down"],
-    ["fountain"] = L["Fountain"],
-    ["rainfall"] = L["Rainfall"],
-	["disabled"] = L["Disabled"],
+    ["verticalUp"] = "Vertical Up",
+    ["verticalDown"] = "Vertical Down",
+    ["fountain"] = "Fountain",
+    ["rainfall"] = "Rainfall",
+	["disabled"] = "Disabled",
 };
 
 local fontFlags = {
@@ -59,12 +59,12 @@ local function CombatTextTable()
 				type = "toggle",
 				name = L["Disable Blizzard FCT"],
 				desc = "",
-				get = function(_, newValue) return GetCVar("floatingCombatTextCombatDamage") == "0" end,
+				get = function(info) return GetCVar("floatingCombatTextCombatDamage") == "0" end,
 				set = function(info, value)
 					if (value) then
-						SetCVar("floatingCombatTextCombatDamage", "0")
+						SetCVar("floatingCombatTextCombatDamage", "0");
 					else
-						SetCVar("floatingCombatTextCombatDamage", "1")
+						SetCVar("floatingCombatTextCombatDamage", "1");
 					end
 				end,
 			},
@@ -104,15 +104,15 @@ local function CombatTextTable()
 					},
 					autoattack = {
 						type = 'select',
-						name = L["Auto Attacks"],
+						name = "Auto Attacks",
 						desc = "",
 						values = animationValues,
 						order = 4,
 					},
 					autoattackcrit = {
 						type = 'select',
-						name = L["Critical"],
-						desc = L["Auto attacks that are critical hits"],
+						name = "Critical",
+						desc = "Auto attacks that are critical hits",
 						values = animationValues,
 						order = 5,
 					},
@@ -173,27 +173,21 @@ local function CombatTextTable()
 						type = "toggle",
 						name = L["Font Shadow"],
 					},
-					space1 = {
-						order = 4,
-						type = "description",
-						name = "",
-					},
 					damageColor = {
-						order = 5,
+						order = 4,
 						type = "toggle",
 						name = L["Use Damage Type Color"],
 					},
 					defaultColor = {
-						order = 6,
+						order = 5,
 						type = "color",
 						name = L["Default Color"],
 						hasAlpha = false,
-						disabled = function() return E.db.KlixUI.combattext.damageColor end,
 						get = function(info) return hexToRGB(E.db.KlixUI.combattext.defaultColor); end,
 						set = function(_, r, g, b) E.db.KlixUI.combattext.defaultColor = rgbToHex(r, g, b); end,
 					},
-					space2 = {
-						order = 7,
+					space1 = {
+						order = 6,
 						type = "description",
 						name = "",
 					},
@@ -213,46 +207,28 @@ local function CombatTextTable()
 						desc = L["Has soft min/max, you can type whatever you'd like into the editbox tho."],
 						softMin = -75, softMax = 75, step = 1,
 					},
-					space3 = {
+					space2 = {
 						order = 12,
 						type = "description",
 						name = "",
 					},
-					damageColorPersonal = {
-						order = 13,
-						type = "toggle",
-						name = L["Use Damage Type Color"],
-					},
-
-					defaultColorPersonal = {
-						order = 14,
-						type = "color",
-						name = L["Default Color"],
-						hasAlpha = false,
-						disabled = function() return E.db.KlixUI.combattext.damageColorPersonal end,
-						set = function(_, r, g, b) E.db.KlixUI.combattext.defaultColorPersonal = rgbToHex(r, g, b) end,
-						get = function() return hexToRGB(E.db.KlixUI.combattext.defaultColorPersonal) end,
-					},
-					space4 = {
-						order = 15,
-						type = "description",
-						name = "",
-					},
 					xOffsetPersonal = {
-						order = 16,
+						order = 13,
 						type = "range",
 						width = 1.5,
 						name = L["X-Offset Personal SCT"],
 						desc = L["Only used if Personal Nameplate is Disabled."],
 						softMin = -400, softMax = 400, step = 1,
+						hidden = function() return not E.db.KlixUI.combattext.personal; end,
 					},
 					yOffsetPersonal = {
-						order = 17,
+						order = 14,
 						type = "range",
 						width = 1.5,
 						name = L["Y-Offset Personal SCT"],
 						desc = L["Only used if Personal Nameplate is Disabled."],
 						softMin = -400, softMax = 400, step = 1,
+						hidden = function() return not E.db.KlixUI.combattext.personal; end,
 					},
 				},
 			},
@@ -362,8 +338,8 @@ local function CombatTextTable()
 					},
 					autoattackcritsizing = {
 						type = 'toggle',
-						name = L["Embiggen Auto Attack Crits"],
-						desc = L["Embiggen critical auto attacks"],
+						name = "Embiggen Auto Attack Crits",
+						desc = "Embiggen critical auto attacks",
 						order = 2,
 					},
 					critsScale = {
@@ -391,7 +367,7 @@ local function CombatTextTable()
 						order = 20,
 						type = "toggle",
 						name = L["Scale Down Small Hits"],
-						desc = L["Scale down hits that are below a running average of your recent damage output"],
+						desc = "Scale down hits that are below a running average of your recent damage output",
 					},
 					smallHitsScale = {
 						order = 21,
@@ -403,8 +379,8 @@ local function CombatTextTable()
 					},
 					smallHitsHide = {
 						type = 'toggle',
-						name = L["Hide Small Hits"],
-						desc = L["Hide hits that are below a running average of your recent damage output"],
+						name = "Hide Small Hits",
+						desc = "Hide hits that are below a running average of your recent damage output",
 						order = 22,
 					},
 				},

@@ -61,4 +61,4 @@ local function OnEnter(self)
 	DT.tooltip:Show()
 end
 
-DT:RegisterDatatext('Mail (KUI)', {'PLAYER_ENTERING_WORLD', 'MAIL_INBOX_UPDATE', 'UPDATE_PENDING_MAIL', 'MAIL_CLOSED', 'PLAYER_LOGIN','MAIL_SHOW'}, OnEvent, nil, nil, OnEnter)
+DT:RegisterDatatext('Mail (KUI)', KUI.Title, {'PLAYER_ENTERING_WORLD', 'MAIL_INBOX_UPDATE', 'UPDATE_PENDING_MAIL', 'MAIL_CLOSED', 'PLAYER_LOGIN','MAIL_SHOW'}, OnEvent, nil, nil, OnEnter)

@@ -151,6 +151,7 @@ Rey
 Vauxine]]
 L["Testing & Inspiration:"] = true
 L["ELVUI_KUI_TESTING"] = [[Kringel
+Dlarge
 Akiao
 Obscurrium
 Benik
@@ -161,6 +162,7 @@ TukUI/ElvUI community]]
 L["Other Support:"] = true
 L["ELVUI_KUI_SPECIAL"] = [[Kringel - for updating the german locales and always provide helpful and good support in my Discord!
 Wilzor - for suggestion alot of new features and helping out with some coding (AutoOpen Bags ID)
+Dlarge - for help keep KlixUI up to date for ElvUI Versions and updated other Addons
 And not to forget the rest of the TukUI/ElvUI community :)]]
 
 -- Actionbars
@@ -517,6 +519,24 @@ L["has gone |cffff0000offline|r."] = true
 L[" has come |cff298F00online|r."] = true
 L[" has gone |cffff0000offline|r."] = true
 L["|cfff960d9GMOTD:|r %s"] = true
+L["Expand the chat"] = true
+L["Chat Menu"] = true
+L["Create a chat button to increase the chat size."] = true
+L["Hide Player Brackets"] = true
+L["Removes brackets around the person who posts a chat message."] = true
+L["Hide Chat Side Panel"] = true
+L["Removes the Chat SidePanel. |cffFF0000WARNING: If you disable this option you must adjust your Layout.|r"] = true
+L["ChatBar"] = true
+L["Shows a ChatBar with different quick buttons."] = true
+L["Hide Community Chat"] = true
+L["Adds an overlay to the Community Chat. Useful for streamers."] = true
+L["Chat Hidden. Click to show"] = true
+L["Click to open Emoticon Frame"] = true
+L["Emotes"] = true
+L["Damage Meter Filter"] = true
+L["Fade Chat"] = true
+L["Auto hide timeout"] = true
+L["Seconds before fading chat panel"] = true
 
 -- CombatText
 L["Combat Text"] = true
@@ -889,6 +909,9 @@ L["Hide Raid"] = true
 L["Show/Hide raids on recommended dungeons."] = true
 L["Hide PvP"] = true
 L["Show/Hide PvP zones, Arenas and BGs on recommended dungeons and zones."] = true
+L["Toggle WorldMap"] = true
+L["Send position to chat"] = true
+L["Toggle Datatexts"] = true
 L["KUI_LOCPANEL_IGNOREMISSINGINFO"] = [[Due to how client functions some item info may become unavailable for a period of time. This mostly happens to toys info.
 When called the menu will wait for all information being available before showing up. This may resul in menu opening after some concidarable amount of time, depends on how fast the server will answer info requests.
 By enabling this option you'll make the menu ignore items with missing info, resulting in them not showing up in the list.]]
@@ -947,9 +970,6 @@ L["West"] = true
 L["Places the west cardinal point on your minimap."] = true
 L["Worldmap"] = true
 L["World Map Frame Size"] = true
-L["World Map Frame Fade"] = true
-L["World Map Frame Zoom"] = true
-L["Mouse scroll on the world map to zoom."] = true
 L["Reveal"] = true
 L["Reveal all undiscovered areas on the world map."] = true
 L["Set an overlay tint on unexplored ares on the world map."] = true
@@ -1409,6 +1429,43 @@ L["Defaults to the talents tab of the talent frame on login. By default WoW show
 L["Auto Hide PvP Talents"] = true
 L["Closes the PvP talents flyout on login. PvP talents and warmode flag are still accessible by manually opening the PvP talents flyout."] = true
 
+-- TeamStats
+L["Team Stats"] = true
+L["Show the teamstats frame when clicking the teamstats minimap button."] = true
+L["BtnRescanText"] = "Reacquire"
+L["BtnRescanTipTitle"] = "Regain talent/costume/jewelry info"
+L["BtnRescanTip"] = "To reduce resource consumption, the plug-in does not update the member information in real time. Please select the member to be updated and click this button."
+L["BtnAnnText"] = "Information broadcast"
+L["BtnAnnTipTitle"] = "Information broadcast"
+L["BtnAnnTip"] = "Please post the information of selected members to the team channel. Please choose carefully to prevent refresh and disputes."
+L["BtnAnnPopupText"] = "Are you sure you want to broadcast |cffff7f00[%d]|r message to |cffff7f00[%s]|r channel?"
+L["BtnAnnNoSelect"] = "Please select at least one member"
+L["TitleText"] = true
+L["HeaderClass"] = CLASS
+L["HeaderPlayerName"] = true
+L["HeaderGS"] = true
+L["HeaderHealth"] = true
+L["StatusGetting"] = "Accessing data"
+L["StatusCannotGet"] = "There are players too far away to get it."
+L["StatusAllDone"] = "All data obtained"
+L["StatusPaused"] = "Suspended gain in combat"
+L["HUNTER"] = true
+L["WARLOCK"] = true
+L["PRIEST"] = true
+L["PALADIN"] = true
+L["MAGE"] = true
+L["ROGUE"] = true
+L["DRUID"] = true
+L["SHAMAN"] = true
+L["WARRIOR"] = true
+L["DEATHKNIGHT"] = true
+L["MiniTipTitle"] = "Team stats"
+L["MiniTip"] = "Open the statistics screen of team information, and focus on the talent, loading and dungeon kill status of all team members. The icon flashes to indicate the newly acquired data."
+L["BtnLinkText"] = true -- Missing translation??
+L["BtnLinkTipTitle"] = true -- Missing translation??
+L["BtnLinkTip"] = true -- Missing translation??
+L["CopyDialogTitleText"] = true -- Missing translation??
+
 -- Toasts
 L["Toasts"] = true
 L["TOAST_DESC"] = [[Here can you control which toasts that should be displayed.
@@ -1462,6 +1519,12 @@ L["Specialization"] = true
 L["Only show the traits for your current specialization."] = true
 L["Compact"] = true
 L["Only show icons in the azerite tooltip."] = true
+L["Corruption"] = true
+L["Show the name and level of corruption on item tooltips."] = true
+L["Append"] = true
+L["Swap position of the tooltip."] = true
+L["English"] = true
+L["Swap between English and native Corruption name."] = true
 L["Raid Progression"] = true
 L["Shows raid progress of a character in the tooltip.\n|cffff8000Note: The visibility of the raid progress can be changed in the display option.|r"] = true
 L["Display"] = true
@@ -1473,6 +1536,7 @@ L["Difficulty Style"] = true
 L["RAID_BOD"] = "BoD"
 L["RAID_COS"] = "CoS"
 L["RAID_EP"] = "EP"
+L["RAID_NWC"] = "NWC"
 L["Name Hover"] = true
 L["Shows the unit name, at the cursor, when hovering over a target."] = true
 L["Guild Name"] = true

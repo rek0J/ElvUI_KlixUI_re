@@ -47,8 +47,4 @@ function FC:Initialize()
     FC.frame:SetScript("OnUpdate", OnUpdate)
 end
 
-local function InitializeCallback()
-    FC:Initialize()
-end
-
-KUI:RegisterModule(FC:GetName(), InitializeCallback)
+KUI:RegisterModule(FC:GetName())

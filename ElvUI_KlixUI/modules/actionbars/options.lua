@@ -1,6 +1,8 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KAB = KUI:GetModule('KUIActionbars')
 local MB = KUI:GetModule("MicroBar")
+local ABS = KUI:GetModule("AutoButtons")
+local SEB = KUI:GetModule("SpecEquipBar")
 
 local function abTable()
 	E.Options.args.KlixUI.args.modules.args.actionbars = {
@@ -14,8 +16,204 @@ local function abTable()
 				type = 'header',
 				name = KUI:cOption(L['ActionBars']),
 			},
-			microBar = {
+			general = {
 				order = 2,
+				type = "group",
+				name = L["General"],
+				args = {
+
+					RandomHearthstone = {
+						order = 15,
+						type = "group",
+						guiInline = true,
+						name = L["Random Hearthstone"],
+						get = function(info) return E.db.KlixUI.actionbars.hearthstone[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.actionbars.hearthstone[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						args = {
+							info = {
+								order = 1,
+								type = "description",
+								name = L["RHS_DESC"],
+							},
+							enable = {
+								order = 2,
+								type = "toggle",
+								name = L["Enable"],
+							},
+							delete = {
+								order = 3,
+								type = "toggle",
+								name = L["Delete Hearthstone"],
+								desc = L['Automatically delete the classic hearthstone, you receive, when you change hearth location.'],
+							},
+							CreateRHS = {
+								order = 4,
+								type = 'execute',
+								name = L["Create |cfff960d9KlixUI|r Hearthstone"],
+								disabled = function(info) return not E.db.KlixUI.actionbars.hearthstone.enable end,
+								func = function()
+									local toggleOptions = E.ToggleOptions or E.ToggleOptionsUI
+									KAB:Macro_Refresh()
+									if toggleOptions then
+										toggleOptions(E)
+									end
+								end,
+							},
+						},
+					},
+				},
+			},
+			glow = {
+				order = 3,
+				type = "group",
+				name = L["Glow"],
+				hidden = function() return T.IsAddOnLoaded("CoolGlow") end,
+				disabled = function() return T.IsAddOnLoaded("CoolGlow") end,
+				get = function(info) return E.db.KlixUI.actionbars.glow[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.actionbars.glow[ info[#info] ] = value; KAB:SpellActivationGlow(); end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						set = function(info, value) E.db.KlixUI.actionbars.glow[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+					},
+					finishMove = {
+						order = 2,
+						type = "toggle",
+						name = L["Finishing Move Glow"],
+						desc = L["This will display glow, when reaching 5 combopoints, on spells which utilize 1-5 combopoints."],
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable or not E.myclass == "ROGUE" or not E.myclass == "DRUID" end,
+						set = function(info, value) E.db.KlixUI.actionbars.glow[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+					},
+					color = {
+						order = 3,
+						type = "color",
+						name = L["Color"],
+						hasAlpha = true,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+						get = function(info)
+							local t = E.db.KlixUI.actionbars.glow.color
+							return t.r, t.g, t.b, t.a
+						end,
+						set = function(info, r, g, b, a)
+							local t = E.db.KlixUI.actionbars.glow.color
+							t.r, t.g, t.b, t.a = r, g, b, a
+							KAB:SpellActivationGlow()
+						end,
+					},
+					number = {
+						order = 4,
+						type = "range",
+						name = L["Num Lines"],
+						desc = L["Defines the number of lines the glow will spawn."],
+						min = 4, max = 16, step = 1,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+					frequency = {
+						order = 5,
+						type = "range",
+						name = L["Frequency"],
+						desc = L["Sets the animation speed of the glow. Negative values will rotate the glow anti-clockwise."],
+						min = -2, max = 2, step = 0.01,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+					length = {
+						order = 6,
+						type = "range",
+						name = L["Length"],
+						desc = L["Defines the length of each individual glow lines."],
+						min = 2, max = 16, step = 1,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+					thickness = {
+						order = 7,
+						type = "range",
+						name = L["Thickness"],
+						desc = L["Defines the thickness of the glow lines."],
+						min = 1, max = 6, step = 1,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+					xOffset = {
+						order = 8,
+						type = "range",
+						name = L["X-Offset"],
+						min = -5, max = 5, step = 1,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+					yOffset = {
+						order = 9,
+						type = "range",
+						name = L["Y-Offset"],
+						min = -5, max = 5, step = 1,
+						disabled = function() return not E.db.KlixUI.actionbars.glow.enable end,
+					},
+				},
+			},
+			SEBar = {
+				order = 4,
+				type = "group",
+				name = L["Specialization & Equipment Bar"],
+				get = function(info) return E.db.KlixUI.actionbars.SEBar[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.actionbars.SEBar[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						desc = L['Show/Hide the |cfff960d9KlixUI|r Spec & EquipBar.'],
+					},
+					space1 = {
+						order = 2,
+						type = "description",
+						name = "",
+					},
+					space2 = {
+						order = 3,
+						type = "description",
+						name = "",
+					},
+					borderGlow = {
+						order = 4,
+						type = "toggle",
+						name = L["Border Glow"],
+						desc = L["Shows an animated border glow for the currently active specialization and loot specialization."],
+						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
+						
+					},
+					mouseover = {
+						order = 5,
+						type = "toggle",
+						name = L["Mouseover"],
+						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
+					},
+					malpha = {
+						order = 6,
+						type = "range",
+						name = L["Alpha"],
+						desc = L["Change the alpha level of the frame."],
+						min = 0, max = 1, step = 0.1,
+						disabled = function() return not E.db.KlixUI.actionbars.SEBar.mouseover or not E.db.KlixUI.actionbars.SEBar.enable end,
+					},
+					hideInCombat = {
+						order = 7,
+						type = "toggle",
+						name = L["Hide In Combat"],
+						desc = L['Show/Hide the |cfff960d9KlixUI|r Spec & EquipBar in combat.'],
+						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
+					},
+					hideInOrderHall = {
+						order = 8,
+						type = "toggle",
+						name = L["Hide In Orderhall"],
+						desc = L['Show/Hide the |cfff960d9KlixUI|r Spec & Equip Bar in the class hall.'],
+						disabled = function() return E.Mists or not E.db.KlixUI.actionbars.SEBar.enable end,
+						hidden = function() return E.Mists end,
+					},
+				},
+			},
+			microBar = {
+				order = 5,
 				type = "group",
 				name = L["Micro Bar"],
 				get = function(info) return E.db.KlixUI.microBar[ info[#info] ] end,
@@ -54,8 +252,16 @@ local function abTable()
 						disabled = function() return not E.db.KlixUI.microBar.enable end,
 						hidden = function() return not E.db.KlixUI.microBar.enable end,
 					},
-					highlight = {
+					hideInOrderHall = {
 						order = 6,
+						type = "toggle",
+						name = L["Hide In Orderhall"],
+						desc = L['Show/Hide the |cfff960d9KlixUI|r MicroBar in the class hall.'],
+						disabled = function() return E.Mists or not E.db.KlixUI.microBar.enable end,
+						hidden = function() return E.Mists or not E.db.KlixUI.microBar.enable end,
+					},
+					highlight = {
+						order = 7,
 						type = "group",
 						name = L["Highlight"],
 						disabled = function() return not E.db.KlixUI.microBar.enable end,
@@ -79,12 +285,12 @@ local function abTable()
 						},
 					},
 					space3 = {
-						order = 7,
+						order = 8,
 						type = "description",
 						name = "",
 					},
 					text = {
-						order = 8,
+						order = 9,
 						type = "group",
 						name = L["Text"],
 						disabled = function() return not E.db.KlixUI.microBar.enable end,
@@ -240,8 +446,412 @@ local function abTable()
 					},
 				},
 			},
+			autoButtons = {
+				order = 6,
+				type = "group",
+				name = L["Auto Buttons"],
+				hidden = function() return (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				get = function(info)return E.db.KlixUI.actionbars.autoButtons[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.actionbars.autoButtons[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+					},
+					featureconfig = {
+						order = 2,
+						type = "group",
+						guiInline = true,
+						name = L["Feature Config"],
+						hidden = function()
+							return not E.db.KlixUI.actionbars.autoButtons.enable
+						end,
+						get = function(info)
+							return E.db.KlixUI.actionbars.autoButtons[info[#info]]
+						end,
+						set = function(info, value)
+							E.db.KlixUI.actionbars.autoButtons[info[#info]] = value
+							ABS:UpdateAutoButton()
+						end,
+						args = {
+							bindFont = {
+								order = 1,
+								type = "select",
+								dialogControl = "LSM30_Font",
+								name = L["Hot Key Font"],
+								values = AceGUIWidgetLSMlists.font,
+							},
+							countFont = {
+								order = 2,
+								type = "select",
+								dialogControl = "LSM30_Font",
+								name = L["Count Font"],
+								values = AceGUIWidgetLSMlists.font,
+							},
+							bindFontSize = {
+								order = 3,
+								type = "range",
+								min = 4, max = 40, step = 1,
+								name = L["Hot Key Font Size"],
+							},
+							countFontSize = {
+								order = 4,
+								type = "range",
+								min = 4, max = 40, step = 1,
+								name = L["Count Font Size"],
+							},
+							slotAutoButtons = {
+								order = 5,
+								type = "group",
+								guiInline = true,
+								name = L["Inventory Auto Buttons"],
+								get = function(info)
+									return E.db.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]]
+								end,
+								set = function(info, value)
+									E.db.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]] = value
+									ABS:UpdateAutoButton()
+								end,
+								args = {
+									enable = {
+										order = 1,
+										type = "toggle",
+										name = L["Enable"],
+									},
+									slotBBColorByItem = {
+										order = 2,
+										type = "toggle",
+										name = L["Color By Item"],
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+									slotBBColor = {
+										order = 3,
+										type = "color",
+										name = L["Custom Color"],
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+										disabled = function()
+											return E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.slotBBColorByItem
+										end,
+										get = function(info)
+											local t = E.db.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]]
+											local d = P.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]]
+											return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a
+										end,
+										set = function(info, r, g, b, a)
+											E.db.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]] = {}
+											local t = E.db.KlixUI.actionbars.autoButtons.slotAutoButtons[info[#info]]
+											t.r, t.g, t.b, t.a = r, g, b, a
+											ABS:UpdateAutoButton()
+										end,
+									},
+									slotSpace = {
+										order = 4,
+										type = "range",
+										name = L["Spacing"],
+										min = -1, max = 10, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+									slotDirection = {
+										order = 5,
+										type = "select",
+										name = L["Direction"],
+										values = {
+											["RIGHT"] = L["Right"],
+											["LEFT"] = L["Left"],
+										},
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+									slotNum = {
+										order = 6,
+										type = "range",
+										name = L["Number of Buttons"],
+										min = 0, max = 12, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+									slotPerRow = {
+										order = 7,
+										type = "range",
+										name = L["Buttons Per Row"],
+										min = 1, max = 12, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+									slotSize = {
+										order = 8,
+										type = "range",
+										name = L["Button Size"],
+										min = 10, max = 100, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.slotAutoButtons.enable
+										end,
+									},
+								},
+							},
+							questAutoButtons = {
+								order = 4,
+								type = "group",
+								guiInline = true,
+								name = L["Quest Auto Buttons"],
+								get = function(info)
+									return E.db.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]]
+								end,
+								set = function(info, value)
+									E.db.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]] = value
+									ABS:UpdateAutoButton()
+								end,
+								args = {
+									enable = {
+										order = 1,
+										type = "toggle",
+										name = L["Enable"],
+									},
+									questBBColorByItem = {
+										order = 2,
+										type = "toggle",
+										name = L["Color By Item"],
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+									questBBColor = {
+										order = 3,
+										type = "color",
+										name = L["Custom Color"],
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+										disabled = function()
+											return E.db.KlixUI.actionbars.autoButtons.questAutoButtons.questBBColorByItem
+										end,
+										get = function(info)
+											local t = E.db.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]]
+											local d = P.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]]
+											return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a
+										end,
+										set = function(info, r, g, b, a)
+											E.db.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]] = {}
+											local t = E.db.KlixUI.actionbars.autoButtons.questAutoButtons[info[#info]]
+											t.r, t.g, t.b, t.a = r, g, b, a
+											ABS:UpdateAutoButton()
+										end,
+									},
+									questSpace = {
+										order = 4,
+										type = "range",
+										name = L["Spacing"],
+										min = -1, max = 10, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+									questDirection = {
+										order = 5,
+										type = "select",
+										name = L["Direction"],
+										values = {
+											["RIGHT"] = L["Right"],
+											["LEFT"] = L["Left"],
+										},
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+									questNum = {
+										order = 6,
+										type = "range",
+										name = L["Number of Buttons"],
+										min = 0, max = 12, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+									questPerRow = {
+										order = 7,
+										type = "range",
+										name = L["Buttons Per Row"],
+										min = 1, max = 12, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+									questSize = {
+										order = 8,
+										type = "range",
+										name = L["Button Size"],
+										min = 10, max = 100, step = 1,
+										hidden = function()
+											return not E.db.KlixUI.actionbars.autoButtons.questAutoButtons.enable
+										end,
+									},
+								},
+							},
+							whiteItemID = {
+								order = 6,
+								type = "input",
+								name = L["Whitelist"],
+								get = function()
+									return whiteItemID or ""
+								end,
+								set = function(info, value)
+									whiteItemID = value
+								end,
+							},
+							AddItemID = {
+								order = 7,
+								type = "execute",
+								name = L["Add ItemID"],
+								func = function()
+									if not tonumber(whiteItemID) then
+										KUI:Print(L["Must be an itemID!"])
+										return
+									end
+									local id = tonumber(whiteItemID)
+									if not T.GetItemInfo(id) then
+										KUI:Print(whiteItemID .. L["is not an itemID"])
+										return
+									end
+									E.db.KlixUI.actionbars.autoButtons.whiteList[id] = true
+									E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.whiteList.values[id] = T.GetItemInfo(id)
+									ABS:UpdateAutoButton()
+								end,
+							},
+							DeleteItemID = {
+								order = 8,
+								type = "execute",
+								name = L["Delete ItemID"],
+								func = function()
+									if not T.tonumber(whiteItemID) then
+										KUI:Print(L["Must be an itemID!"])
+										return
+									end
+									local id = T.tonumber(whiteItemID)
+									if not T.GetItemInfo(id) then
+										KUI:Print(whiteItemID .. L["is not an itemID"])
+										return
+									end
+									if E.db.KlixUI.actionbars.autoButtons.whiteList[id] == true or E.db.KlixUI.actionbars.autoButtons.whiteList[id] == false then
+										E.db.KlixUI.actionbars.autoButtons.whiteList[id] = nil
+										E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.whiteList.values[id] = nil
+									end
+									ABS:UpdateAutoButton()
+								end,
+							},
+							whiteList = {
+								order = 9,
+								type = "multiselect",
+								name = L["Whitelist"],
+								get = function(info, k)
+									return E.db.KlixUI.actionbars.autoButtons.whiteList[k]
+								end,
+								set = function(info, k, v)
+									E.db.KlixUI.actionbars.autoButtons.whiteList[k] = v
+									ABS:UpdateAutoButton()
+								end,
+								values = {}
+							},
+							blackitemID = {
+								order = 10,
+								type = "input",
+								name = L["Blacklist"],
+								get = function()
+									return blackItemID or ""
+								end,
+								set = function(info, value)
+									blackItemID = value
+								end,
+							},
+							AddblackItemID = {
+								order = 11,
+								type = "execute",
+								name = L["Add Blacklist ItemID"],
+								func = function()
+									if not T.tonumber(blackItemID) then
+										KUI:Print(L["Must be an itemID!"])
+										return
+									end
+										local id = T.tonumber(blackItemID)
+										if not T.GetItemInfo(id) then
+											KUI:Print(blackItemID .. L["is not an itemID"])
+											return
+										end
+										E.db.KlixUI.actionbars.autoButtons.blackList[id] = true
+										E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.blackList.values[id] = T.GetItemInfo(id)
+										ABS:UpdateAutoButton()
+									end,
+							},
+							DeleteblackItemID = {
+								order = 12,
+								type = "execute",
+								name = L["Delete Blacklist ItemID"],
+								func = function()
+									if not T.tonumber(blackItemID) then
+										KUI:Print(L["Must be an itemID!"])
+										return
+									end
+									local id = T.tonumber(blackItemID)
+									if not T.GetItemInfo(id) then
+										KUI:Print(blackItemID .. L["is not an itemID"])
+										return
+									end
+									if E.db.KlixUI.actionbars.autoButtons.blackList[id] == true or E.db.KlixUI.actionbars.autoButtons.blackList[id] == false then
+										E.db.KlixUI.actionbars.autoButtons.blackList[id] = nil
+										E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.blackList.values[id] = nil
+									end
+									ABS:UpdateAutoButton()
+								end,
+							},
+							blackList = {
+								order = 13,
+								type = "multiselect",
+								name = L["Blacklist"],
+								get = function(info, k)
+									return E.db.KlixUI.actionbars.autoButtons.blackList[k]
+								end,
+								set = function(info, k, v)
+									E.db.KlixUI.actionbars.autoButtons.blackList[k] = v
+									ABS:UpdateAutoButton()
+								end,
+								values = {}
+							},
+						},
+					},
+				},
+			},
 		},
 	}
+	
+	for k, v in T.pairs(E.db.KlixUI.actionbars.autoButtons.whiteList) do
+		if T.type(k) == "string" then k = T.tonumber(k) end
+		if T.GetItemInfo(k) then
+		
+			local name = T.select(1, T.GetItemInfo(k))
+			local tex = T.select(10, T.GetItemInfo(k))
+			
+			E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.whiteList.values[k] = '|T'..tex..':18:18:0:0:64:64:4:60:4:60|t '..name
+		end
+	end
+	for k, v in T.pairs(E.db.KlixUI.actionbars.autoButtons.blackList) do
+		if T.type(k) == "string" then k = T.tonumber(k) end
+		if T.GetItemInfo(k) then
+		
+			local name = T.select(1, T.GetItemInfo(k))
+			local tex = T.select(10, T.GetItemInfo(k))
+			
+			E.Options.args.KlixUI.args.modules.args.actionbars.args.autoButtons.args.featureconfig.args.blackList.values[k] = '|T'..tex..':18:18:0:0:64:64:4:60:4:60|t '..name
+		end
+	end
 	
 	local available = available or 6
 

@@ -1,11 +1,11 @@
--------------------------------------------------------------------------------
+﻿-------------------------------------------------------------------------------
 -- Credits: RealUI - Gethe, Nibelheim
 -------------------------------------------------------------------------------
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
+local KS = KUI:GetModule('KuiSkins')
 local NF = KUI:NewModule("Notification", "AceEvent-3.0", "AceHook-3.0")
 local CH = E:GetModule("Chat")
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 
 local SOCIAL_QUEUE_QUEUED_FOR = SOCIAL_QUEUE_QUEUED_FOR:gsub(':%s?$','') --some language have `:` on end
 
@@ -17,11 +17,60 @@ local queuedToasts = {}
 local anchorFrame
 local alertBagsFull
 local shouldAlertBags = false
+local C_Texture = _G.C_Texture
+local C_Calendar = _G.C_Calendar
+local C_DateAndTime = _G.C_DateAndTime
+local C_VignetteInfo = _G.C_VignetteInfo
+local C_SocialQueue = _G.C_SocialQueue
+local C_LFGList = _G.C_LFGList
+
+local Texture_GetAtlasInfo = T.C_Texture_GetAtlasInfo or (C_Texture and C_Texture.GetAtlasInfo)
+local Calendar_GetNumPendingInvites = T.C_Calendar_GetNumPendingInvites or _G.CalendarGetNumPendingInvites or (C_Calendar and C_Calendar.GetNumPendingInvites)
+local Calendar_GetNumGuildEvents = T.C_Calendar_GetNumGuildEvents or _G.CalendarGetNumGuildEvents or (C_Calendar and C_Calendar.GetNumGuildEvents)
+local Calendar_GetGuildEventInfo = T.C_Calendar_GetGuildEventInfo or _G.CalendarGetGuildEventInfo or (C_Calendar and C_Calendar.GetGuildEventInfo)
+local Calendar_GetNumDayEvents = T.C_Calendar_GetNumDayEvents or _G.CalendarGetNumDayEvents or (C_Calendar and C_Calendar.GetNumDayEvents)
+local Calendar_GetDayEvent = T.C_Calendar_GetDayEvent or _G.CalendarGetDayEvent or (C_Calendar and C_Calendar.GetDayEvent)
+local VignetteInfo_GetVignetteInfo = T.C_VignetteInfo_GetVignetteInfo or (C_VignetteInfo and C_VignetteInfo.GetVignetteInfo)
+local SocialQueue_GetGroupMembers = T.C_SocialQueue_GetGroupMembers or (C_SocialQueue and C_SocialQueue.GetGroupMembers)
+local SocialQueue_GetGroupQueues = T.C_SocialQueue_GetGroupQueues or (C_SocialQueue and C_SocialQueue.GetGroupQueues)
+local LFGList_GetSearchResultInfo = T.C_LFGList_GetSearchResultInfo or (C_LFGList and C_LFGList.GetSearchResultInfo)
+local LFGList_GetActivityInfo = T.C_LFGList_GetActivityInfo or (C_LFGList and C_LFGList.GetActivityInfo)
+
+local function GetCurrentCalendarTime()
+	if T.C_DateAndTime_GetCurrentCalendarTime then
+		return T.C_DateAndTime_GetCurrentCalendarTime()
+	elseif C_DateAndTime and C_DateAndTime.GetCurrentCalendarTime then
+		return C_DateAndTime.GetCurrentCalendarTime()
+	end
+
+	local now = T.date("*t")
+	return {
+		month = now.month,
+		monthDay = now.day,
+		year = now.year,
+	}
+end
+
+local function HasCalendarSupport()
+	return Calendar_GetNumPendingInvites and Calendar_GetNumGuildEvents and Calendar_GetGuildEventInfo and Calendar_GetNumDayEvents and Calendar_GetDayEvent
+end
+
+local function HasVignetteSupport()
+	return E.Retail and VignetteInfo_GetVignetteInfo
+end
+
+local function HasSocialQueueSupport()
+	return E.Retail and SocialQueue_GetGroupMembers and SocialQueue_GetGroupQueues and LFGList_GetSearchResultInfo and LFGList_GetActivityInfo and _G.ToggleQuickJoinPanel
+end
 
 local VignetteExclusionMapIDs = {
 	[579] = true, -- Lunarfall: Alliance garrison
 	[585] = true, -- Frostwall: Horde garrison
 	[646] = true, -- Scenario: The Broken Shore
+}
+
+local VignetteBlackListIDs = {
+	[4553] = true, -- Recoverable Corpse (The Maw)
 }
 
 function NF:SpawnToast(toast)
@@ -120,7 +169,7 @@ end
 function NF:CreateToast()
 	local toast = T.table_remove(toasts, 1)
 
-	toast = T.CreateFrame("Frame", nil, E.UIParent)
+	toast = T.CreateFrame("Frame", nil, E.UIParent, "BackdropTemplate")
 	toast:SetFrameStrata("HIGH")
 	toast:SetSize(NF.db.width or 300, NF.db.height or 50)
 	toast:SetPoint("TOP", E.UIParent, "TOP")
@@ -138,12 +187,12 @@ function NF:CreateToast()
 	local sep = toast:CreateTexture(nil, "BACKGROUND")
 	sep:SetSize(2, NF.db.height)
 	sep:SetPoint("LEFT", icon, "RIGHT", 7, 0)
-	sep:SetColorTexture(T.unpack(E.media.rgbvaluecolor))
+	sep:SetColorTexture(T.unpack(E["media"].rgbvaluecolor))
 
 	local title = KUI:CreateText(toast, "OVERLAY", NF.db.fontSize + 1, "OUTLINE")
 	title:SetShadowOffset(1, -1)
-	title:SetPoint("TOPLEFT", sep, "TOPRIGHT", 3, -6)
-	title:SetPoint("TOP", toast, "TOP", 0, 0)
+	title:Point("TOPLEFT", sep, "TOPRIGHT", 3, -6)
+	title:Point("TOP", toast, "TOP", 0, 0)
 	title:SetJustifyH("LEFT")
 	title:SetNonSpaceWrap(true)
 	toast.title = title
@@ -220,7 +269,8 @@ function NF:DisplayToast(name, message, clickFunc, texture, ...)
 	end
 
 	if texture then
-		if T.C_Texture_GetAtlasInfo(texture) then
+		local atlasInfo = Texture_GetAtlasInfo and Texture_GetAtlasInfo(texture)
+		if atlasInfo then
 			toast.icon:SetAtlas(texture)
 		else
 			toast.icon:SetTexture(texture)
@@ -269,6 +319,7 @@ SLASH_TESTNOTIFICATION2 = "/tn"
 local hasMail = false
 function NF:UPDATE_PENDING_MAIL()
 	if NF.db.enable ~= true or NF.db.mail ~= true then return end
+	if InCombatLockdown() then return end
 	local newMail = T.HasNewMail()
 	if hasMail ~= newMail then
 		hasMail = newMail
@@ -287,17 +338,17 @@ end
 local showRepair = true
 
 local Slots = {
-	[1] = {1, INVTYPE_HEAD, 1000},
-	[2] = {3, INVTYPE_SHOULDER, 1000},
-	[3] = {5, INVTYPE_ROBE, 1000},
-	[4] = {6, INVTYPE_WAIST, 1000},
-	[5] = {9, INVTYPE_WRIST, 1000},
-	[6] = {10, INVTYPE_HAND, 1000},
-	[7] = {7, INVTYPE_LEGS, 1000},
-	[8] = {8, INVTYPE_FEET, 1000},
-	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
-	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
-	[11] = {18, INVTYPE_RANGED, 1000}
+	[1] = {1, _G.INVTYPE_HEAD, 1000},
+	[2] = {3, _G.INVTYPE_SHOULDER, 1000},
+	[3] = {5, _G.INVTYPE_ROBE, 1000},
+	[4] = {6, _G.INVTYPE_WAIST, 1000},
+	[5] = {9, _G.INVTYPE_WRIST, 1000},
+	[6] = {10, _G.INVTYPE_HAND, 1000},
+	[7] = {7, _G.INVTYPE_LEGS, 1000},
+	[8] = {8, _G.INVTYPE_FEET, 1000},
+	[9] = {16, _G.INVTYPE_WEAPONMAINHAND, 1000},
+	[10] = {17, _G.INVTYPE_WEAPONOFFHAND, 1000},
+	[11] = {18, _G.INVTYPE_RANGED, 1000}
 }
 
 local function ResetRepairNotification()
@@ -321,7 +372,7 @@ function NF:UPDATE_INVENTORY_DURABILITY()
 	if showRepair and value < 20 then
 		showRepair = false
 		E:Delay(30, ResetRepairNotification)
-		self:DisplayToast(MINIMAP_TRACKING_REPAIR, T.string_format(L["%s slot needs to repair, current durability is %d."], Slots[1][2], value))
+		self:DisplayToast(_G.MINIMAP_TRACKING_REPAIR, T.string_format(L["%s slot needs to repair, current durability is %d."], Slots[1][2], value))
 		if NF.db.message then 
 			KUI:Print((L["%s slot needs to repair, current durability is %d."]):format(Slots[1][2], value))
 		end
@@ -330,22 +381,26 @@ end
 
 local numInvites = 0
 local function GetGuildInvites()
-    local numGuildInvites = 0
-    local date = T.C_Calendar_GetDate()
-    for index = 1, T.C_Calendar_GetNumGuildEvents() do
-        local info = T.C_Calendar_GetGuildEventInfo(index)
-        local monthOffset = info.month - date.month
-        local numDayEvents = T.C_Calendar_GetNumDayEvents(monthOffset, info.monthDay)
+	if not HasCalendarSupport() then return 0 end
 
-        for i = 1, numDayEvents do
-            local event = T.C_Calendar_GetDayEvent(monthOffset, info.monthDay, i)
-            if event.inviteStatus == CALENDAR_INVITESTATUS_NOT_SIGNEDUP then
-                numGuildInvites = numGuildInvites + 1
-            end
-        end
-    end
+	local numGuildInvites = 0
+	local date = GetCurrentCalendarTime()
+	for index = 1, Calendar_GetNumGuildEvents() do
+		local info = Calendar_GetGuildEventInfo(index)
+		if info then
+			local monthOffset = info.month - date.month
+			local numDayEvents = Calendar_GetNumDayEvents(monthOffset, info.monthDay)
 
-    return numGuildInvites
+			for i = 1, numDayEvents do
+				local event = Calendar_GetDayEvent(monthOffset, info.monthDay, i)
+				if event and event.inviteStatus == _G.CALENDAR_INVITESTATUS_NOT_SIGNEDUP then
+					numGuildInvites = numGuildInvites + 1
+				end
+			end
+		end
+	end
+
+	return numGuildInvites
 end
 
 local function toggleCalendar()
@@ -355,48 +410,31 @@ end
 
 local function alertEvents()
 	if NF.db.enable ~= true or NF.db.invites ~= true then return end
+	if not HasCalendarSupport() then return end
 	if _G.CalendarFrame and _G.CalendarFrame:IsShown() then return end
-	local num = T.C_Calendar_GetNumPendingInvites()
+	local num = Calendar_GetNumPendingInvites() or 0
 	if num ~= numInvites then
 		if num > 0 then
-			NF:DisplayToast(CALENDAR, L["You have %s pending calendar |4invite:invites;."]:format(num), toggleCalendar)
+			NF:DisplayToast(_G.CALENDAR, L["You have %s pending calendar |4invite:invites;."]:format(num), toggleCalendar)
 			if NF.db.message then 
 				KUI:Print((L["You have %s pending calendar |4invite:invites;."]):format((num), toggleCalendar))
 			end
 		end
 		numInvites = num
 	end
-
-	--[[
-	if num ~= numInvites then
-		if num > 1 then
-			NF:DisplayToast(CALENDAR, T.string_format(L["You have %s pending calendar invite(s)."], num), toggleCalendar)
-		elseif num > 0 then
-			NF:DisplayToast(CALENDAR, T.string_format(L["You have %s pending calendar invite(s)."], 1), toggleCalendar)
-		end
-		numInvites = num
-	end
-	]]
 end
 
 local function alertGuildEvents()
 	if NF.db.enable ~= true or NF.db.guildEvents ~= true then return end
+	if not HasCalendarSupport() then return end
 	if _G.CalendarFrame and _G.CalendarFrame:IsShown() then return end
 	local num = GetGuildInvites()
 	if num > 0 then
-		NF:DisplayToast(CALENDAR, L["You have %s pending guild |4event:events;."]:format(num), toggleCalendar)
+		NF:DisplayToast(_G.CALENDAR, L["You have %s pending guild |4event:events;."]:format(num), toggleCalendar)
 		if NF.db.message then 
 			KUI:Print((L["You have %s pending guild |4event:events;."]):format((num), toggleCalendar))
 		end
 	end
-
-	--[[
-	if num > 1 then
-		NF:DisplayToast(CALENDAR, T.string_format(L["You have %s pending guild event(s)."], num), toggleCalendar)
-	elseif num > 0 then
-		NF:DisplayToast(CALENDAR, T.string_format(L["You have %s pending guild event(s)."], 1), toggleCalendar)
-	end
-	]]
 end
 
 function NF:CALENDAR_UPDATE_PENDING_INVITES()
@@ -420,7 +458,7 @@ end
 
 local SOUND_TIMEOUT = 20
 function NF:VIGNETTE_MINIMAP_UPDATED(event, vignetteGUID, onMinimap)
-	if not NF.db.vignette or T.InCombatLockdown() or VignetteExclusionMapIDs[T.C_Map_GetBestMapForUnit("player")] then return end
+	if not HasVignetteSupport() or not NF.db.vignette or T.InCombatLockdown() or VignetteExclusionMapIDs[T.C_Map_GetBestMapForUnit("player")] then return end
 
 	local inGroup, inRaid, inPartyLFG = T.IsInGroup(), T.IsInRaid(), T.IsPartyLFG()
 	if inGroup or inRaid or inPartyLFG then
@@ -428,12 +466,15 @@ function NF:VIGNETTE_MINIMAP_UPDATED(event, vignetteGUID, onMinimap)
 	end
 
 	if onMinimap then
-		if vignetteGUID ~= self.lastMinimapRare.id then
-			local vignetteInfo = T.C_VignetteInfo_GetVignetteInfo(vignetteGUID)
-			if vignetteInfo then
+			local vignetteInfo = VignetteInfo_GetVignetteInfo(vignetteGUID)
+		if not vignetteInfo then return end
+		if VignetteBlackListIDs[vignetteInfo.vignetteID] then return end
+
+			if vignetteInfo and vignetteGUID ~= self.lastMinimapRare.id  then
 				vignetteInfo.name = T.string_format("|cff00c0fa%s|r", vignetteInfo.name:sub(1, 28))
 				self:DisplayToast(vignetteInfo.name, L["has appeared on the MiniMap!"], nil, vignetteInfo.atlasName)
-				
+	self.lastMinimapRare.time = T.GetTime()
+	self.lastMinimapRare.id = vignetteGUID				
 				if NF.db.message then 
 					KUI:Print(vignetteInfo.name, L["has appeared on the MiniMap!"])
 				end
@@ -448,11 +489,6 @@ function NF:VIGNETTE_MINIMAP_UPDATED(event, vignetteGUID, onMinimap)
 		end
 	end
 
-	--Set last Vignette data
-	self.lastMinimapRare.time = T.GetTime()
-	self.lastMinimapRare.id = vignetteGUID
-end
-
 function NF:RESURRECT_REQUEST(name)
 	if NF.db.noSound ~= true then
 		T.PlaySound(46893, "Master")
@@ -464,24 +500,24 @@ local function SocialQueueIsLeader(playerName, leaderName)
 		return true
 	end
 
-	for i = 1, T.BNGetNumFriends() do
-		local _, accountName, _, _, _, _, _, isOnline = T.BNGetFriendInfo(i)
-		if isOnline then
-			local numGameAccounts = T.BNGetNumFriendGameAccounts(i)
-			for y = 1, numGameAccounts do
-				local _, gameCharacterName, gameClient, realmName = T.BNGetFriendGameAccountInfo(i, y)
-				if (gameClient == BNET_CLIENT_WOW) and (accountName == playerName) then
-					playerName = gameCharacterName
-					if realmName ~= E.myrealm then
-						playerName = T.string_format('%s-%s', playerName, T.string_gsub(realmName,'[%s%-]',''))
-					end
-					if leaderName == playerName then
-						return true
-					end
-				end
-			end
-		end
-	end
+	-- for i = 1, T.BNGetNumFriends() do
+		-- local _, accountName, _, _, _, _, _, isOnline = T.BNGetFriendInfo(i)
+		-- if isOnline then
+			-- local numGameAccounts = T.BNGetNumFriendGameAccounts(i)
+			-- for y = 1, numGameAccounts do
+				-- local _, gameCharacterName, gameClient, realmName = T.BNGetFriendGameAccountInfo(i, y)
+				-- if (gameClient == BNET_CLIENT_WOW) and (accountName == playerName) then
+					-- playerName = gameCharacterName
+					-- if realmName ~= E.myrealm then
+						-- playerName = T.string_format('%s-%s', playerName, T.string_gsub(realmName,'[%s%-]',''))
+					-- end
+					-- if leaderName == playerName then
+						-- return true
+					-- end
+				-- end
+			-- end
+		-- end
+	-- end
 end
 
 local socialQueueCache = {}
@@ -501,14 +537,14 @@ local function RecentSocialQueue(TIME, MSG)
 end
 
 function NF:SocialQueueEvent(event, guid, numAddedItems)
-	if not NF.db.quickJoin or T.InCombatLockdown() then return end
+	if not HasSocialQueueSupport() or not NF.db.quickJoin or T.InCombatLockdown() then return end
 	if not (guid) then return end
 
-	if ( numAddedItems == 0 or T.C_SocialQueue_GetGroupMembers(guid) == nil) then
+	if ( numAddedItems == 0 or SocialQueue_GetGroupMembers(guid) == nil) then
 		return
 	end
 	
-	local players = T.C_SocialQueue_GetGroupMembers(guid)
+	local players = SocialQueue_GetGroupMembers(guid)
 	if not players then return end
 	
 	local firstMember, numMembers, extraCount, coloredName = players[1], #players, ''
@@ -524,7 +560,7 @@ function NF:SocialQueueEvent(event, guid, numAddedItems)
 	end
 
 	local isLFGList, firstQueue
-	local queues = T.C_SocialQueue_GetGroupQueues(guid)
+	local queues = SocialQueue_GetGroupQueues(guid)
 	local firstQueue = queues and queues[1]
 	local isLFGList = firstQueue and firstQueue.queueData and firstQueue.queueData.queueType == 'lfglist'
 
@@ -532,7 +568,7 @@ function NF:SocialQueueEvent(event, guid, numAddedItems)
 		local searchResultInfo, activityID, name, comment, leaderName, fullName, isLeader
 
 		if firstQueue.queueData.lfgListID then
-			searchResultInfo = T.C_LFGList_GetSearchResultInfo(firstQueue.queueData.lfgListID)
+			searchResultInfo = LFGList_GetSearchResultInfo(firstQueue.queueData.lfgListID)
 			if searchResultInfo then
 				activityID, name, comment, leaderName = searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.comment, searchResultInfo.leaderName
 				isLeader = SocialQueueIsLeader(playerName, leaderName)
@@ -547,7 +583,7 @@ function NF:SocialQueueEvent(event, guid, numAddedItems)
 		socialQueueCache[guid] = {TIME, name}
 
 		if activityID or firstQueue.queueData.activityID then
-			fullName = T.C_LFGList_GetActivityInfo(activityID or firstQueue.queueData.activityID)
+			fullName = LFGList_GetActivityInfo(activityID or firstQueue.queueData.activityID)
 		end
 		
 		fullName = T.string_format("|cff00ff00%s|r", fullName)
@@ -598,25 +634,27 @@ function NF:Initialize()
 	KUI:RegisterDB(self, "notification")
 
 	anchorFrame = T.CreateFrame("Frame", nil, E.UIParent)
-	anchorFrame:SetSize(NF.db.width or 300, NF.db.height or 50)
-	anchorFrame:SetPoint("TOP", 0, -70)
+	anchorFrame:Size(NF.db.width or 300, NF.db.height or 50)
+	anchorFrame:Point("TOP", 0, -70)
 	E:CreateMover(anchorFrame, "Notification Mover", L["Notifications"], nil, nil, nil, "ALL,SOLO,KLIXUI", nil, "KlixUI,modules,notification")
 	
 	self:RegisterEvent("UPDATE_PENDING_MAIL")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES")
-	self:RegisterEvent("CALENDAR_UPDATE_GUILD_EVENTS")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("VIGNETTE_MINIMAP_UPDATED")
+	if HasCalendarSupport() then
+		self:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES")
+		self:RegisterEvent("CALENDAR_UPDATE_GUILD_EVENTS")
+		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	end
+	if HasVignetteSupport() then
+		self:RegisterEvent("VIGNETTE_MINIMAP_UPDATED")
+	end
 	self:RegisterEvent("RESURRECT_REQUEST")
 	self:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-	self:RegisterEvent("SOCIAL_QUEUE_UPDATE", "SocialQueueEvent")
+	if HasSocialQueueSupport() then
+		self:RegisterEvent("SOCIAL_QUEUE_UPDATE", "SocialQueueEvent")
+	end
 
 	self.lastMinimapRare = {time = 0, id = nil}
 end
 
-local function InitializeCallback()
-	NF:Initialize()
-end
-
-KUI:RegisterModule(NF:GetName(), InitializeCallback)
+KUI:RegisterModule(NF:GetName())

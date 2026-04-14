@@ -183,8 +183,4 @@ function KAN:Initialize()
 	T.SetCVar("floatingCombatTextCombatState", "1")
 end
 
-local function InitializeCallback()
-	KAN:Initialize()
-end
-
-KUI:RegisterModule(KAN:GetName(), InitializeCallback)
+KUI:RegisterModule(KAN:GetName())

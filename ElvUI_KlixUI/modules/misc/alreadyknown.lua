@@ -163,8 +163,4 @@ function KAK:Initialize()
 	end
 end
 
-local function InitializeCallback()
-	KAK:Initialize()
-end
-
-KUI:RegisterModule(KAK:GetName(), InitializeCallback)
+KUI:RegisterModule(KAK:GetName())

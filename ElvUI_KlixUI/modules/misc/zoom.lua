@@ -2,10 +2,7 @@
 -- Based on: MaxCam - Ketho
 -------------------------------------------------------------------------------
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KZ = KUI:NewModule("KuiZoom", "AceEvent-3.0")
-
-local base = 15
-local maxfactor = 4
+local KZ = KUI:NewModule("KuiZoom");
 
 local function CameraZoom(func, increment)
 	local isCloseUp = T.GetCameraZoom() < 6 and E.db.KlixUI.misc.zoom.increment >= 2
@@ -23,17 +20,14 @@ function CameraZoomOut(v)
 	CameraZoom(oldZoomOut, v)
 end
 
-function KZ:PLAYER_ENTERING_WORLD()
-	if E.db.KlixUI.misc.zoom.maxZoom then
-		T.SetCVar("cameraDistanceMaxZoomFactor", 4)
-	else
-		T.SetCVar("cameraDistanceMaxZoomFactor", E.db.KlixUI.misc.zoom.distance)
-	end
+-- multi-passenger mounts / quest vehicles
+local oldVehicleZoomIn = VehicleCameraZoomIn
+local oldVehicleZoomOut = VehicleCameraZoomOut
+
+function VehicleCameraZoomIn(v)
+	CameraZoom(oldVehicleZoomIn, v)
 end
 
-function KZ:Initialize()
-
-	KZ:RegisterEvent("PLAYER_ENTERING_WORLD")
+function VehicleCameraZoomOut(v)
+	CameraZoom(oldVehicleZoomOut, v)
 end
-
-KUI:RegisterModule(KZ:GetName())

@@ -3,14 +3,20 @@ local LP = KUI:GetModule("LocPanel")
 
 local CLASS, CUSTOM, DEFAULT = CLASS, CUSTOM, DEFAULT
 
+local FISH_ICON = "|TInterface\\AddOns\\ElvUI_KlixUI\\media\\textures\\locationpanel\\fish.tga:14:14|t"
+local PET_ICON = "|TInterface\\AddOns\\ElvUI_KlixUI\\media\\textures\\locationpanel\\pet.tga:14:14|t"
+local LEVEL_ICON = "|TInterface\\AddOns\\ElvUI_KlixUI\\media\\textures\\locationpanel\\levelup.tga:14:14|t"
+
 local function LocPanelTable()
+	local screenWidth = E.screenWidth or T.GetScreenWidth() or 100
+	local halfScreenWidth = T.math_max(100, screenWidth / 2)
+	local fullScreenWidth = T.math_max(100, screenWidth)
+
 	E.Options.args.KlixUI.args.modules.args.locPanel = {
 		type = "group",
 		name = L["Location Panel"],
 		order = 15,
 		childGroups = "tab",
-		disabled = function() return T.IsAddOnLoaded("ElvUI_LocationPlus") end,
-		hidden = function() return T.IsAddOnLoaded("ElvUI_LocationPlus") end,
 		get = function(info) return E.db.KlixUI.locPanel[ info[#info] ] end,
 		args = {
 			name = {
@@ -77,7 +83,7 @@ local function LocPanelTable()
 						order = 7,
 						type = "range",
 						name = L["Width"],
-						min = 100, max = E.screenwidth/2, step = 1,
+						min = 100, max = halfScreenWidth, step = 1,
 						disabled = function() return not E.db.KlixUI.locPanel.enable or E.db.KlixUI.locPanel.autowidth end,
 						hidden = function() return not E.db.KlixUI.locPanel.enable end,
 						set = function(info, value) E.db.KlixUI.locPanel[ info[#info] ] = value; LP:Resize() end,
@@ -122,8 +128,8 @@ local function LocPanelTable()
 						order = 12,
 						type = "toggle",
 						name = L["Hide In Orderhall"],
-						disabled = function() return not E.db.KlixUI.locPanel.enable end,
-						hidden = function() return not E.db.KlixUI.locPanel.enable end,
+						disabled = function() return E.Mists or not E.db.KlixUI.locPanel.enable end,
+						hidden = function() return E.Mists or not E.db.KlixUI.locPanel.enable end,
 						set = function(info, value) E.db.KlixUI.locPanel[ info[#info] ] = value; LP:Toggle() end,
 					},
 					blizzText = {
@@ -152,6 +158,29 @@ local function LocPanelTable()
 						disabled = function() return not E.db.KlixUI.locPanel.mouseover or not E.db.KlixUI.locPanel.enable end,
 						hidden = function() return not E.db.KlixUI.locPanel.enable end,	
 						set = function(info, value) E.db.KlixUI.locPanel[ info[#info] ] = value; LP:MouseOver() end,
+					},
+					displayOther = {
+						order = 16,
+						name = OTHER,
+						type = 'select',
+						desc = L["Show additional info in the Location Panel."],
+						disabled = function() return not E.db.KlixUI.locPanel.enable end,
+						hidden = function() return not E.db.KlixUI.locPanel.enable end,
+						set = function(info, value) E.db.KlixUI.locPanel[ info[#info] ] = value; end,
+							values = {
+								['NONE'] = L['None'],
+								['RLEVEL'] = LEVEL_ICON.." "..LEVEL_RANGE,
+								['PET'] = PET_ICON.." "..L['Battle Pet Level'],
+								['PFISH'] = FISH_ICON.." "..PROFESSIONS_FISHING,
+							},						
+					},
+					showicon = {
+						order = 17,
+						name = EMBLEM_SYMBOL,
+						type = 'toggle',
+						disabled = function() return not E.db.KlixUI.locPanel.enable or E.db.KlixUI.locPanel.displayOther == 'NONE' end,
+						hidden = function() return not E.db.KlixUI.locPanel.enable end,
+						set = function(info, value) E.db.KlixUI.locPanel[ info[#info] ] = value; end,						
 					},
 				},
 			},
@@ -297,7 +326,102 @@ local function LocPanelTable()
 					},
 				},
 			},
-			tooltip = {
+			portals = {
+				order = 23,
+				type = "group",
+				name = L["Relocation Menu"],
+				disabled = function() return not E.db.KlixUI.locPanel.enable end,
+				hidden = function() return not E.db.KlixUI.locPanel.enable end,
+				get = function(info) return E.db.KlixUI.locPanel.portals[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.locPanel.portals[ info[#info] ] = value; end,
+				args = {
+					enable = {
+						type = "toggle",
+						name = L["Enable"],
+						desc = L["Right click on the location panel will bring up a menu with available options for relocating your character (e.g. Hearthstones, Portals, etc)."],
+						order = 1,
+					},
+					customWidth = {
+						type = "toggle",
+						name = L["Custom Width"],
+						desc = L["By default menu's width will be equal to the location panel width. Checking this option will allow you to set own width."],
+						order = 2,
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					customWidthValue = {
+						order = 3,
+						name = L["Width"],
+						type = "range",
+						min = 100, max = fullScreenWidth, step = 1,
+						disabled = function() return not E.db.KlixUI.locPanel.portals.customWidth or not E.db.KlixUI.locPanel.portals.enable or not E.db.KlixUI.locPanel.enable end,
+					},
+					justify = {
+						order = 4,
+						name = L["Justify Text"],
+						type = "select",
+						values = {
+							["LEFT"] = L["Left"],
+							["CENTER"] = L["Middle"],
+							["RIGHT"] = L["Right"],
+						},
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					cdFormat = {
+						order = 5,
+						name = L["CD format"],
+						type = "select",
+						values = {
+							["DEFAULT"] = [[(10m |TInterface\FriendsFrame\StatusIcon-Away:16|t)]],
+							["DEFAULT_ICONFIRST"] = [[( |TInterface\FriendsFrame\StatusIcon-Away:16|t10m)]],
+						},
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					HSplace = {
+						type = "toggle",
+						order = 6,
+						name = L["Hearthstone Location"],
+						desc = L["Show the name on location your Heathstone is bound to."],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					showHearthstones = {
+						type = "toggle",
+						order = 7,
+						name = L["Show hearthstones"],
+						desc = L["Show hearthstone type items in the list."],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					hsProprity = KUI:CreateMovableButtons(22, L["Hearthstone Toys Order"], false, E.db.KlixUI.locPanel.portals, "hsPrio"),
+					showToys = {
+						type = "toggle",
+						order = 20,
+						name = L["Show Toys"],
+						desc = L["Show toys in the list. This option will affect all other display options as well."],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					showSpells = {
+						type = "toggle",
+						order = 30,
+						name = L["Show spells"],
+						desc = L["Show relocation spells in the list."],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					showEngineer = {
+						type = "toggle",
+						order = 40,
+						name = L["Show engineer gadgets"],
+						desc = L["Show items used only by engineers when the profession is learned."],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+					ignoreMissingInfo = {
+						type = "toggle",
+						order = 50,
+						name = L["Ignore missing info"],
+						desc = L["KUI_LOCPANEL_IGNOREMISSINGINFO"],
+						disabled = function() return not E.db.KlixUI.locPanel.portals.enable end,
+					},
+				},
+			},
+			gen_tt = {
 				order = 24,
 				type = "group",
 				name =  L["Tooltip"],
@@ -305,33 +429,157 @@ local function LocPanelTable()
 				hidden = function() return not E.db.KlixUI.locPanel.enable end,
 				get = function(info) return E.db.KlixUI.locPanel.tooltip[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.locPanel.tooltip[ info[#info] ] = value; end,						
-				args = {			
-					enable = {
-						order = 1,
-						name = L["Show/Hide tooltip"],
-						type = 'toggle',
+				args = {
+					tt_grp = {
+					order = 1,
+					type = "group",
+					name = L["Tooltip"],
+					guiInline = true,
+						args = {				
+							tt = {
+								order = 1,
+								name = L["Show/Hide tooltip"],
+								type = 'toggle',
+							},
+							ttcombathide = {
+								order = 2,
+								name = L["Combat Hide"],
+								desc = L["Hide tooltip while in combat."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							tthint = {
+								order = 3,
+								name = L["Show Hints"],
+								desc = L["Enable/Disable hints on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+						},
 					},
-					combathide = {
+					tt_options = {
 						order = 2,
-						name = L["Combat Hide"],
-						desc = L["Hide tooltip while in combat."],
-						type = 'toggle',
-						disabled = function() return not E.db.KlixUI.locPanel.tooltip.enable end,			
+						type = "group",
+						name = SHOW,
+						guiInline = true,
+						args = {
+							ttst = {
+								order = 1,
+								name = STATUS,
+								desc = L["Enable/Disable status on Tooltip."],
+								type = 'toggle',
+								width = "full",
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							ttlvl = {
+								order = 2,
+								name = LEVEL_RANGE,
+								desc = L["Enable/Disable level range on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,		
+							},
+							fish = {
+								order = 3,
+								name = L["Area Fishing level"],
+								desc = L["Enable/Disable fishing level on the area."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,				
+							},
+							petlevel = {
+								order = 4,
+								name = L["Battle Pet level"],
+								desc = L["Enable/Disable battle pet level on the area."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,				
+							},
+							spacer2 = {
+								order = 5,
+								type = "description",
+								width = "full",
+								name = "",
+							},	
+							ttreczones = {
+								order = 6,
+								name = L["Recommended Zones"],
+								desc = L["Enable/Disable recommended zones on Tooltip."],
+								type = 'toggle',
+								width = "full",
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,		
+							},
+							ttinst = {
+								order = 7,
+								name = L["Zone Dungeons"],
+								desc = L["Enable/Disable dungeons in the zone, on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							ttrecinst = {
+								order = 8,
+								name = L["Recommended Dungeons"],
+								desc = L["Enable/Disable recommended dungeons on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							ttcoords = {
+								order = 9,
+								name = L["with Entrance Coords"],
+								desc = L["Enable/Disable the coords for area dungeons and recommended dungeon entrances, on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt or not E.db.KlixUI.locPanel.tooltip.ttrecinst end,			
+							},
+							spacer3 = {
+								order = 10,
+								type = "description",
+								width = "full",
+								name = "",
+							},	
+							curr = {
+								order = 11,
+								name = CURRENCY,
+								desc = L["Enable/Disable the currencies, on Tooltip."],
+								type = 'toggle',
+								width = "full",
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							prof = {
+								order = 12,
+								name = TRADE_SKILLS,
+								desc = L["Enable/Disable the professions, on Tooltip."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,			
+							},
+							profcap = {
+								order = 13,
+								name = L["Hide capped"],
+								desc = L["Hides a profession when the player reaches its highest level."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt or not E.db.KlixUI.locPanel.tooltip.prof end,			
+							},
+						},
 					},
-					hint = {
+					tt_filters = {
 						order = 3,
-						name = L["Show Hints"],
-						desc = L["Enable/Disable hints on Tooltip."],
-						type = 'toggle',
-						disabled = function() return not E.db.KlixUI.locPanel.tooltip.enable end,			
-					},
-					status = {
-						order = 4,
-						name = STATUS,
-						desc = L["Enable/Disable status on Tooltip."],
-						type = 'toggle',
-						width = "full",
-						disabled = function() return not E.db.KlixUI.locPanel.tooltip.enable end,			
+						type = "group",
+						name = FILTERS,
+						guiInline = true,
+						get = function(info) return E.db.KlixUI.locPanel.tooltip[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.locPanel.tooltip[ info[#info] ] = value; end,	
+						args = {
+							tthideraid = {
+								order = 1,
+								name = L["Hide Raid"],
+								desc = L["Show/Hide raids on recommended dungeons."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,
+							},
+							tthidepvp = {
+								order = 2,
+								name = L["Hide PvP"],
+								desc = L["Show/Hide PvP zones, Arenas and BGs on recommended dungeons and zones."],
+								type = 'toggle',
+								disabled = function() return not E.db.KlixUI.locPanel.tooltip.tt end,
+							},
+						},
 					},
 				},
 			},

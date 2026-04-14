@@ -1,8 +1,12 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<script file="datatexts.lua"/>
-	<script file="dtcolors.lua"/>
+	<!-- MoP Classic: Legion/BfA mission datatexts are not available. -->
+	<!--script file='classhall.lua'/-->
 	<script file="mail.lua"/>
-	<script file='system.lua'/>
+	<!--script file="missions.lua"/-->
+	<script file='itemlevel.lua'/>
+	<script file='specswitch.lua'/>
+	<script file='professions.lua'/>
 	<script file='time.lua'/>
 	<script file="options.lua"/>
 </Ui>

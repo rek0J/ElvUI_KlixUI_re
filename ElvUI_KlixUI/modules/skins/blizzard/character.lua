@@ -1,75 +1,126 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
-local r, g, b = T.unpack(E.media.rgbvaluecolor)
+local r, g, b = T.unpack(E["media"].rgbvaluecolor)
+
+local function UpdateToken()
+	local TokenFramePopup = _G.TokenFramePopup
+	
+	if TokenFramePopup.backdrop then
+		if not TokenFramePopup.backdrop.styling then
+			TokenFramePopup.backdrop:Styling()
+			
+			TokenFramePopup.backdrop.styling = true
+		end
+		
+		TokenFramePopup:ClearAllPoints()
+		TokenFramePopup:Point("TOPLEFT", _G.TokenFrame, "TOPRIGHT", 4, -1)
+	end
+end
 
 local function UpdateReputationDetails()
 	local ReputationDetailFrame = _G.ReputationDetailFrame
 	
-	if ReputationDetailFrame then
-		ReputationDetailFrame:StripTextures()
-		ReputationDetailFrame:CreateBackdrop('Transparent')
-		ReputationDetailFrame.backdrop:Styling()
-	end
-	
-	ReputationDetailFrame:ClearAllPoints()
-	ReputationDetailFrame:Point("TOPLEFT", _G.ReputationFrame, "TOPRIGHT", -30, -13)
-end
+	if ReputationDetailFrame.backdrop then
+		if not ReputationDetailFrame.backdrop.styling then
+			ReputationDetailFrame.backdrop:Styling()
 
-local function ResizeCharacterFrame()
-	if _G["PaperDollFrame"]:IsShown() then
-		_G["CharacterFrame"]:SetWidth(415)
-		_G["CharacterFrame"]:SetHeight(530)
-
-		_G.CharacterHandsSlot:ClearAllPoints()
-		_G.CharacterHandsSlot:SetPoint("TOPRIGHT", _G.CharacterFrame.backdrop, "TOPRIGHT", -10, -62)
+			ReputationDetailFrame.backdrop.styling = true
+		end
 		
-		_G.CharacterMainHandSlot:ClearAllPoints()
-		_G.CharacterMainHandSlot:SetPoint("BOTTOMLEFT", _G.CharacterFrame.backdrop, "BOTTOMLEFT", 125, 10)
-		
-		_G.CharacterModelFrame:SetSize(250, 250)
-		_G.CharacterModelFrame:ClearAllPoints()
-		_G.CharacterModelFrame:SetPoint("CENTER", _G.CharacterFrame.backdrop, "CENTER", 0, 30)
-		
-		_G.CharacterModelFrameRotateLeftButton:ClearAllPoints()
-		_G.CharacterModelFrameRotateLeftButton:SetPoint("TOPLEFT", _G.CharacterHeadSlot, "TOPRIGHT", 10, 0)
-		
-		_G.CharacterAttributesFrame:ClearAllPoints()
-		_G.CharacterAttributesFrame:SetPoint("CENTER", _G.CharacterFrame.backdrop, "CENTER", 0, -120)
-		
-		_G.CharacterNameFrame:ClearAllPoints()
-		_G.CharacterNameFrame:SetPoint("TOP", _G.CharacterFrame.backdrop, "TOP", 0, -10)
-		
-		_G.MagicResFrame1:ClearAllPoints()
-		_G.MagicResFrame1:SetPoint("TOPRIGHT", _G.CharacterHandsSlot, "TOPLEFT", -10, 0)
+		ReputationDetailFrame:ClearAllPoints()
+		ReputationDetailFrame:Point("TOPLEFT", _G.ReputationFrame, "TOPRIGHT", 4, -1)
 	end
 end
 
 local function styleCharacter()
+	if E.Mists then return end
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.character ~= true or E.private.KlixUI.skins.blizzard.character ~= true then return end
 
+	-- Hide ElvUI Backdrop
 	local CharacterFrame = _G.CharacterFrame
 	local CharacterModelFrame = _G.CharacterModelFrame
-	CharacterFrame.backdrop:Styling()
+
+	CharacterFrame:Styling()
 
 	if CharacterModelFrame and CharacterModelFrame.BackgroundTopLeft and CharacterModelFrame.BackgroundTopLeft:IsShown() then
 		CharacterModelFrame.BackgroundTopLeft:Hide()
 		CharacterModelFrame.BackgroundTopRight:Hide()
 		CharacterModelFrame.BackgroundBotLeft:Hide()
 		CharacterModelFrame.BackgroundBotRight:Hide()
-		_G.CharacterModelFrameBackgroundOverlay:Hide()
+		if E.db.KlixUI.armory.backdrop.overlay then
+            _G.CharacterModelFrameBackgroundOverlay:Show()
+        else
+            _G.CharacterModelFrameBackgroundOverlay:Hide()
+        end
 		
 		if CharacterModelFrame.backdrop then
 			CharacterModelFrame.backdrop:Hide()
 		end
 	end
 	
-	ResizeCharacterFrame()
-	
 	-- Reputation
 	hooksecurefunc("ExpandFactionHeader", UpdateReputationDetails)
 	hooksecurefunc("CollapseFactionHeader", UpdateReputationDetails)
 	hooksecurefunc("ReputationFrame_Update", UpdateReputationDetails)
+	
+	-- Token
+	hooksecurefunc("TokenFrame_Update", UpdateToken)
+	hooksecurefunc(_G.TokenFrameContainer, "update", UpdateToken)
+	
+	if E.db.KlixUI.armory.naked then
+		-- Undress Button
+		local function Button_OnEnter(self)
+			_G.GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT', 0, 4)
+			_G.GameTooltip:ClearLines()
+			_G.GameTooltip:AddLine(L["Instantly remove all your equipped gear."])
+			_G.GameTooltip:Show()
+		end
+
+		local function Button_OnLeave(self)
+			_G.GameTooltip:Hide()
+		end
+		
+		local function UnequipItemInSlot(i)
+			if T.InCombatLockdown() then return end
+			local action = T.EquipmentManager_UnequipItemInSlot(i)
+			T.EquipmentManager_RunAction(action)
+		end
+
+		local undress = T.CreateFrame("Button", KUI.Title.."UndressButton", _G.PaperDollFrame, "UIPanelButtonTemplate")
+		undress:SetFrameStrata("HIGH")
+		undress:Size(62, 20)
+		--if E.db.KlixUI.armory.azeritebtn then
+			--if T.IsAddOnLoaded("ElvUI_SLE") then
+				--undress:Point("BOTTOMLEFT", _G.CharacterHeadSlot, "TOPLEFT", -1, 25)
+			--else
+				--undress:Point("BOTTOMLEFT", _G.CharacterHeadSlot, "TOPLEFT", 0, 25)
+			--end
+		--else
+			if T.IsAddOnLoaded("ElvUI_SLE") then
+				undress:Point("BOTTOMLEFT", _G.CharacterHeadSlot, "TOPLEFT", -1, 4)
+			else
+				undress:Point("BOTTOMLEFT", _G.CharacterHeadSlot, "TOPLEFT", 0, 4)
+			end
+		--end
+
+		undress.text = KUI:CreateText(undress, "OVERLAY", 12, nil)
+		undress.text:Point("CENTER")
+		undress.text:SetText(L["Naked"])
+
+		undress:SetScript('OnEnter', Button_OnEnter)
+		undress:SetScript('OnLeave', Button_OnLeave)
+		undress:SetScript("OnClick", function()
+			for i = 1, 17 do
+				local texture = T.GetInventoryItemTexture('player', i)
+				if texture then
+					UnequipItemInSlot(i)
+				end
+			end
+		end)
+		S:HandleButton(undress)
+	end
 end
 
 S:AddCallback("KuiCharacter", styleCharacter)

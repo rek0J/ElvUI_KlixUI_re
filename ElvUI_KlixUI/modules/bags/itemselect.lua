@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local IS = KUI:NewModule('ItemSelect', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 local B = E:GetModule('Bags')
 local LCG = LibStub("LibCustomGlow-1.0")
@@ -127,20 +127,20 @@ end
 function IS:CreateProgressFrame()
 	-- Frame:
 	IS.ProcessFrame = T.CreateFrame("Frame", "KuiProgressFrame", E.UIParent);
-	IS.ProcessFrame:Size(200,40);
-	IS.ProcessFrame:Point("CENTER", E.UIParent);
+	IS.ProcessFrame:SetSize(200,40);
+	IS.ProcessFrame:SetPoint("CENTER", E.UIParent);
 	IS.ProcessFrame:CreateBackdrop("Transparent");
 	IS.ProcessFrame.Title = IS.ProcessFrame:CreateFontString(nil, "OVERLAY");
 	IS.ProcessFrame.Title:FontTemplate(nil, 12, "OUTLINE");
-	IS.ProcessFrame.Title:Point('TOP', IS.ProcessFrame, 'TOP', 0, -2);
+	IS.ProcessFrame.Title:SetPoint('TOP', IS.ProcessFrame, 'TOP', 0, -2);
 	IS.ProcessFrame.Title:SetText(L["Processing selected items:"]);
 	IS.ProcessFrame:SetAlpha(IS.db.displayProgressFrame and 1 or 0);
 
 	-- Status bar:
 	IS.ProcessFrame.StatusBar = T.CreateFrame("StatusBar", "KuiProgressFrameStatusBar", IS.ProcessFrame);
-	IS.ProcessFrame.StatusBar:Size(180, 16);
-	IS.ProcessFrame.StatusBar:Point("BOTTOM", IS.ProcessFrame, "BOTTOM", 0, 4);
-	IS.ProcessFrame.StatusBar:SetStatusBarTexture(E.media.normTex);
+	IS.ProcessFrame.StatusBar:SetSize(180, 16);
+	IS.ProcessFrame.StatusBar:SetPoint("BOTTOM", IS.ProcessFrame, "BOTTOM", 0, 4);
+	IS.ProcessFrame.StatusBar:SetStatusBarTexture(E["media"].normTex);
 	IS.ProcessFrame.StatusBar:SetStatusBarColor(1, 0, 0);
 	IS.ProcessFrame.StatusBar:CreateBackdrop("Transparent");
 
@@ -153,7 +153,7 @@ function IS:CreateProgressFrame()
 	-- Value text:
 	IS.ProcessFrame.StatusBar.ValueText = IS.ProcessFrame.StatusBar:CreateFontString(nil, "OVERLAY");
 	IS.ProcessFrame.StatusBar.ValueText:FontTemplate(nil, 12, "OUTLINE");
-	IS.ProcessFrame.StatusBar.ValueText:Point("CENTER", IS.ProcessFrame.StatusBar);
+	IS.ProcessFrame.StatusBar.ValueText:SetPoint("CENTER", IS.ProcessFrame.StatusBar);
 
 	-- Our own variables, these will get set every time items are
 	-- processed. The interval is queried

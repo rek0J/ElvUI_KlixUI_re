@@ -1,7 +1,9 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local ElvUF = ElvUI.oUF
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local ElvUF = ElvUI and ElvUI.oUF or nil
+if not ElvUF then return end -- MoP Classic: skip if oUF is missing
 T.assert(ElvUF, "ElvUI was unable to locate oUF.")
-
+local Translit = E.Libs.Translit
+local translitMark = "!"
 
 --All credits belongs to Merathilis, Blazeflack and Rehok for this mod
 
@@ -9,6 +11,7 @@ T.assert(ElvUF, "ElvUI was unable to locate oUF.")
 local abs = math.abs
 local format, match, sub, gsub, len = string.format, string.match, string.sub, string.gsub, string.len
 local assert, tonumber, type = assert, tonumber, type
+local gmatch, gsub = gmatch, gsub
 -- WoW API / Variables
 local UnitIsDead = UnitIsDead
 local UnitClass = UnitClass
@@ -44,16 +47,12 @@ local shortenNumber = function(number)
     if T.type(number) ~= "number" then
         number = T.tonumber(number)
     end
+
     if not number then
         return
     end
 
-    local affixes = {
-        "",
-        "k",
-        "m",
-        "b",
-    }
+	local affixes = {"", "k", "m", "B",}
 
     local affix = 1
     local dec = 0
@@ -78,7 +77,7 @@ local shortenNumber = function(number)
 end
 
 -- Displays CurrentHP --(2.04b)--
-_G["ElvUF"].Tags.Events['health:current-kui'] = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+_G["ElvUF"].Tags.Events['health:current-kui'] = 'UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 _G["ElvUF"].Tags.Methods['health:current-kui'] = function(unit)
 	local status = T.UnitIsDead(unit) and L["RIP"] or T.UnitIsGhost(unit) and L["Ghost"] or not T.UnitIsConnected(unit) and L["Offline"]
 	
@@ -91,7 +90,7 @@ _G["ElvUF"].Tags.Methods['health:current-kui'] = function(unit)
 end
 
 -- Displays Percent --(100%)--
-_G["ElvUF"].Tags.Events['health:percent-kui'] = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+_G["ElvUF"].Tags.Events['health:percent-kui'] = 'UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 _G["ElvUF"].Tags.Methods['health:percent-kui'] = function(unit)
 	local status = T.UnitIsDead(unit) and L["RIP"] or T.UnitIsGhost(unit) and L["Ghost"] or not T.UnitIsConnected(unit) and L["Offline"]
 	
@@ -108,7 +107,7 @@ _G["ElvUF"].Tags.Methods['health:percent-kui'] = function(unit)
 end
 
 -- Displays CurrentHP | Percent --(2.04b | 100)--
-_G["ElvUF"].Tags.Events['health:current-percent-kui'] = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+_G["ElvUF"].Tags.Events['health:current-percent-kui'] = 'UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 _G["ElvUF"].Tags.Methods['health:current-percent-kui'] = function(unit)
 	local status = T.UnitIsDead(unit) and L["RIP"] or T.UnitIsGhost(unit) and L["Ghost"] or not T.UnitIsConnected(unit) and L["Offline"]
 	
@@ -126,7 +125,7 @@ _G["ElvUF"].Tags.Methods['health:current-percent-kui'] = function(unit)
 end
 
 -- Displays CurrentHP | Percent --(2.04b | 100)--
-_G["ElvUF"].Tags.Events['health:current-percent1-kui'] = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+_G["ElvUF"].Tags.Events['health:current-percent1-kui'] = 'UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 _G["ElvUF"].Tags.Methods['health:current-percent1-kui'] = function(unit)
 	local status = T.UnitIsDead(unit) and L["RIP"] or T.UnitIsGhost(unit) and L["Ghost"] or not T.UnitIsConnected(unit) and L["Offline"]
 	
@@ -144,7 +143,7 @@ _G["ElvUF"].Tags.Methods['health:current-percent1-kui'] = function(unit)
 end
 
 -- Displays current deficit
-_G["ElvUF"].Tags.Events['health:deficit-kui'] = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+_G["ElvUF"].Tags.Events['health:deficit-kui'] = 'UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 _G["ElvUF"].Tags.Methods['health:deficit-kui'] = function(unit)
 	local status = T.UnitIsDead(unit) and L["RIP"] or T.UnitIsGhost(unit) and L["Ghost"] or not T.UnitIsConnected(unit) and L["Offline"]
 

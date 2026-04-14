@@ -1,5 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local B = KUI:GetModule("Blizzard")
+local MI = KUI:GetModule("KuiMisc")
 
 local function BlizzardTable()
 	E.Options.args.KlixUI.args.modules.args.blizzard = {
@@ -20,7 +21,7 @@ local function BlizzardTable()
 				name = L["Raid Utility Mouse Over"],
 				desc = L["Enabling mouse over will make ElvUI's raid utility show on mouse over instead of always showing."],
 				get = function(info) return E.db.KlixUI.blizzard.rumouseover end,
-				set = function(info, value) E.db.KlixUI.blizzard.rumouseover = value; B:RUReset() end,
+				set = function(info, value) E.db.KlixUI.blizzard.rumouseover = value; MI:RUReset() end,
 			},
 			errorframe = {
 				order = 5,

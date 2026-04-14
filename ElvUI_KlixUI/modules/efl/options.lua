@@ -1,13 +1,14 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local EFL = KUI:GetModule("EnhancedFriendsList")
+local COMP = KUI:GetModule("KuiCompatibility")
 
 local function EnhancedFriendsListTable()
 	E.Options.args.KlixUI.args.modules.args.efl = {
 		type = "group",
 		name = L["Enhanced Friends List"],
 		order = 12,
-		disabled = function() return T.IsAddOnLoaded("ProjectAzilroka") end,
-		hidden = function() return T.IsAddOnLoaded("ProjectAzilroka") end,
+		disabled = function() return (COMP.PA and _G.ProjectAzilroka.db["EnhancedFriendsList"]['Enable']) end,
+		hidden = function() return (COMP.PA and _G.ProjectAzilroka.db["EnhancedFriendsList"]['Enable']) end,
 		get = function(info) return E.db.KlixUI.efl[ info[#info] ] end,
 		set = function(info, value) E.db.KlixUI.efl[ info[#info] ] = value; end,
 		args = {
@@ -90,11 +91,11 @@ local function EnhancedFriendsListTable()
 						order = 8,
 						type = "select",
 						values = {
-							['Default'] = L["Default"],
-							['BlizzardChat'] = L["Blizzard Chat"],
-							['Flat'] = L["Flat Style"],
-							['Gloss'] = L["Glossy"],
-							['Launcher'] = L["Launcher"],
+							['Default'] = 'Default',
+							['BlizzardChat'] = 'Blizzard Chat',
+							['Flat'] = 'Flat Style',
+							['Gloss'] = 'Glossy',
+							['Launcher'] = 'Launcher'
 						},
 						hidden = function() return not E.db.KlixUI.efl.enable end,
 					},
@@ -103,9 +104,9 @@ local function EnhancedFriendsListTable()
 						order = 9,
 						type = "select",
 						values = {
-							['Default'] = L["Default"],
-							['Square'] = L["Square"],
-							['D3'] = L["Diablo 3"],
+							['Default'] = 'Default',
+							['Square'] = 'Square',
+							['D3'] = 'Diablo 3',
 						},
 						hidden = function() return not E.db.KlixUI.efl.enable end,
 					},

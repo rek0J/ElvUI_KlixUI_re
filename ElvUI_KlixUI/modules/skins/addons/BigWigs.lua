@@ -1,6 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
-local S = E:GetModule("Skins")
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
 local buttonsize = 18
 
@@ -34,15 +34,15 @@ local function FreeStyle(bar)
 	--Reset Positions
 	--Icon
 	bar.candyBarIconFrame:ClearAllPoints()
-	bar.candyBarIconFrame:SetPoint("TOPLEFT")
-	bar.candyBarIconFrame:SetPoint("BOTTOMLEFT")
+	bar.candyBarIconFrame:Point("TOPLEFT")
+	bar.candyBarIconFrame:Point("BOTTOMLEFT")
 	bar.candyBarIconFrame:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 
 	--Status Bar
 	bar.candyBarBar:ClearAllPoints()
 	bar.candyBarBar.SetPoint = nil
-	bar.candyBarBar:SetPoint("TOPRIGHT")
-	bar.candyBarBar:SetPoint("BOTTOMRIGHT")
+	bar.candyBarBar:Point("TOPRIGHT")
+	bar.candyBarBar:Point("BOTTOMRIGHT")
 
 	--BG
 	bar.candyBarBackground:SetAllPoints()
@@ -51,7 +51,7 @@ end
 local function ApplyStyle(bar)
 	if E.private.KlixUI.skins.addonSkins.bw ~= true or not T.IsAddOnLoaded("BigWigs") then return end
 	-- general bar settings
-	bar:SetHeight(buttonsize)
+	bar:Height(buttonsize)
 
 	local bg
 	if #FreeBackgrounds > 0 then
@@ -94,17 +94,17 @@ local function ApplyStyle(bar)
 
 	local height = bar:GetHeight()
 	bar.candyBarIconFrame:ClearAllPoints()
-	bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", (E.PixelMode and -3 or -5) or -3, 0)
-	bar.candyBarIconFrame:SetSize(height, height)
+	bar.candyBarIconFrame:Point("BOTTOMRIGHT", bar, "BOTTOMLEFT", (E.PixelMode and -3 or -5) or -3, 0)
+	bar.candyBarIconFrame:Size(height, height)
 	bar.candyBarIconFrame:SetTexCoord(T.unpack(E.TexCoords))
 
 	bar.candyBarLabel:ClearAllPoints()
-	bar.candyBarLabel:SetPoint("LEFT", bar, "LEFT", 2, 0)
-	bar.candyBarLabel:SetPoint("RIGHT", bar, "RIGHT", -2, 0)
+	bar.candyBarLabel:Point("LEFT", bar, "LEFT", 2, 0)
+	bar.candyBarLabel:Point("RIGHT", bar, "RIGHT", -2, 0)
 
 	bar.candyBarDuration:ClearAllPoints()
-	bar.candyBarDuration:SetPoint("LEFT", bar, "LEFT", 2, 0)
-	bar.candyBarDuration:SetPoint("RIGHT", bar, "RIGHT", -2, 0)
+	bar.candyBarDuration:Point("LEFT", bar, "LEFT", 2, 0)
+	bar.candyBarDuration:Point("RIGHT", bar, "RIGHT", -2, 0)
 end
 
 local f = T.CreateFrame("Frame")

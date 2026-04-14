@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local PI = KUI:NewModule("ProgressInfo", "AceHook-3.0", "AceEvent-3.0")
 local KTT = KUI:GetModule('KuiTooltip')
 local TT = E:GetModule('Tooltip')
@@ -9,7 +9,23 @@ PI.Cache = {}
 PI.playerGUID = T.UnitGUID("player")
 PI.highestKill = 0
 
+-- https://www.wowhead.com/battle-for-azeroth-dungeon-and-raid-statistics#achievements:100+1+7
 PI.bosses = {
+		{ -- CastleNathria
+			{ -- Mythic
+				14421, 14425, 14429, 14433, 14437, 14441, 14445, 14449, 14453, 14457
+			},
+			{ -- Heroic
+				14420, 14424, 14428, 14432, 14436, 14440, 14444, 14448, 14452, 14456
+			},
+			{ -- Normal
+				14419, 14423, 14427, 14431, 14435, 14439, 14443, 14447, 14451, 14455
+			},
+			{ -- LFR
+				14422, 14426, 14430, 14434, 14438, 14442, 14446, 14450, 14454, 14458
+			},
+		        "CastleNathria",
+		},
 	{ -- Uldir
 		{ -- Mythic
 			12789, 12793, 12797, 12801, 12805, 12811, 12816, 12820,
@@ -70,20 +86,38 @@ PI.bosses = {
 		},
 		"eternalpalace"
 	},
+	{ -- Ny'alotha, the Waking City
+		{ -- Mythic
+			14082, 14094, 14098, 14105, 14110, 14115, 14120, 14211, 14126, 14130, 14134, 14138
+		},
+		{ -- Heroic
+			14080, 14093, 14097, 14104, 14109, 14114, 14119, 14210, 14125, 14129, 14133, 14137
+		},
+		{ -- Normal
+			14079, 14091, 14096, 14102, 14108, 14112, 14118, 14208, 14124, 14128, 14132, 14136
+		},
+		{ -- LFR
+			14078, 14089, 14095, 14101, 14107, 14111, 14117, 14207, 14123, 14127, 14131, 14135
+		},
+		"nyalotha"
+	},
 }
 
+-- https://wow.gamepedia.com/UiMapID
 PI.Raids = {
 	["LONG"] = {
 		KUI:GetMapInfo(1148, "name"),
 		KUI:GetMapInfo(1358, "name"),
 		KUI:GetMapInfo(1345, "name"),
 		KUI:GetMapInfo(1512, "name"),
+		KUI:GetMapInfo(1580, "name"),
 	},
 	["SHORT"] = {
 		KUI:GetMapInfo(1148, "name"),
 		L["RAID_BOD"],
 		L["RAID_COS"],
 		L["RAID_EP"],
+		L["RAID_NWC"],
 	},
 }
 PI.modes = { 
@@ -176,8 +210,8 @@ local function AchieveReady(event, GUID)
 	if (TT.compareGUID ~= GUID) then return end
 	local unit = "mouseover"
 	if T.UnitExists(unit) then
-		PI:UpdateProgression(GUID)
-		_G["GameTooltip"]:SetUnit(unit)
+		PI:UpdateProgression(GUID, faction)
+			_G.GameTooltip:SetUnit(unit)
 	end
 	T.ClearAchievementComparisonUnit()
 	TT:UnregisterEvent("INSPECT_ACHIEVEMENT_READY")
@@ -189,20 +223,21 @@ local function OnInspectInfo(self, tt, unit, level, r, g, b, numTries)
 	if E.db.KlixUI.tooltip.progressInfo.display == "SHIFT" and not T.IsShiftKeyDown() then return end 
 	if not (unit and T.CanInspect(unit)) then return end
 	local level = T.UnitLevel(unit)
-	if not level or level < MAX_PLAYER_LEVEL then return end
+	if not level or level < _G.MAX_PLAYER_LEVEL then return end
 	
 	local guid = T.UnitGUID(unit)
 	if not PI.Cache[guid] or (T.GetTime() - PI.Cache[guid].timer) > 600 then
 		if guid == PI.playerGUID then
-			PI:UpdateProgression(guid)
+			PI:UpdateProgression(guid, playerFaction)
 		else
 			T.ClearAchievementComparisonUnit()
 			if not self.loadedComparison and T.select(2, T.IsAddOnLoaded("Blizzard_AchievementUI")) then
-				T.AchievementFrame_DisplayComparison(unit)
-				T.HideUIPanel(_G["AchievementFrame"])
+				AchievementFrame_DisplayComparison(unit)
+				T.HideUIPanel(_G.AchievementFrame)
 				T.ClearAchievementComparisonUnit()
 				self.loadedComparison = true
 			end
+
 			self.compareGUID = guid
 			if T.SetAchievementComparisonUnit(unit) then
 				self:RegisterEvent("INSPECT_ACHIEVEMENT_READY", AchieveReady)

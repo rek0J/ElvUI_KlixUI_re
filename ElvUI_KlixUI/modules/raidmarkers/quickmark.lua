@@ -63,8 +63,4 @@ function QM:Initialize()
 	end)
 end
 
-local function InitializeCallback()
-	QM:Initialize()
-end
-
-KUI:RegisterModule(QM:GetName(), InitializeCallback)
+KUI:RegisterModule(QM:GetName())

@@ -23,8 +23,8 @@ function KUI:LoadLSProfile()
 				["point"] = {
 					p = "TOP",
 					rP = "TOP",
-					["x"] = 0,
-					["y"] = -210,
+					x = 0,
+					y = -210,
 				},
 				["scale"] = 1.2,
 			},

@@ -1,6 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
-local S = E:GetModule("Skins")
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
 local function styleBaggins()
 	if E.private.KlixUI.skins.addonSkins.ba ~= true or not AddOnSkins or not T.IsAddOnLoaded("Baggins") then return end
@@ -30,24 +30,24 @@ local function styleBaggins()
 	   
 		S:HandleCloseButton(frame.closebutton)
 	   
-		frame.closebutton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+		frame.closebutton:Point("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
 	   
 		frame.compressbutton:ClearAllPoints()
-		frame.compressbutton:SetPoint("TOPRIGHT", frame.closebutton, "TOPLEFT", -4, -2)
+		frame.compressbutton:Point("TOPRIGHT", frame.closebutton, "TOPLEFT", -4, -2)
 	   
 		frame.title:SetVertexColor(1, 1, 1, 1)
 		frame.title:ClearAllPoints()
-		frame.title:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -10)
-		frame.title:SetPoint("RIGHT", frame.closebutton, "LEFT", 0, 0)
-		frame.title:SetHeight(12)
+		frame.title:Point("TOPLEFT", frame, "TOPLEFT", 10, -10)
+		frame.title:Point("RIGHT", frame.closebutton, "LEFT", 0, 0)
+		frame.title:Height(12)
 		frame.title:SetJustifyH("LEFT")
 	end
 
 	function KUI_BagginsSkin:SkinSection(frame)
 	   frame.title:SetVertexColor(1, 1, 1, 1)
 	   frame.title:SetText("")
-	   frame.title:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 2)
-	   frame.title:SetHeight(13)
+	   frame.title:Point("TOPLEFT", frame, "TOPLEFT", 0, 2)
+	   frame.title:Height(13)
 	end
 
 	function KUI_BagginsSkin:SkinItem(button)
@@ -70,12 +70,12 @@ local function styleBaggins()
 	   
 		button.ILevel = button:CreateFontString()
 		button.ILevel:SetFont("Interface\\AddOns\\ElvUI\\media\\fonts\\Expressway.ttf", 12, "OUTLINE")
-		button.ILevel:SetPoint("TOPLEFT", button, "TOPLEFT", 2, 0)
+		button.ILevel:Point("TOPLEFT", button, "TOPLEFT", 2, 0)
 		button.ILevel:SetTextColor(1, 1, 0)
 		
 		button.Slot = button:CreateFontString()
 		button.Slot:SetFont("Interface\\AddOns\\ElvUI\\media\\fonts\\Expressway.ttf", 7, "OUTLINE")
-		button.Slot:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, 3)
+		button.Slot:Point("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, 3)
 		button.Slot:SetTextColor(1, 1, 0)
 	   
 		ElvUI[1]:RegisterCooldown(_G[button:GetName().."Cooldown"])
@@ -85,7 +85,7 @@ local function styleBaggins()
 		end
 	   
 		button.UpgradeIcon:ClearAllPoints()
-		button.UpgradeIcon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT")
+		button.UpgradeIcon:Point("BOTTOMRIGHT", button, "BOTTOMRIGHT")
 	   
 		button.Azerite = button:CreateTexture(nil, "ARTWORK")
 		button.Azerite:SetAtlas("AzeriteIconFrame")
@@ -105,9 +105,9 @@ local function styleBaggins()
 		  BagginsCopperText:ClearAllPoints()
 		  BagginsGoldText:ClearAllPoints()
 		  BagginsSilverText:ClearAllPoints()
-		  BagginsCopperText:SetPoint("RIGHT", BagginsCopperIcon, "LEFT")
-		  BagginsSilverText:SetPoint("RIGHT", BagginsSilverIcon, "LEFT")
-		  BagginsGoldText:SetPoint("RIGHT", BagginsGoldIcon, "LEFT")
+		  BagginsCopperText:Point("RIGHT", BagginsCopperIcon, "LEFT")
+		  BagginsSilverText:Point("RIGHT", BagginsSilverIcon, "LEFT")
+		  BagginsGoldText:Point("RIGHT", BagginsGoldIcon, "LEFT")
 	end)
 
 	hooksecurefunc(Baggins, "UpdateItemButton", function(self, _, button, bag, slot)
@@ -152,7 +152,7 @@ local function styleBaggins()
 		end
 		  
 		button.Count:ClearAllPoints()
-		button.Count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 3)
+		button.Count:Point("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 3)
 		  
 		button.UpgradeIcon:SetShown(T.IsContainerItemAnUpgrade(bag, slot))
 		  

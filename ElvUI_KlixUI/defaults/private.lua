@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 
 if V["KlixUI"] == nil then V["KlixUI"] = {} end
 
@@ -9,16 +9,14 @@ V['KlixUI'] = {
 		['day'] = 1,
 	},
 	
-	["characterGoldsSorting"] = {},
-	
 	-- Bags
-	["bags"] = {
+	['bags'] = {
 		["bagFilter"] = true,
 		["autoOpen"] = false,
 	},
 	
 	-- Blizzard
-	["module"] = {
+	['module'] = {
 		["blizzmove"] = {
 			["enable"] = true,
 			["remember"] = false,
@@ -26,99 +24,99 @@ V['KlixUI'] = {
 		},
 	},
 	
-	-- Equip Manager
-	["equip"] = {
-		["enable"] = true,
-		["spam"] = false,
-		["onlyTalent"] = true,
-		["conditions"] = "",
-		["setoverlay"] = true,
-		["lockbutton"] = true,
-	},
-	
-	-- Professions
-	["professions"] = {
-		["deconButton"] = {
-			["enable"] = true,
-			["style"] = "PIXEL",
-			["buttonGlow"] = true,
-		},
-		["enchant"] = {
-			["enchScroll"] = false,
-		},
-		["fishing"] = {
-			["EasyCast"] = false,
-			["FromMount"] = false,
-			["UseLures"] = true,
-			["IgnorePole"] = false,
-			["CastButton"] = "Shift",
-			["relureThreshold"] = 8,
-		},
-	},
-	
-	-- PvP
-	["pvp"] = {
-		["KBbanner"] = {
-			["enable"] = false,
-			["sound"] = true,
-		},
-	},
-	
 	-- Skins
-	["skins"] = {
+	['skins'] = {
 		["blizzard"] = {
-			["addonManager"] = true,
-			["auctionhouse"] = true,
-			["bags"] = true,
-			["battlefield"] = true,
-			["bgmap"] = true,
-			["bgscore"] = true,
-			["binding"] = true,
-			["channels"] = true,
 			["character"] = true,
-			["communities"] = true,
-			["craft"] = true,
-			["debug"] = true,
-			["dressingroom"] = true,
-			["friends"] = true,
-			["gmchat"] = true,
+			["encounterjournal"] = true,
 			["gossip"] = true,
-			["guildregistrar"] = true,
-			["help"] = true,
-			["inspect"] = true,
-			["loot"] = true,
-			["macro"] = true,
-			["mail"] = true,
-			["merchant"] = true,
-			["minimap"] = true,
-			["petition"] = true,
 			["quest"] = true,
-			["raid"] = true,
+			["questChoice"] = true,
 			["spellbook"] = true,
-			["stable"] = true,
-			["tabard"] = true,
+			["orderhall"] = true,
 			["talent"] = true,
-			["taxi"] = true,
-			["timemanager"] = true,
-			["trade"] = true,
-			["tradeskill"] = true,
-			["trainer"] = true,
+			["auctionhouse"] = true,
+			["barber"] = true,
+			["friends"] = true,
+			["garrison"] = true,
+			["contribution"] = true,
+			["artifact"] = true,
+			["collections"] = true,
+			["calendar"] = true,
+			["merchant"] = true,
 			["worldmap"] = true,
+			["pvp"] = true,
+			["achievement"] = true,
+			["tradeskill"] = true,
+			["lfg"] = true,
+			["lfguild"] = true,
+			["itemUpgrade"] = true,
+			["talkinghead"] = true,
+			["guild"] = true,
+			["objectiveTracker"] = true,
+			["Obliterum"] = true,
+			["addonManager"] = true,
+			["archaeology"] = true,
+			["mail"] = true,
+			["raid"] = true,
+			["dressingroom"] = true,
+			["timemanager"] = true,
+			["blackmarket"] = true,
+			["guildcontrol"] = true,
+			["macro"] = true,
+			["binding"] = true,
+			["gbank"] = true,
+			["taxi"] = true,
+			["help"] = true,
+			["loot"] = true,
+			["warboard"] = true,
+			["deathRecap"] = true,
+			["questPOI"] = true,
+			["voidstorage"] = true,
+			["communities"] = true,
+			["azerite"] = true,
+			["azeriteRespec"] = true,
+			["challenges"] = true,
+			["channels"] = true,
+			["IslandQueue"] = true,
+			["IslandsPartyPose"] = true,
+			["minimap"] = true,
+			["Scrapping"] = true,
+			["trainer"] = true,
+			["debug"] = true,
+			["inspect"] = true,
+			["socket"] = true,
+			["itemUpgrade"] = true,
+			["trade"] = true,
+			["AlliedRaces"] = true,
+                        ["GMChat"] = true,
+			["AzeriteEssence"] = true,
+			["ItemInteraction"] = true,
+			["animaDiversion"] = true,
+		        ["soulbinds"] = true,
+		        ["covenantSanctum"] = true,
+		        ["covenantPreview"] = true,
+		        ["playerChoice"] = true,
 		},
-		["addonSkins"] = {
+		['addonSkins'] = {
 			["abp"] = true,
 			["ba"] = true,
 			["bs"] = true,
 			["bw"] = true,
-			["dbm"] = true,
+			["dbm"] = false,
 			["dtb"] = true,
 			["ls"] = true,
+			["hk"] = false,
+			["cl"] = true,		
+			["et"] = true,				
+			["cbn"] = true,	
+			["tb"] = true,				
 			["pa"] = true,
-			["pw"] = true,
 			["sle"] = true,
-			["wa"] = true,
+			["wa"] = false,
 			["xiv"] = true,
 		},
 		["vehicleButton"] = true,
+		["WAIconCooldown"] = true,
 	},
 }

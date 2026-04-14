@@ -1,5 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local EFL = KUI:NewModule("EnhancedFriendsList", "AceHook-3.0")
+local EFL = KUI:NewModule("EnhancedFriendsList")
+local COMP = KUI:GetModule("KuiCompatibility")
 local LSM = E.LSM or E.Libs.LSM
 
 local MediaPath = "Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\"
@@ -124,7 +125,7 @@ end
 function EFL:BasicUpdateFriends(button)
 	local nameText, nameColor, infoText, broadcastText, _, Cooperate
 	if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
-		local name, level, class, area, connected, status = T.C_FriendList_GetFriendInfo(button.id)
+		local name, level, class, area, connected, status = T.GetFriendInfo(button.id)
 		broadcastText = nil
 		if connected then
 			button.status:SetTexture(EFL.StatusIcons[EFL.db["StatusIconPack"]][(status == CHAT_FLAG_DND and 'DND' or status == CHAT_FLAG_AFK and "AFK" or "Online")])
@@ -156,8 +157,8 @@ function EFL:BasicUpdateFriends(button)
 			if client == BNET_CLIENT_WOW then
 				if (level == nil or T.tonumber(level) == nil) then level = 0 end
 				local classcolor = KUI:ClassColorCode(class)
-				local diff = level ~= 0 and T.string_format('FF%02x%02x%02x', GetQuestDifficultyColor(level).r * 255, GetQuestDifficultyColor(level).g * 255, GetQuestDifficultyColor(level).b * 255) or 'FFFFFFFF'
-				nameText = T.string_format('%s |cFFFFFFFF(|r%s - %s %s|cFFFFFFFF)|r', nameText, WrapTextInColorCode(characterName, classcolor), LEVEL, WrapTextInColorCode(level, diff))
+				local diff = level ~= 0 and T.string_format("|cFF%02x%02x%02x", T.GetQuestDifficultyColor(level).r * 255, T.GetQuestDifficultyColor(level).g * 255, T.GetQuestDifficultyColor(level).b * 255) or "|cFFFFFFFF"
+				nameText = T.string_format("%s |cFFFFFFFF(|r%s%s|r - %s %s%s|r|cFFFFFFFF)|r", nameText, classcolor, characterName, LEVEL, diff, level)
 				Cooperate = T.CanCooperateWithGameAccount(toonID)
 			else
 				if not ClientColor[client] then
@@ -224,17 +225,13 @@ function EFL:BasicUpdateFriends(button)
 end
 
 function EFL:Initialize()
-	if not E.db.KlixUI.efl.enable or T.IsAddOnLoaded("ProjectAzilroka") then return end
+	if not E.db.KlixUI.efl.enable or (COMP.PA and _G.ProjectAzilroka.db["EnhancedFriendsList"]['Enable']) then return end
 
 	EFL.db = E.db.KlixUI.efl
 	
 	KUI:RegisterDB(self, "efl")
 	
-	EFL:SecureHook("FriendsFrame_UpdateFriendButton", 'BasicUpdateFriends')
+	hooksecurefunc("FriendsFrame_UpdateFriendButton", function(button) EFL:BasicUpdateFriends(button) end)
 end
 
-local function InitializeCallback()
-	EFL:Initialize()
-end
-
-KUI:RegisterModule(EFL:GetName(), InitializeCallback)
+KUI:RegisterModule(EFL:GetName())

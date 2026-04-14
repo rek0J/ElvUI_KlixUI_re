@@ -1,6 +1,6 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local MI = KUI:GetModule("KuiMisc")
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 
 function MI:GMOTD()
 	-- MainFrame

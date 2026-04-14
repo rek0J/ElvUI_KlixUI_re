@@ -1,6 +1,44 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KUF = KUI:NewModule("KuiUnits", 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 local UF = E:GetModule('UnitFrames')
+
+function KUF:StyleUFs()
+	local db = E.db.KlixUI.unitframes
+
+	if db.style then
+		-- Player
+		self:InitPlayer()
+		self:InitPower()
+		self:InitCastBar()
+
+		-- Target
+		self:InitTarget()
+
+		-- TargetTarget
+		self:InitTargetTarget()
+
+		-- Pet
+		self:InitPet()
+
+		-- Focus
+		self:InitFocus()
+
+		-- FocusTarget
+		self:InitFocusTarget()
+
+		-- Party
+		self:InitParty()
+
+		-- Raid
+		self:InitRaid()
+
+		-- Raid40
+		self:InitRaid40()
+
+		-- Boss
+		self:InitBoss()
+	end
+end
 
 function KUF:UpdateUF()
 	if E.db.unitframe.units.player.enable then
@@ -78,7 +116,7 @@ function KUF:AddShouldIAttackIcon(frame)
 	tag:SetScript("OnEvent", function()
 		if tag.db.enable and not T.UnitIsDeadOrGhost("target") and T.UnitCanAttack("player", "target") and T.UnitIsTapDenied("target") then
 			tag:ClearAllPoints()
-			tag:SetPoint(tag.db.point or "TOPLEFT", frame, tag.db.relativePoint or "CENTER", tag.db.xOffset or 1, tag.db.yOffset or 0)
+			tag:Point(tag.db.point or "TOPLEFT", frame, tag.db.relativePoint or "CENTER", tag.db.xOffset or 1, tag.db.yOffset or 0)
 			tag:Show()
 		else
 			tag:Hide()
@@ -88,30 +126,34 @@ end
 
 -- Credits: BenikUI
 -- Unit Shadows
+local function ApplyAuraShadowCallbacks(unitbutton)
+	if unitbutton and unitbutton.Buffs and unitbutton.Debuffs then
+		unitbutton.Buffs.PostUpdateIcon = KUF.PostUpdateAura
+		unitbutton.Debuffs.PostUpdateIcon = KUF.PostUpdateAura
+	end
+end
+
 function KUF:UnitShadows()
 	for _, unitName in T.pairs(UF.units) do
 		local frameNameUnit = E:StringTitle(unitName)
 		frameNameUnit = frameNameUnit:gsub("t(arget)", "T%1")
 
 		local unitframe = _G["ElvUF_"..frameNameUnit]
-		if unitframe then
-			unitframe.Buffs.PostUpdateIcon = KUF.PostUpdateAura
-			unitframe.Debuffs.PostUpdateIcon = KUF.PostUpdateAura
-		end
+		ApplyAuraShadowCallbacks(unitframe)
 	end
 end
 
 -- Party Shadows
 function KUF:PartyShadows()
 	local header = _G['ElvUF_Party']
+	if not header then return end
 	for i = 1, header:GetNumChildren() do
 		local group = T.select(i, header:GetChildren())
+		if group then
 
-		for j = 1, group:GetNumChildren() do
-			local unitbutton = T.select(j, group:GetChildren())
-			if unitbutton then
-				unitbutton.Buffs.PostUpdateIcon = KUF.PostUpdateAura
-				unitbutton.Debuffs.PostUpdateIcon = KUF.PostUpdateAura
+			for j = 1, group:GetNumChildren() do
+				local unitbutton = T.select(j, group:GetChildren())
+				ApplyAuraShadowCallbacks(unitbutton)
 			end
 		end
 	end
@@ -120,15 +162,15 @@ end
 -- Raid Shadows
 function KUF:RaidShadows()
 	local header = _G['ElvUF_Raid']
+	if not header then return end
 
 	for i = 1, header:GetNumChildren() do
 		local group = T.select(i, header:GetChildren())
+		if group then
 
-		for j = 1, group:GetNumChildren() do
-			local unitbutton = T.select(j, group:GetChildren())
-			if unitbutton then
-				unitbutton.Buffs.PostUpdateIcon = KUF.PostUpdateAura
-				unitbutton.Debuffs.PostUpdateIcon = KUF.PostUpdateAura
+			for j = 1, group:GetNumChildren() do
+				local unitbutton = T.select(j, group:GetChildren())
+				ApplyAuraShadowCallbacks(unitbutton)
 			end
 		end
 	end
@@ -137,18 +179,22 @@ end
 -- Raid-40 Shadows
 function KUF:Raid40Shadows()
 	local header = _G['ElvUF_Raid40']
+	if not header then return end
 
 	for i = 1, header:GetNumChildren() do
 		local group = T.select(i, header:GetChildren())
+		if group then
 
-		for j = 1, group:GetNumChildren() do
-			local unitbutton = T.select(j, group:GetChildren())
-			if unitbutton then
-				unitbutton.Buffs.PostUpdateIcon = KUF.PostUpdateAura
-				unitbutton.Debuffs.PostUpdateIcon = KUF.PostUpdateAura
+			for j = 1, group:GetNumChildren() do
+				local unitbutton = T.select(j, group:GetChildren())
+				ApplyAuraShadowCallbacks(unitbutton)
 			end
 		end
 	end
+end
+
+function KUF:UpdateShadowedGroup(frame)
+	ApplyAuraShadowCallbacks(frame)
 end
 
 -- Boss shadows
@@ -222,10 +268,23 @@ end
 function KUF:Initialize()
 	if not E.private.unitframe.enable then return end
 
+	-- Units
+	self:StyleUFs()
+
+	self:InitCastBar()
+	self:InitPower()
 	self:InitPlayer()
 	self:InitTarget()
+	self:InitTargetTarget()	
+	self:InitFocus()
+	self:InitFocusTarget()	
 	self:InitPet()
-
+	self:InitParty()	
+	self:InitRaid()
+	self:InitRaid40()
+	self:InitBoss()
+	
+	self:ChangePowerBarTexture()
 	self:ChangeHealthBarTexture()
 
 	self:UnitShadows()
@@ -240,11 +299,12 @@ function KUF:Initialize()
 	
 	hooksecurefunc(UF, "Configure_ReadyCheckIcon", KUF.Configure_ReadyCheckIcon)
 	hooksecurefunc(UF, "Configure_RaidIcon", KUF.Configure_RaidIcon)
+	hooksecurefunc(UF, "Update_PartyFrames", KUF.UpdateShadowedGroup)
+	hooksecurefunc(UF, "Update_RaidFrames", KUF.UpdateShadowedGroup)
+	if UF.Update_Raid40Frames then
+		hooksecurefunc(UF, "Update_Raid40Frames", KUF.UpdateShadowedGroup)
+	end
 	self:RegisterEvent("ADDON_LOADED")
 end
 
-local function InitializeCallback()
-	KUF:Initialize()
-end
-
-KUI:RegisterModule(KUF:GetName(), InitializeCallback)
+KUI:RegisterModule(KUF:GetName())

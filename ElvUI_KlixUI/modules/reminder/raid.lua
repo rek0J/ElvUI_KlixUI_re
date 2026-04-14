@@ -1,4 +1,4 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KRR = KUI:NewModule("KuiRaidReminder")
 local LCG = LibStub('LibCustomGlow-1.0')
 KRR.modName = L["Raid Buff Reminder"]
@@ -11,29 +11,44 @@ KRR.VisibilityStates = {
 
 KRR.ReminderBuffs = {
 	Flask = {
-									-- Legion --
+		-- Legion
 		188034,			-- Flask of the Countless Armies (59 str)
 		188035,			-- Flask of the Thousand Scars (88 sta)
 		188033,			-- Flask of the Seventh Demon (59 agi)
 		188031,			-- Flask of the Whispered Pact (59 int)
 		242551,			-- Fel Focus Str, Agi and Int +23, stam + 34
 
-								-- Battle for Azeroth --
+		-- Battle for Azeroth 
+		251836,			-- Flask of the Currents (238 agi)
 		251837,			-- Flask of Endless Fathoms (238 int)
 		251838,			-- Flask of the Vast Horizon (357 sta)
 		251839,			-- Flask of the Undertow (238 str)
-		251836,			-- Flask of the Currents (238 agi)
 		298836,			-- Greater Flask of the Currents
 		298837,			-- Greater Flask of Endless Fathoms
 		298839,			-- Greater Flask of the Vast Horizon
 		298841,			-- Greater Flask of the Undertow
+
+		-- Shadowlands
+		307166,			-- Eternal FLask (190 stat)
+		307185,			-- Spectral Flask of Power (73 stat)
+		307187,			-- Spectral Flask of Stamina (109 sta)
 	},
 	DefiledAugmentRune = {
-		270058,			-- Battle Scarred Augmentation (60 primary stat)
 		224001,			-- Defiled Augumentation (15 primary stat)
+		270058,			-- Battle Scarred Augmentation (60 primary stat)
 	},
 	Food = {
 		104280,	-- Well Fed
+
+		-- Shadowlands
+		259455,	-- Well Fed
+		308434,	-- Well Fed
+		308488,	-- Well Fed
+		308506,	-- Well Fed
+		308514,	-- Well Fed
+		308637,	-- Well Fed
+		327715,	-- Well Fed
+		327851,	-- Well Fed
 	},
 	Intellect = {
 		264760, -- War-Scroll of Intellect
@@ -57,7 +72,7 @@ local intellectbuffs = KRR.ReminderBuffs["Intellect"]
 local staminabuffs = KRR.ReminderBuffs["Stamina"]
 local attackpowerbuffs = KRR.ReminderBuffs["AttackPower"]
 
-local r, g, b = T.unpack(E.media.rgbvaluecolor)
+local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 local color = {r, g, b, 1}
 
 local function OnAuraChange(self, event, arg1, unit)
@@ -182,9 +197,9 @@ end
 function KRR:CreateIconBuff(name, relativeTo, firstbutton)
 	local button = T.CreateFrame("Frame", name, KRR.frame)
 	if firstbutton == true then
-		button:Point("RIGHT", relativeTo, "RIGHT", E:Scale(-4), 0)
+		button:SetPoint("RIGHT", relativeTo, "RIGHT", E:Scale(-4), 0)
 	else
-		button:Point("RIGHT", relativeTo, "LEFT", E:Scale(-4), 0)
+		button:SetPoint("RIGHT", relativeTo, "LEFT", E:Scale(-4), 0)
 	end
 	button:Size(KRR.db.size)
 	button:SetFrameLevel(self.frame.backdrop:GetFrameLevel() + 2)
@@ -229,13 +244,13 @@ function KRR:Initialize()
 
 	self.frame = T.CreateFrame("Frame", "RaidBuffReminder", E.UIParent)
 	self.frame:CreateBackdrop('Transparent')
-	self.frame:Point("TOP", E.UIParent, "TOP", 0, -67)
+	self.frame:SetPoint("TOP", E.UIParent, "TOP", 0, -67)
 	E.FrameLocks[self.frame] = true
 
 	self.frame.backdrop:SetAllPoints()
 	
 	if KRR.db.class then
-		self.frame:Size((KRR.db.size * 6) + 28, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
+		self.frame:SetSize((KRR.db.size * 6) + 28, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
 		self:CreateIconBuff("IntellectFrame", RaidBuffReminder, true)
 		self:CreateIconBuff("StaminaFrame", IntellectFrame, false)
 		self:CreateIconBuff("AttackPowerFrame", StaminaFrame, false)
@@ -243,7 +258,7 @@ function KRR:Initialize()
 		self:CreateIconBuff("FoodFrame", FlaskFrame, false)
 		self:CreateIconBuff("DARuneFrame", FoodFrame, false)
 	else
-		self.frame:Size((KRR.db.size * 3) + 16, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
+		self.frame:SetSize((KRR.db.size * 3) + 16, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
 		self:CreateIconBuff("FlaskFrame", RaidBuffReminder, true)
 		self:CreateIconBuff("FoodFrame", FlaskFrame, false)
 		self:CreateIconBuff("DARuneFrame", FoodFrame, false)
@@ -272,8 +287,4 @@ function KRR:Initialize()
 	self:ForUpdateAll()
 end
 
-local function InitializeCallback()
-	KRR:Initialize()
-end
-
-KUI:RegisterModule(KRR:GetName(), InitializeCallback)
+KUI:RegisterModule(KRR:GetName())

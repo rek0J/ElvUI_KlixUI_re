@@ -84,7 +84,7 @@ E.PopupDialogs["DISCORD"] = {
 
 -- ElvUI Versions check
 E.PopupDialogs["VERSION_MISMATCH"] = {
-	text = KUI:MismatchText(),
+	text = format(L["MSG_KUI_ELV_OUTDATED"], KUI.ElvUIV, KUI.ElvUIX),
 	button1 = CLOSE,
 	timeout = 0,
 	whileDead = 1,
@@ -138,16 +138,6 @@ E.PopupDialogs["KLIXUI_CREDITS"] = {
 	hideOnEscape = 1,
 }
 
---Incompatibility messages
---[[E.PopupDialogs["KUI_INCOMPATIBLE_ADDON"] = {
-	text = T.string_gsub(L["INCOMPATIBLE_ADDON"], "ElvUI", "KlixUI"),
-	OnAccept = function(self) T.DisableAddOn(E.PopupDialogs["KUI_INCOMPATIBLE_ADDON"].addon); T.ReloadUI(); end,
-	OnCancel = function(self) E.PopupDialogs["KUI_INCOMPATIBLE_ADDON"].optiontable[E.PopupDialogs["KUI_INCOMPATIBLE_ADDON"].value] = false; T.ReloadUI(); end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-}]]
-
 E.PopupDialogs["BUI_KUI_INCOMPATIBLE"] = {
 	text = L["You got |cff00c0faBenikUI|r and |cfff960d9KlixUI|r both enabled at the same time. Please select an addon to disable."],
 	OnAccept = function() T.DisableAddOn("ElvUI_BenikUI"); T.ReloadUI() end,
@@ -191,6 +181,30 @@ E.PopupDialogs["MUI_KUI_INCOMPATIBLE"] = {
 	whileDead = 1,
 	hideOnEscape = false,
 }
+
+-- Compatibility
+E.PopupDialogs["WINDTOOLS_KUI_INCOMPATIBLE"] = {
+	text = L["You got |cffff7d0aElvUI_Windtools|r and |cfff960d9KlixUI|r both enabled at the same time. Please select an addon to disable."],
+	OnAccept = function() DisableAddOn("ElvUI_WindTools"); ReloadUI() end,
+	OnCancel = function() DisableAddOn("ElvUI_KlixUI"); ReloadUI() end,
+	button1 = "|cff00c0faElvUI_Windtools|r",
+	button2 = KUI.Title,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+}
+
+E.PopupDialogs["LIVVEN_KUI_INCOMPATIBLE"] = {
+	text = L["You got |cffff7d0aElvUI_LivvenUI|r and |cfff960d9KlixUI|r both enabled at the same time. Please select an addon to disable."],
+	OnAccept = function() DisableAddOn("ElvUI_LivvenUI"); ReloadUI() end,
+	OnCancel = function() DisableAddOn("ElvUI_KlixUI"); ReloadUI() end,
+	button1 = "|cff9482c9ElvUI_LivvenUI|r",
+	button2 = KUI.Title,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+}
+
 
 -- Profile Creation
 function KUI:NewProfile(new)

@@ -1,21 +1,28 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
 
-local SOUNDKIT = _G.SOUNDKIT
+local SOUNDKIT = SOUNDKIT
+local PlaySound = PlaySound
 local CLOSE = CLOSE
+local DISABLED_FONT_COLOR = DISABLED_FONT_COLOR
 
 local ChangeLogData = {
 	"Changes:",
-		"• Small fixes!!",
-		"• ",
+		"- MoP Classic compatibility and stability pass across core, options, maps, datatexts and skins",
+		"- Fixed outdated ElvUI and KlixUI config calls, old option paths and missing defaults or guards",
+		"- Fixed Bags, AutoButtons, MicroBar, SpecSwitch, Time, Talents and Professions related issues",
+		"- Fixed Armory, IcyStats and CharacterStats integration for MoP spec, stats and tooltip paths",
+		"- Fixed multiple Blizzard skin modules for MoP UI differences and retail-only hook paths",
+		"- Restored Maps, World Map, Minimap styling and Square Minimap Buttons compatibility",
+		"- Fixed layout, dropdown, game menu, locpanel, autolog and elite icon parenting issues",
+		"- Added MoP-safe feature detection for retail-only APIs instead of hard Lua errors",
 		" ", -- Section space!
-		-- "• ",
-		
+
+	" ",
+
 	"Notes:",
-		"|cff00ffda• I'm looking for translators e.g. Spanish, French, Italian, Chinese, Taiwanese etc.\nPM me on discord if you want to contribute, to the UI!|r",
-		--"• PlEASE DELETE THE OLD KLIXUI FOLDER BEFORE EXTRACTING THE NEW ONE!!",
-		--"• 'Typing /kui will navigate you to the KlixUI configurations.'",
-		-- "• ",
+		"|cff00ffda- Detailed release notes are available in 'changelog.md'.|r",
+		"|cff00ffda- Retail-only blocks without a safe MoP fallback are now skipped defensively instead of crashing.|r",
 }
 
 local function ModifiedString(string)
@@ -25,7 +32,7 @@ local function ModifiedString(string)
 	if count then
 		local prefix = T.string_sub(string, 0, count)
 		local suffix = T.string_sub(string, count + 1)
-		local subHeader = T.string_find(string, "•")
+		local subHeader = T.string_find(string, "â€¢")
 
 		if subHeader then newString = T.tostring("|cFFFFFF00".. prefix .. "|r" .. suffix) else newString = T.tostring("|cfff960d9" .. prefix .. "|r" .. suffix) end
 	end
@@ -41,52 +48,53 @@ local function GetChangeLogInfo(i)
 end
 
 function KUI:CreateChangelog()
-	local frame = T.CreateFrame("Frame", "KlixUIChangeLog", E.UIParent)
-	frame:SetPoint("CENTER")
-	frame:SetSize(500, 350)
-	frame:SetTemplate("Transparent")
-	frame:Styling()
+	local frame = T.CreateFrame("Frame", "KlixUIChangeLog", E.UIParent, 'BackdropTemplate')
+	frame:Point("CENTER")
+	frame:Size(600, 430)
+	frame:CreateBackdrop("Transparent")
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 	frame:SetClampedToScreen(true)
+	frame.backdrop:Styling()
 
-	local icon = T.CreateFrame("Frame", nil, frame)
-	icon:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, 2)
-	icon:SetSize(30, 30)
-	icon:SetTemplate("Transparent")
+	local icon = T.CreateFrame("Frame", nil, frame, 'BackdropTemplate')
+	icon:Point("BOTTOMLEFT", frame, "TOPLEFT", 0, 2)
+	icon:Size(30, 30)
+	icon:CreateBackdrop("Transparent")
 	icon:Styling()
+
 	icon.bg = icon:CreateTexture(nil, "ARTWORK")
 	icon.bg:Point("TOPLEFT", 2, -2)
 	icon.bg:Point("BOTTOMRIGHT", -2, 2)
 	icon.bg:SetTexture(KUI.Logo)
 	icon.bg:SetBlendMode("ADD")
-	
-	local title = T.CreateFrame("Frame", nil, frame)
-	title:SetPoint("LEFT", icon, "RIGHT", 2, 0)
-	title:SetSize(468, 30)
-	title:SetTemplate("Transparent")
-	title:Styling()
-	title.text = title:CreateFontString(nil, "OVERLAY")
-	title.text:SetPoint("CENTER", title, 0, -1)
-	title.text:SetFont(E.media.normFont, 15, "OUTLINE")
-	title.text:SetText(KUI.Title.."- ChangeLog version |cfff960d9"..KUI.Version)
 
-	local close = T.CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+	local title = T.CreateFrame("Frame", nil, frame, 'BackdropTemplate')
+	title:Point("LEFT", icon, "RIGHT", 2, 0)
+	title:Size(568, 30)
+	title:CreateBackdrop("Transparent")
+	title.backdrop:Styling()
+
+	title.text = KUI:CreateText(title, "OVERLAY", 15, nil, "CENTER")
+	title.text:Point("CENTER", title, 0, -1)
+	title.text:SetText(KUI.Title.. "- ChangeLog version |cfff960d9"..KUI.Version)
+
+	local close = T.CreateFrame("Button", nil, frame, "UIPanelButtonTemplate, BackdropTemplate")
 	close:Point("BOTTOM", frame, "BOTTOM", 0, 10)
 	close:SetText(CLOSE)
-	close:SetSize(80, 20)
+	close:Size(80, 20)
 	close:SetScript("OnClick", function() frame:Hide() end)
 	S:HandleButton(close)
 	close:Disable()
 	frame.close = close
-	
+
 	local warning = T.CreateFrame("Frame", nil, frame)
 	warning:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, 34)
-	warning:SetSize(500, 20)
-	warning:SetTemplate("Transparent")
+	warning:SetSize(600, 20)
+	warning:CreateBackdrop("Transparent")
 	warning:Styling()
 	warning.text = warning:CreateFontString(nil, "OVERLAY")
 	warning.text:SetPoint("CENTER", warning, 0, 1)
@@ -94,9 +102,9 @@ function KUI:CreateChangelog()
 	warning.text:SetText("|cffff0000WARNING: Delete your old ElvUI_KlixUI folder before installing v"..KUI.Version.."!!|r")
 	KUI:CreatePulse(warning, 1, 1)
 	warning:Show() -- Use this to toggle this frame!
-	
+
 	local countdown = KUI:CreateText(close, "OVERLAY", 12, nil, "CENTER")
-	countdown:SetPoint("LEFT", close.Text, "RIGHT", 3, 0)
+	countdown:Point("LEFT", close.Text, "RIGHT", 3, 0)
 	countdown:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
 	frame.countdown = countdown
 
@@ -104,7 +112,7 @@ function KUI:CreateChangelog()
 	for i = 1, #ChangeLogData do
 		local button = T.CreateFrame("Frame", "Button"..i, frame)
 		button:SetSize(375, 16)
-		button:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -offset)
+		button:Point("TOPLEFT", frame, "TOPLEFT", 5, -offset)
 
 		if i <= #ChangeLogData then
 			local string = ModifiedString(GetChangeLogInfo(i))
@@ -112,7 +120,7 @@ function KUI:CreateChangelog()
 			button.Text = button:CreateFontString(nil, "OVERLAY")
 			button.Text:SetFont(E.media.normFont, 12, "OUTLINE")
 			button.Text:SetText(string)
-			button.Text:SetPoint("LEFT", 0, 0)
+			button.Text:Point("LEFT", 0, 0)
 		end
 		offset = offset + 16
 	end
@@ -134,14 +142,14 @@ function KUI:ToggleChangeLog()
 		self:CreateChangelog()
 	end
 	T.PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF or 857)
-	
+
 	local fadeInfo = {}
 	fadeInfo.mode = "IN"
 	fadeInfo.timeToFade = 0.5
 	fadeInfo.startAlpha = 0
 	fadeInfo.endAlpha = 1
 	E:UIFrameFade(KlixUIChangeLog, fadeInfo)
-	
+
 	self.time = 6
 	self:CancelAllTimers()
 	KUI:CountDown()

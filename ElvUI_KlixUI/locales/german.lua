@@ -150,6 +150,7 @@ Rey
 Vauxine]]
 L["Testing & Inspiration:"] = "Testen & Inspiration"
 L["ELVUI_KUI_TESTING"] = [[Kringel
+Dlarge
 Akiao
 Obscurrium
 Benik
@@ -159,7 +160,8 @@ Skullflower
 TukUI/ElvUI community]]
 L["Other Support:"] = "Andere Unterstützung:"
 L["ELVUI_KUI_SPECIAL"] = [[Kringel - für das aktualisieren der deutschen Übersetzung und die hilfreiche und gute Unterstützung in Discord!
-Wilzor - for suggestion alot of new features and helping out with some coding (AutoOpen Bags ID)
+Wilzor - für Vorschläge viele neue Funktionen und Hilfe bei der Codierung (AutoOpen Bags ID)
+Dlarge - für die Hilfe KlixUI und Addons zu aktualisieren, zu testen und Fehler zu beheben
 Und nicht zu vergessen den Rest der TukUI/ElvUI Gemeinschaft :)]]
 
 -- Actionbars
@@ -515,6 +517,22 @@ L["has gone |cffff0000offline|r."] = true
 L[" has come |cff298F00online|r."] = true
 L[" has gone |cffff0000offline|r."] = true
 L["|cfff960d9GMOTD:|r %s"] = true
+L["Expand the chat"] = "Chat erweitern"
+L["Chat Menu"] = "Chat Menu"
+L["Create a chat button to increase the chat size."] = "Erstellt eine Chat Taste um den Chat zu erweitern."
+L["Hide Player Brackets"] = "Verstecke Spieler Klammern"
+L["Removes brackets around the person who posts a chat message."] = "Entfernt die Klammern um die Spielernamen im Chat."
+L["ChatBar"] = "Chatleiste"
+L["Shows a ChatBar with different quick buttons."] = "Zeigt eine Chatleiste mit verschiedenen Schnelltasten."
+L["Hide Community Chat"] = "Verstecke Community Chat"
+L["Adds an overlay to the Community Chat. Useful for streamers."] = "Fügt ein Overlay zum Community Chat hinzu. Nützlich für Streamer."
+L["Chat Hidden. Click to show"] = "Chat versteckt. Klicken um anzuzeigen"
+L["Click to open Emoticon Frame"] = "Öffnet das Emoticon Fenster"
+L["Emotes"] = true
+L["Damage Meter Filter"] = true
+L["Fade Chat"] = true
+L["Auto hide timeout"] = true
+L["Seconds before fading chat panel"] = true
 
 -- CombatText
 L["Combat Text"] = "Kampftext"
@@ -886,6 +904,9 @@ L["Hide Raid"] = "Schlachtzug verbergen"
 L["Show/Hide raids on recommended dungeons."] = "Schlachtzüge als empfohlene Instanzen anzeigen/verbergen"
 L["Hide PvP"] = "PvP verbergen"
 L["Show/Hide PvP zones, Arenas and BGs on recommended dungeons and zones."] = "PvP Gebiete, Arenen und Schlachtfelder als empfohlene Instanzen und Gebiete anzeigen/verbergen"
+L["Toggle WorldMap"] = "Weltkarte anzeigen/verstecken"
+L["Send position to chat"] = "Aktuelle Position im Chat ausgeben"
+L["Toggle Datatexts"] = "Zeige/Verstecke Infotexte"
 L["KUI_LOCPANEL_IGNOREMISSINGINFO"] = [[Aufgrund der Funktionsweise des Spieles kann es vorkommen, dass einige Gegenstandsinformationen kurzzeitig nicht verfügbar sind. Dies trifft hauptsächlich auf Spielzeuge zu.
 Das Menü wartet bis alle Informationen verfügbar sind, bevor es angezeigt wird. Dies kann, je nach Antwortzeit des Servers, dazu führen, dass es einige Zeit dauert bis das Menü erscheint.
 Durch aktivieren dieser Option, ignoriert das Menü fehlende Gegenstandsinformationen und zeigt die betroffenen Gegenstände nicht in der Liste an.]]
@@ -944,9 +965,6 @@ L["West"] = "Westen"
 L["Places the west cardinal point on your minimap."] = "Zeigt die westliche Himmelsrichtung auf der Minimap an"
 L["Worldmap"] = "Weltkarte"
 L["World Map Frame Size"] = "Weltkarte-Größe"
-L["World Map Frame Fade"] = true
-L["World Map Frame Zoom"] = true
-L["Mouse scroll on the world map to zoom."] = true
 L["Reveal"] = "Enthüllen"
 L["Reveal all undiscovered areas on the world map."] = "Alle unentdeckten Gebiete auf der Weltkarte enhüllen"
 L["Set an overlay tint on unexplored ares on the world map."] = true
@@ -1458,6 +1476,12 @@ L["Specialization"] = "Spezialisierung"
 L["Only show the traits for your current specialization."] = "Zeigt nur Fähigkeiten für deine aktuelle Spezialisierung"
 L["Compact"] = "Kompakt"
 L["Only show icons in the azerite tooltip."] = "Zeigt nur Symbole im Azerit-Tooltip."
+L["Corruption"] = "Verderbnis"
+L["Show the name and level of corruption on item tooltips."] = true
+L["Append"] = true
+L["Swap position of the tooltip."] = true
+L["English"] = true
+L["Swap between English and native Corruption name."] = true
 L["Raid Progression"] = "Schlachtzugs-Fortschritt"
 L["Shows raid progress of a character in the tooltip.\n|cffff8000Note: The visibility of the raid progress can be changed in the display option.|r"] = "Zeigt Schlachtzugsfortschritt für einen Charakter im Tooltip an."
 L["Display"] = "Anzeige"
@@ -1469,6 +1493,7 @@ L["Difficulty Style"] = "Schwierigkeitsstil"
 L["RAID_BOD"] = "BoD"
 L["RAID_COS"] = "CoS"
 L["RAID_EP"] = "EP"
+L["RAID_NWC"] = "NWC"
 L["Name Hover"] = "Name am Mauszeiger"
 L["Shows the unit name, at the cursor, when hovering over a target."] = "Zeigt den Einheitennamen am Mauszeiger"
 L["Guild Name"] = "Gildenname"

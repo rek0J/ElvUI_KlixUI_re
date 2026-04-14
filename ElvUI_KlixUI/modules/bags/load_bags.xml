@@ -2,5 +2,6 @@
 	<script file="bags.lua"/>
 	<script file="itemselect.lua"/>
 	<script file="bagfilter.lua"/>
+	<script file="autoopen.lua"/>
 	<script file="options.lua"/>
 </Ui>

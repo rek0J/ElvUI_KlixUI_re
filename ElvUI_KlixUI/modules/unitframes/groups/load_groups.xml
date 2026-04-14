@@ -2,4 +2,5 @@
 	<Script file='party.lua'/>
 	<Script file='raid.lua'/>
 	<Script file='raid40.lua'/>
+	<Script file='boss.lua'/>	
 </Ui>

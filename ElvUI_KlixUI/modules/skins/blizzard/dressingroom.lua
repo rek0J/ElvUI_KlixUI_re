@@ -1,21 +1,66 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local S = E:GetModule("Skins")
+local S = E:GetModule('Skins')
+
+--Cache global variables
+local _G = _G
+--WoW API / Variables
+local format = string.format
+local CreateFrame = CreateFrame
+local PlaySound = PlaySound
+-- GLOBALS:
+
+local function UndressButton()
+	local Button = CreateFrame("Button", nil, _G.DressUpFrame, "UIPanelButtonTemplate")
+	Button:SetText(format("|cff70C0F5%s", L["Undress"]))
+	Button:SetHeight(_G.DressUpFrameResetButton:GetHeight())
+	Button:SetWidth(Button:GetTextWidth() + 40)
+	Button:SetPoint("RIGHT", _G.DressUpFrameResetButton, "LEFT", -2, 0)
+	Button:RegisterForClicks("AnyUp")
+	S:HandleButton(Button)
+
+	Button.model = _G.DressUpFrame.ModelScene
+
+	Button:SetScript("OnClick", function(self, button)
+		local actor = self.model:GetPlayerActor()
+		if not actor then return end
+		if button == "RightButton" then
+			actor:UndressSlot(19)
+		else
+			actor:Undress()
+		end
+		PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
+	end)
+
+	Button:RegisterEvent("AUCTION_HOUSE_SHOW")
+	Button:RegisterEvent("AUCTION_HOUSE_CLOSED")
+
+	Button:SetScript("OnEvent", function(self)
+		if self.model ~= _G.DressUpFrame.ModelScene then
+			self:SetParent(_G.DressUpFrame.ModelScene)
+			self:ClearAllPoints()
+			self:SetPoint("RIGHT", _G.DressUpFrameResetButton, "LEFT", -2, 0)
+			self.model = _G.DressUpFrame.ModelScene
+		end
+	end)
+end
 
 local function styleDressingroom()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.dressingroom ~= true or E.private.KlixUI.skins.blizzard.dressingroom ~= true then return end
-	
-	local DressUpFrame = _G.DressUpFrame
-	if DressUpFrame.backdrop then
-		DressUpFrame.backdrop:Styling()
+
+	_G.DressUpFrame:Styling()
+
+	-- Wardrobe edit frame (MoP Classic: may not exist)
+	if _G.WardrobeOutfitFrame then
+		_G.WardrobeOutfitFrame:Styling()
 	end
-	
-	DressUpFrameBackgroundTopLeft:Hide()
-	DressUpFrameBackgroundTopRight:Hide()
-	DressUpFrameBackgroundBot:Hide()
-	
-	if DressUpModelFrame.backdrop then
-		DressUpModelFrame.backdrop:Hide()
+
+	-- AuctionHouse
+	if _G.SideDressUpFrame then
+		_G.SideDressUpFrame:Styling()
 	end
+
+	-- Undress Button
+	UndressButton()
 end
 
 S:AddCallback("KuiDressingRoom", styleDressingroom)

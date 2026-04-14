@@ -271,8 +271,4 @@ function PC:Initialize()
 	DCP:SetPoint("CENTER", E.UIParent, "CENTER")
 end
 
-local function InitializeCallback()
-	PC:Initialize()
-end
-
-KUI:RegisterModule(PC:GetName(), InitializeCallback)
+KUI:RegisterModule(PC:GetName())

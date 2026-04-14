@@ -1,6 +1,6 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
-local KS = KUI:GetModule("KuiSkins")
-local S = E:GetModule("Skins")
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
 
 local r, g, b = T.unpack(E.media.rgbvaluecolor)
 
@@ -21,13 +21,13 @@ local function InitStyleWAO()
 		S:HandleCloseButton(close)
 
 		-- Disable import check
-		children[2]:Hide()
+		--[[children[2]:Hide()
 		local import = children[2]:GetChildren()
 		S:HandleCheckBox(import)
 		import:SetParent(frame)
 		import:SetSize(25, 25)
 		import:ClearAllPoints()
-		import:SetPoint("LEFT", close, "RIGHT", 1, 0)
+		import:SetPoint("LEFT", close, "RIGHT", 1, 0)]]
 
 		-- Title
 		--children[3]
@@ -41,7 +41,7 @@ local function InitStyleWAO()
 		for i = 1, 3 do
 			local tex = sizer:CreateTexture(nil, "OVERLAY")
 			tex:SetSize(2, 2)
-			tex:SetTexture(E.media.normTex)
+			tex:SetTexture(E["media"].normTex)
 			tex:SetVertexColor(r, g, b, .8)
 			tex:Show()
 			sizer[i] = tex
@@ -70,11 +70,11 @@ local function InitStyleWAO()
 		S:HandleEditBox(WeakAurasFilterInput)
 
 		-- Remove Title BG
-		KS:StripTextures(frame)
+		frame:StripTextures()
 
 		-- StripTextures will actually remove the backdrop too, so we need to put that back
-		KS:CreateBD(frame)
-		KS:CreateSD(frame)
+		--KS:CreateBD(frame)
+		--KS:CreateSD(frame)
 		frame:Styling()
 
 		frame.skinned = true

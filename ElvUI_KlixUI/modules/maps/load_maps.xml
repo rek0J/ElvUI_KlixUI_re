@@ -4,5 +4,8 @@
 	<Script file="minimapbuttons.lua"/>
 	<Script file="minimaplocation.lua"/>
 	<Script file="mail.lua"/>
+	<!-- MoP Classic: World Quests/Argus helpers are retail-only. -->
+ 	<!--Include file="worldquests\load_worldquests.xml"/-->
+	<!--Script file="flightq.lua"/-->
 	<Script file="options.lua"/>
 </Ui>

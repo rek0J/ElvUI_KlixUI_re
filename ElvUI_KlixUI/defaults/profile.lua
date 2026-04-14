@@ -1,31 +1,187 @@
-local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 
 if P["KlixUI"] == nil then P["KlixUI"] = {} end
 
---Create a unique table for our plugin
 P['KlixUI'] = {
 	-- General
-    ["general"] = {
+    ['general'] = {
         ["loginMessage"] = true,
 		["GameMenuScreen"] = true, -- Enable the Styles GameMenu
 		["GameMenuButton"] = true, -- Enable the KlixUI GameMenu Button
 		["AFK"] = true,
 		["AFKChat"] = true,
-		['splashScreen'] = true,
+		["splashScreen"] = true,
 		["Movertransparancy"] = .75,
 		["style"] = "ALL", -- Styling function
 		["iconShadow"] = true, -- Icon Styling function
-		["shadowOverlay"] = { -- Screen overlay
+		['shadowOverlay'] = { -- Screen overlay
 			["enable"] = true,
-			["alpha"] = 60,
+			["alpha"] = 25,
 		},
-		["minimap"] = {
+		['minimap'] = {
 			["hide"] = false,
 		},
+		["teamStats"] = true,
     },
 	
+	-- ActionBars
+	['actionbars'] = {
+		['hearthstone'] = {
+			["enable"] = true,
+			["delete"] = false,
+		},
+		['SEBar'] = {
+			["enable"] = true,
+			["borderGlow"] = true,
+			["mouseover"] = false,
+			["malpha"] = 1,
+			["hideInCombat"] = false,
+			["hideInOrderHall"] = false,
+		},
+		['glow'] = {
+			["enable"] = true,
+			["finishMove"] = true,
+			["color"] = {r = 0.95, g = 0.95, b = 0.32, a = 1},
+			["number"] = 8,
+			["frequency"] = 0.45,
+			["length"] = 8,
+			["thickness"] = 2,
+			["xOffset"] = 0,
+			["yOffset"] = 0,
+		},
+		['autoButtons'] = {
+			["enable"] = false,
+			bindFont = "Expressway",
+			countFont = "Expressway",
+			bindFontSize = 18,
+			countFontSize = 18,
+			slotAutoButtons = {
+				enable = true,
+				slotBBColorByItem = true,
+				slotBBColor = {r = 1, g = 1, b = 1, a = 1},
+				slotSpace = 1,
+				slotDirection = "RIGHT",
+				slotNum = 5,
+				slotPerRow = 5,
+				slotSize = 35,
+			        inheritGlobalFade = false,
+			},
+			questAutoButtons = {
+				enable = true,
+				questBBColorByItem = true,
+				questBBColor = {r = 1, g = 1, b = 1, a = 1},
+				questSpace = 1,
+				questDirection = "RIGHT",
+				questNum = 5,
+				questPerRow = 5,
+				questSize = 35,
+			        inheritGlobalFade = false,
+			},
+			whiteList = {
+				[90006] = true, -- Wu Kao Smoke Bomb
+				[86534] = true,
+				[86536] = true,
+				[76097] = true, -- Master Healing Potion
+				[76098] = true, -- Master Mana Potion
+				[5512] = true, -- Healthstone
+				[36799] = true, -- Mana Gem
+				[81901] = true, -- Brilliant Mana Gem
+				[76089] = true, -- Virmen's Bite
+				[76090] = true, -- Potion of the Mountains
+				[76093] = true, -- Potion of the Jade Serpent
+				[76094] = true, -- Alchemist's Rejuvenation
+				[76095] = true, -- Potion of Mogu Power
+				[86125] = true, -- Kafa Press
+				[86569] = true, -- Crystal of Insanity
+				[118922] = true, -- Oralius' Whispering Crystal
+				[127843] = true,
+				[49040] = true, -- Jeeves
+				[132514] = true, -- Auto-Hammer
+
+			        -- Professions (Bfa)
+			        [164733] = true, -- Synchronous Thread
+			        [164978] = true, -- Mallet of Thunderous Skins
+							
+				--Guild and Honor
+			        [63359] = true, -- Banner of Cooperation
+			        [64398] = true, -- Standard of Unity
+			        [64399] = true, -- Battle Standard of Coordination
+			        [18606] = true, -- Alliance Battle Standard
+			        [64400] = true, -- Banner of Cooperation
+			        [64401] = true, -- Standard of Unity
+			        [64402] = true, -- Battle Standard of Coordination
+			        [18607] = true, -- Horde Battle Standard
+							
+				--WOD
+				[116266] = true,
+				[116276] = true,
+				[116268] = true,
+				[116271] = true,
+				[118711] = true,
+				[118704] = true,
+				[109217] = true,
+				[109218] = true,
+				[109219] = true,
+				[109220] = true,
+				[109221] = true,
+				[109222] = true,
+				[109223] = true,
+				[118269] = true, -- Greenskin Apple
+				[122453] = true, -- Commander's Draenic Agility Potion
+				[122451] = true,
+				[122454] = true,
+				[122452] = true,
+				[122455] = true,
+				[122456] = true,
+				[116411] = true, -- Scroll of Protection
+							
+				--Legion
+				[118330] = true, -- Pile of Weapons
+				[122100] = true, -- Soul Gem
+				[127030] = true, -- Granny"s Flare Grenades
+				[127295] = true, -- Blazing Torch
+				[128651] = true, -- Critter Hand Cannon
+				[128772] = true, -- Branch of the Runewood
+				[129161] = true, -- Stormforged Horn
+				[129725] = true, -- Smoldering Torch
+				[131931] = true, -- Khadgar"s Wand
+				[133756] = true, -- Fresh Mound of Flesh
+				[133882] = true, -- Trap Rune
+				[133897] = true, -- Telemancy Beacon
+				[133925] = true, -- Fel Lash
+				[133999] = true, -- Inert Crystal
+				[136605] = true, -- Solendra"s Compassion
+				[137299] = true, -- Nightborne Spellblad
+				[138146] = true, -- Rediant Ley Crystal
+				[140916] = true, -- Satchel of Locklimb Powder
+				[109076] = true, -- Goblin Glider Kit
+				[147707] = true, -- Repurposed Fel Focuser
+				[142117] = true, -- Potion of Prolonged Power
+				[153023] = true, -- Lightforged Augment Rune
+							
+				--BFA
+			    [169451] = true, -- Abyssal Healing Potion
+				[152494] = true, -- Coastal Healing Potion
+				[152495] = true, -- Coastal Mana Potion
+			    [160053] = true, -- Battle-Scarred Augment Rune
+				[163224] = true, -- Battle Potion of Strength
+				[163223] = true, -- Battle Potion of Agility
+				[163222] = true, -- Battle Potion of Intellect
+				[163225] = true, -- Battle Potion of Stamina
+				[168500] = true, -- Superior Battle Potion of Strength
+				[168489] = true, -- Superior Battle Potion of Agility
+				[168498] = true, -- Superior Battle Potion of Intellect
+				[168499] = true, -- Superior Battle Potion of Stamina
+			    [169299] = true, -- Potion of Unbridled Fury
+			},
+			blackList = {},
+			blackitemID = "",
+			whiteItemID = "",
+		},
+	},
+	
 	-- AddonPanel
-	["addonpanel"] = {
+	['addonpanel'] = {
 		["Enable"] = true,
 		["NumAddOns"] = 25,
 		['FrameWidth'] = 550,
@@ -41,26 +197,261 @@ P['KlixUI'] = {
 		['FontCustomColor'] = {r = 1, g = 1, b = 1},
 	},
 	
-	-- Armory
-	["armory"] = {
+	-- Announcement System
+	['announcement'] = {
 		["enable"] = true,
-		["azeritebtn"] = true,
+		['interrupt'] = {
+			["enable"] = true,
+			["only_instance"] = true,
+			["player"] = {
+				["enable"] = true,
+				["text"] = L["I interrupted %target%\'s %target_spell%!"],
+				["channel"] = {
+					["solo"] = "SELF",
+					["party"] = "PARTY",
+					["instance"] = "INSTANCE_CHAT",
+					["raid"] = "RAID",
+				},
+			},
+			['others'] = {
+				["enable"] = false,
+				["text"] = L["%player% interrupted %target%\'s %target_spell%!"],
+				["channel"] = {
+					["party"] = "EMOTE",
+					["instance"] = "NONE",
+					["raid"] = "NONE",
+				},
+			},
+		},
+		['utility_spells'] = {
+			["enable"] = true,
+			["channel"] = {
+				["solo"] = "SELF",
+				["party"] = "PARTY",
+				["instance"] = "INSTANCE_CHAT",
+				["raid"] = "RAID",
+			},
+			['spells'] = {
+				['ritual_of_summoning'] = {
+					["enable"] = true,
+					["id"] = 698,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% is casting %spell%, please assist!"],
+				},
+				['create_soulwell'] = {
+					["enable"] = true,
+					["id"] = 29893,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% is handing out cookies, go and get one!"],
+				},
+				['moll_e'] = {
+					["enable"] = true,
+					["id"] = 54710,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% puts %spell%"],
+				},
+				['katy_stampwhistle'] = {
+					["enable"] = true,
+					["id"] = 261602,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% used %spell%"],
+				},
+				['conjure_refreshment'] = {
+					["enable"] = true,
+					["id"] = 190336,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% casted %spell%, today's special is Anchovy Pie!"],
+				},
+				['feasts'] = {
+					["enable"] = true,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["OMG, wealthy %player% puts %spell%!"],
+				},
+				['bots'] = {
+					["enable"] = true,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% puts %spell%"],
+				},
+				['toys'] = {
+					["enable"] = true,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% puts %spell%"],
+				},
+				['portals'] = {
+					["enable"] = true,
+					["player_cast"] = false,
+					["use_raid_warning"] = true,
+					["text"] = L["%player% opened %spell%!"],
+				},
+			}
+		},
+		
+		['combat_spells'] = {
+			["enable"] = true,
+			['combat_resurrection'] = {
+				["enable"] = true,
+				["player_cast"] = false,
+				["use_raid_warning"] = false,
+				["text"] = L["%player% casted %spell% -> %target%"],
+				['channel'] = {
+					["solo"] = "EMOTE",
+					["party"] = "PARTY",
+					["instance"] = "INSTANCE_CHAT",
+					["raid"] = "RAID",
+				},
+			},
+			
+			['threat_transfer'] = {
+				["enable"] = true,
+				["player_cast"] = true,
+				["target_is_me"] = true,
+				["only_target_is_not_tank"] = true,
+				["use_raid_warning"] = false,
+				["text"] = L["%player% casted %spell% -> %target%"],
+				['channel'] = {
+					["solo"] = "EMOTE",
+					["party"] = "PARTY",
+					["instance"] = "INSTANCE_CHAT",
+					["raid"] = "RAID",
+				},
+			},
+		},
+		
+		['taunt_spells'] = {
+			["enable"] = true,
+			["player"] = {
+				['player'] = {
+					["enable"] = false,
+					["success_text"] = L["I taunted %target% successfully!"],
+					["provoke_all_text"] = L["I taunted all enemies in 10 yards!"],
+					["failed_text"] = L["I failed on taunting %target%!"],
+					["success_channel"] = {
+						["solo"] = "EMOTE",
+						["party"] = "PARTY",
+						["instance"] = "INSTANCE_CHAT",
+						["raid"] = "RAID",
+					},
+					['failed_channel'] = {
+						["solo"] = "EMOTE",
+						["party"] = "PARTY",
+						["instance"] = "INSTANCE_CHAT",
+						["raid"] = "RAID",
+					},
+				},
+				
+				['pet'] = {
+					["enable"] = false,
+					["success_text"] = L["My %pet_role% %pet% taunted %target% successfully!"],
+					["failed_text"] = L["My %pet_role% %pet% failed on taunting %target%!"],
+					['success_channel'] = {
+						["solo"] = "EMOTE",
+						["party"] = "PARTY",
+						["instance"] = "INSTANCE_CHAT",
+						["raid"] = "RAID",
+					},
+					['failed_channel'] = {
+						["solo"] = "EMOTE",
+						["party"] = "PARTY",
+						["instance"] = "INSTANCE_CHAT",
+						["raid"] = "RAID",
+					},
+				},
+			},
+			
+			['others'] = {
+				["player"] = {
+					["enable"] = false,
+					["success_text"] = L["%player% taunted %target% successfully!"],
+					["provoke_all_text"] = L["%player% taunted all enemies in 10 yards!"],
+					["failed_text"] = L["%player% failed on taunting %target%!"],
+					['success_channel'] = {
+						["solo"] = "NONE",
+						["party"] = "NONE",
+						["instance"] = "NONE",
+						["raid"] = "NONE",
+					},
+					['failed_channel'] = {
+						["solo"] = "NONE",
+						["party"] = "SELF",
+						["instance"] = "SELF",
+						["raid"] = "SELF",
+					},
+				},
+				
+				['pet'] = {
+					["enable"] = false,
+					["success_text"] = L["%player%\'s %pet_role% %pet% taunted %target% successfully!"],
+					["failed_text"] = L["%player%\'s %pet_role% %pet% failed on taunting %target%!"],
+					['success_channel'] = {
+						["solo"] = "NONE",
+						["party"] = "NONE",
+						["instance"] = "NONE",
+						["raid"] = "NONE",
+					},
+					['failed_channel'] = {
+						["solo"] = "NONE",
+						["party"] = "SELF",
+						["instance"] = "SELF",
+						["raid"] = "SELF",
+					},
+				},
+			},
+		},
+		
+		['thanks'] = {
+			["goodbye"] = {
+				["enable"] = true,
+				["text"] = L["Thanks all!"],
+				['channel'] = {
+					["party"] = "PARTY",
+					["instance"] = "INSTANCE_CHAT",
+					["raid"] = "RAID",
+				},
+			},
+			
+			['resurrection'] = {
+				["enable"] = true,
+				["text"] = L["%target%, thank you for using %spell% to revive me. :)"],
+				['channel'] = {
+					["solo"] = "WHISPER",
+					["party"] = "WHISPER",
+					["instance"] = "WHISPER",
+					["raid"] = "WHISPER",
+				},
+			},
+		},
+	},
+	
+	-- Armory
+	['armory'] = {
+		["enable"] = true,
+		--["azeritebtn"] = true,
 		["naked"] = true,
 		["classCrests"] = true,
-		["backdrop"] = {
+		['backdrop'] = {
 			["selectedBG"] = "NONE",
 			["customAddress"] = "",
 			["overlay"] = false,
 			["alpha"] = .3,
 		},
-		["durability"] = {
+		
+		['durability'] = {
 			["enable"] = true,
 			["onlydamaged"] = true,
 			["font"] = "Expressway",
 			["textSize"] = 11,
 			["fontOutline"] = "OUTLINE",
 		},
-		["ilvl"] = {
+		
+		['ilvl'] = {
 			["enable"] = true,
 			["font"] = "Expressway",
 			["textSize"] = 12,
@@ -68,9 +459,10 @@ P['KlixUI'] = {
 			["colorStyle"] = "RARITY",
 			["color"] = {r = 1, g = 1, b = 0},
 		},
-		["stats"] = {
+		
+		['stats'] = {
 			["IlvlFull"] = true,
-			["IlvlColor"] = false,
+			["IlvlColor"] = true,
 			["AverageColor"] = {r = 0, g = 1, b = .59},
 			["OnlyPrimary"] = true,
 			["ItemLevel"] = {
@@ -78,17 +470,20 @@ P['KlixUI'] = {
 				["size"] = 20,
 				["outline"] = "OUTLINE",
 			},
-			["statFonts"] = {
+
+			['statFonts'] = {
 				["font"] = "Expressway",
 				["size"] = 12,
 				["outline"] = "OUTLINE",
 			},
-			["catFonts"] = {
-				["font"] = "Expressway",
+			
+			['catFonts'] = {
+				["font"] = "Gotham Narrow",
 				["size"] = 12,
 				["outline"] = "OUTLINE",
 			},
-			["List"] = {
+			
+			['List'] = {
 				["HEALTH"] = false,
 				["POWER"] = false,
 				["ALTERNATEMANA"] = false,
@@ -102,13 +497,15 @@ P['KlixUI'] = {
 				["MOVESPEED"] = false,
 			},
 		},
-		["gradient"] = {
+		
+		['gradient'] = {
 			["enable"] = true,
 			["colorStyle"] = "VALUE",
 			["color"] = {r = 1, g = 1, b = 0},
-			["alpha"] = 1,
+			["alpha"] = 0.5,
 		},
-		["indicators"] = {
+		
+		['indicators'] = {
 			["enchant"] = {
 				["enable"] = true,
 				["glow"] = {
@@ -117,31 +514,33 @@ P['KlixUI'] = {
 					["color"] = {r = 255/255, g = 0/255, b = 204/255, a = 1},
 				},
 			},
-			["socket"] = {
+			
+			['socket'] = {
 				["enable"] = true,
-				["glow"] = {
+				['glow'] = {
 					["enable"] = false,
 					["style"] = "AutoCast",
 					["color"] = {r = 255/255, g = 0/255, b = 17/255, a = 1},
 				},
 			},
-			["transmog"] = {
+			['transmog'] = {
 				["enable"] = true,
 			},
-			["illusion"] = {
+			['illusion'] = {
 				["enable"] = true,
 			},
 		},
-		["statsPanel"] = {
+		
+		['statsPanel'] = {
 			["enable"] = true,
-			["height"] = 35,
+			["height"] = 45,
 			["position"] = "TOP",
 			["customStats"] = "",
 		},
 	},
 	
 	-- Bags
-	["bags"] = {
+	['bags'] = {
 		["itemSelect"] = {
 			["enable"] = true,
 			["displayProgressFrame"] = true,
@@ -156,7 +555,7 @@ P['KlixUI'] = {
 	},
 	
 	-- Better Reputation Colors
-	["betterreputationcolors"] = {
+	['betterreputationcolors'] = {
 		[1] = {r = 0.63, g = 0, b = 0},
 		[2] = {r = 0.63, g = 0, b = 0},
 		[3] = {r = 0.63, g = 0, b = 0},
@@ -168,7 +567,7 @@ P['KlixUI'] = {
 	},
 	
 	-- Blizzard
-	["blizzard"] = {
+	['blizzard'] = {
 		["rumouseover"] = false,
 		["errorframe"] = {
 			["height"] = 60,
@@ -177,44 +576,36 @@ P['KlixUI'] = {
 	},
 	
 	-- Chat
-	["chat"] = {
-		["panelHeight"] = E.db.chat.panelHeight, -- Expand function
-		["select"] = false,
-		["styleTab"] = "SQUARE",
-		["colorTab"] = {r = 0.97647058823529, g = 0.37647058823529, b = 0.85098039215686},
-		['fadeChatTabs'] = false,
-		['fadedChatTabAlpha'] = 0.5,
-		['forceShow'] = false,
-		['forceShowBelowAlpha'] = 0.1,
-		['forceShowToAlpha'] = 1,
-		['chatTabSeparator'] = 'HIDEBOTH',
-		['chatDataSeparator']= 'HIDEBOTH',
-		["rightclickmenu"] = {
+		['chat'] = {
+	        ["hideChat"] = false,
+			["chatButton"] = true,	
+			["hidePlayerBrackets"] = false,	
+			["emotes"] = true,
+			["chatBar"] = false,
+	
+		['filter'] = {
 			["enable"] = true,
-			--[[["friend"] = {
-				["ARMORY"] = true,
-				["MYSTATS"] = true,
-				["NAME_COPY"] = true,
-				["SEND_WHO"] = true,
-				["FRIEND_ADD"] = true,
-				["GUILD_ADD"] = true,
-				["Fix_Report"] = false,
+		        ["keywords"] = "",
+	          	["blockAddOnAlerts"] = true,
+		        ["damagemeter"] = true,
 			},
-			["chat_roster"] = {
-				["NAME_COPY"]  = true,
-				["SEND_WHO"] = true,
-				["FRIEND_ADD"] = true,
-			},
-			["guild"] = {
-				["ARMORY"] = true,
-				["NAME_COPY"] = true,
-				["FRIEND_ADD"] = true,
-			},]]
+
+        ['chatFade'] = {
+	        ["enable"] = true,
+	        	["minAlpha"] = 0.33,
+	        	["timeout"] = 20,
+		        fadeOutTime = 0.65
+	        },
+
+		['rightclickmenu'] = {
+			["enable"] = true,
 		},
+			
+		['chatTabSeparator'] = "HIDEBOTH",
 	},
 	
 	-- Combat Text
-	["combattext"] = {
+	['combattext'] = {
         ["enable"] = true,
         ["xOffset"] = 0,
         ["yOffset"] = 0,
@@ -225,12 +616,10 @@ P['KlixUI'] = {
         ["fontShadow"] = false,
         ["damageColor"] = true,
         ["defaultColor"] = "ffff00",
-		["damageColorPersonal"] = false,
-		["defaultColorPersonal"] = "ff0000",
         ["truncate"] = true,
         ["truncateLetter"] = true,
         ["commaSeperate"] = true,
-        ["sizing"] = {
+        ['sizing'] = {
             ["crits"] = true,
             ["critsScale"] = 1.5,
             ["miss"] = false,
@@ -240,25 +629,29 @@ P['KlixUI'] = {
 			["smallHitsHide"] = false,
             ["autoattackcritsizing"] = true,
         },
-        ["animations"] = {
+		
+        ['animations'] = {
             ["ability"] = "fountain",
 			["crit"] = "verticalUp",
             ["miss"] = "verticalUp",
             ["autoattack"] = "fountain",
             ["autoattackcrit"] = "verticalUp",
         },
-        ["animationsPersonal"] = {
+		
+        ['animationsPersonal'] = {
             ["normal"] = "rainfall",
             ["crit"] = "verticalUp",
             ["miss"] = "verticalUp",
         },
-        ["formatting"] = {
+		
+        ['formatting'] = {
             ["size"] = 20,
             ["icon"] = "right",
             ["alpha"] = 1,
         },
-        ["useOffTarget"] = true,
-        ["offTargetFormatting"] = {
+		
+        ['useOffTarget'] = true,
+        ['offTargetFormatting'] = {
             ["size"] = 15,
             ["icon"] = "right",
             ["alpha"] = 0.5,
@@ -266,8 +659,18 @@ P['KlixUI'] = {
     },
 	
 	-- Cooldowns
-	["cooldowns"] = {
-		["pulse"] = {
+	['cooldowns'] = {
+		["dimishing"] = {
+			["enable"] = true,
+			["text"] = {
+				["enable"] = false,
+				["font"] = "Expressway",
+				["fontSize"] = 12,
+				["fontOutline"] = "OUTLINE",
+			},
+		},
+
+		['pulse'] = {
 			["enable"] = false,
 			["fadeInTime"] = 0.3,
 			["fadeOutTime"] = 0.6,
@@ -280,7 +683,8 @@ P['KlixUI'] = {
 			["x"] = UIParent:GetWidth()/2,
 			["y"] = UIParent:GetHeight()/2,
 		},
-		["enemy"] = {
+		
+		['enemy'] = {
 			["enable"] = true,
 			["size"] = 30,
 			["direction"] = "RIGHT",
@@ -288,10 +692,11 @@ P['KlixUI'] = {
 			["show_inpvp"] = false,
 			["show_inarena"] = true,
 		},
+
 	},
 	
 	-- DataBars
-	["databars"] = {
+	['databars'] = {
 		["enable"] = true,
 		["style"] = true,
 		["experienceBar"] = {
@@ -300,128 +705,70 @@ P['KlixUI'] = {
 			["xpColor"] = {r = 0, g = 0.4, b = 1, a = 0.8},
 			["restColor"] = {r = 1, g = 0, b = 1, a = 0.2},
 		},
-		["reputationBar"] = {
+		
+		['reputationBar'] = {
 			["capped"] = true,
 			["progress"] = true,
 			["color"] = "ascii",
 			--["textFormat"] = "Paragon",
 			["autotrack"] = true,
 		},
-		["questXP"] = {
+		
+		['honorBar'] = {
+			["progress"] = true,
+			["color"] = {r = 240/255, g = 114/255, b = 65/255},
+		},
+		
+		['azeriteBar'] = {
+			["progress"] = true,
+			["color"] = {r = 0.901, g = 0.8, b = 0.601},
+		},
+		
+		['questXP'] = {
 			["enable"] = true,
 			["IncludeIncomplete"] = false,
 			["CurrentZoneOnly"] = false,
-			["CurrentZoneOnly"] = true,
-			["tooltip"] = true,
 			["Color"] = {r = 217/255, g = 217/255, b = 0},
 		},
+		
+		['paragon'] = {
+			["enable"] = true,
+			["text"] = "PARAGON",
+			["color"] = {r = 0, g = 0.5, b = 0.9},
+		},
 	},
 	
-	-- DataTexts
+	-- Datatexts
 	['datatexts'] = {
-		['chat'] = {
-			['enable'] = true,
-			['transparent'] = true,
-			['editBoxPosition'] = 'BELOW_CHAT',
-			['backdrop'] = true,
-			['style'] = true,
-			['strata'] = "BACKGROUND"
-		},
-		['middle'] = {
-			['enable'] = true,
-			['transparent'] = true,
-			['backdrop'] = true,
-			['style'] = true,
-			['width'] = 373,
-			['height'] = 21,
-			['strata'] = "BACKGROUND"
-		},
-		['colors'] = {
-			['customColor'] = 2,
-			['userColor'] = { r = 1, g = 1, b = 1 },
-		},
-		--["panels"] = {
-			--["KuiLeftChatDTPanel"] = {
-				--["left"] = "Spec Switch (KUI)",
-				--["middle"] = "Item Level (KUI)",
-				--["right"] = "Classhall (KUI)",
-			--},
-			--["KuiRightChatDTPanel"] = {
-				--["left"] = "System (KUI)",
-				--["middle"] = "Bags",
-				--["right"] = "Gold",
-			--},
-			--["Left_ChatTab_Panel"] = {
-				--["left"] = "",
-				--["middle"] = "",
-				--["right"] = "Mail (KUI)",
-			--},
-			--["Right_ChatTab_Panel"] = {
-				--["left"] = "",
-				--["middle"] = "",
-				--["right"] = "Mail (KUI)",
-			--},
-		--},
-		["leftChatTabDatatextPanel"] = {
-			["enable"] = false,
-		},
-		["rightChatTabDatatextPanel"] = {
-			["enable"] = false,
+		["chat"] = {
+			["enable"] = true,
+			["transparent"] = true,
+			["editBoxPosition"] = "BELOW_CHAT",
+			["backdrop"] = true,
+			["style"] = true,
+			["showChatDt"] = "SHOWBOTH",
 		},
 	},
 	
-	-- DataTexts Continued
-	["currencyDT"] = {
-		["Archaeology"] = false,
-		--["Jewelcrafting"] = false,
-		["PvP"] = true,
-		["Raid"] = true,
-		--["Cooking"] = false,
-		["Miscellaneous"] = true,
-		["BFA"] = true,
-		["LEGION"] = false,
-		["WOD"] = false,
-		["MOP"] = false,
-		["CATA"] = false,
-		["WOLK"] = false,
-		["WoWToken"] = true,
-		["Zero"] = true,
-		["Icons"] = true,
-		["Faction"] = true,
-		["Unused"] = true,
-		["gold"] = {
-			["direction"] = "normal",
-			["method"] = "name",
-		},
-		["cur"] = {
-			["direction"] = "normal",
-			["method"] = "name",
-		},
-	},
-	["systemDT"] = {
-		["maxAddons"] = 25, -- Sets how many Addons to show
-		["showFPS"] = true, -- Show Frames per seconds
-		["showMS"] = true, -- Show Ping
-		["latency"] = "home", -- Set the latency type ("home", "world")
-		["showMemory"] = false, -- Show Memory usage
-		["announceFreed"] = true, -- Enable the Garbage Message in Chat
-	},
-	["timeDT"] = {
-		["size"] = 1.8,
+	-- DataTexts Continue
+	['timeDT'] = {
+		["size"] = 1.2,
 		["date"] = true,
 		["invasions"] = true,
 		["played"] = true,
 	},
-	["profDT"] = {
+
+	['profDT'] = {
 		["prof"] = "prof1",
 		["hint"] = true,
 	},
-	["titlesDT"] = {
+
+	['titlesDT'] = {
 		["useName"] = true,
 	},
 	
 	-- Enhanced Friends List
-	["efl"] = {
+	['efl'] = {
 		["enable"] = true,
 		["NameFont"] = "Expressway",
 		["NameFontSize"] = 11,
@@ -435,16 +782,16 @@ P['KlixUI'] = {
 	
 	-- GameMenu (chat)
 	['gamemenu'] = { 
-		['color'] = 2,
-		['customColor'] = {r = .9, g = .7, b = 0},
+		["color"] = 2,
+		["customColor"] = {r = .9, g = .7, b = 0},
 	},
 	
 	-- LocationPanel
-	["locPanel"] = {
+	['locPanel'] = {
 		["enable"] = false,
 		["style"] = true,
 		["autowidth"] = false,
-		["width"] = 258,
+		["width"] = 300,
 		["height"] = 21,
 		["spacing"] = -1,
 		["linkcoords"] = true,
@@ -456,62 +803,138 @@ P['KlixUI'] = {
 		["throttle"] = 0.2,
 		["format"] = "%.0f",
 		["zoneText"] = true,
-		["colorType"] = "REACTION",
+		["colorType"] = "CLASSCOLOUR",
 		["colorType_Coords"] = "DEFAULT",
 		["customColor"] = {r = 1, g = 1, b = 1 },
 		["customColor_Coords"] = {r = 1, g = 1, b = 1 },
 		["combathide"] = false,
+		["orderhallhide"] = false,
 		["hidecoords"] = false,
 		["hidecoordsInInstance"] = true,
 		["mouseover"] = false,
 		["malpha"] = 1,
-		["tooltip"] = {
+		["displayOther"] = "RLEVEL",
+		["showicon"] = true,
+		["showEngineer"] = true,
+		["dtshow"] = true,
+		['portals'] = {
 			["enable"] = true,
-			["combathide"] = true,
-			["hint"] = true,
-			["status"] = true,
+			["HSplace"] = true,
+			["customWidth"] = false,
+			["customWidthValue"] = 200,
+			["justify"] = "LEFT",
+			["cdFormat"] = "DEFAULT",
+			["ignoreMissingInfo"] = false,
+			["showHearthstones"] = true,
+			["hsPrio"] = "54452,64488,93672,142542,162973,163045,165669,165670,165802,166746,166747,168907,172179,184353",
+			["showToys"] = true,
+			["showSpells"] = true,
+			["showEngineer"] = true,
+		},
+		['tooltip'] = {
+			["tt"] = true,
+			["ttcombathide"] = true,
+			["tthint"] = true,
+			["ttst"] = true,
+			["ttlvl"] = true,
+			["fish"] = true,
+			["petlevel"] = true,
+			["ttinst"] = true,
+			["ttreczones"] = true,
+			["ttrecinst"] = true,
+			["ttcoords"] = true,
+			["curr"] = true,
+			["prof"] = true,
+			["profcap"] = false,
+			["tthideraid"] = false,
+			["tthidepvp"] = false,
+		},
+	},
+	
+	-- Loot
+	['loot'] = {
+		['bonusFilter'] = {
+			[14] = {
+				["*"] = false,
+			},
+			[15] = {
+				["*"] = false,
+			},
+			[16] = {
+				["*"] = false,
+			},
+			[17] = {
+				["*"] = false,
+			},
+			[23] = false,
+			[8] = false,
+			["disableKeystoneLevelToggle"] = false,
+			["disableKeystoneLevel"] = 0,
 		},
 	},
 	
 	-- Maps
-	["maps"] = {
-		["minimap"] = {
+	['maps'] = {
+		['minimap'] = {
 			["rectangle"] = false,
+			["styleButton"] = true,
+			["styleLFG"] = false,
 			["glow"] = true,
 			["glowAlways"] = false,
 			["hideincombat"] = false,
 			["fadeindelay"] = 5,
-			["topbar"] = {
+			['topbar'] = {
 				["locationdigits"] = 1,
 				["locationtext"] = "VERSION",
 			},
-			["mail"] = {
+			['blip'] = {
+				["enabled"] = false,
+			},
+			['mail'] = {
 				["enhanced"] = true,
 				["sound"] = true,
 				["hide"] = false,
 			},
-			["buttons"] = {
+
+			['buttons'] = {
 				["enable"] = true,
 				["barMouseOver"] = false,
 				["backdrop"] = true,
 				["hideInCombat"] = false,
-				["iconSize"] = 20,
+				["iconSize"] = 26,
 				["buttonsPerRow"] = 6,
 				["buttonSpacing"] = 2,
+				["sortBy"] = "BY_FILTERING",
+				["buttonSource"] = "ALL",
+				["growthDirection"] = "RIGHT_DOWN",
 				["visibility"] = "[petbattle] hide; show",
-				["moveTracker"] = false,
+				["moveTracker"] = true,
 				["moveQueue"] = false,
-				["moveMail"] = false,
+				["moveMail"] = true,
 				["hideGarrison"] = false,
 				["moveGarrison"] = false,
+				["useCustomPosition"] = false,
+				["dockToMinimap"] = true,
+				["point"] = "TOPRIGHT",
+				["relativePoint"] = "BOTTOMRIGHT",
+				["xOffset"] = 0,
+				["yOffset"] = -2,
+				["enableCollapse"] = true,
+				["collapsed"] = false,
+				["collapsedButtons"] = "KLIXUI",
+				["whitelist"] = "",
+				["blacklist"] = "MAIL,TRACKING,QUEUE",
+				["knownButtons"] = "",
 			},
-			["ping"] = {
+
+			['ping'] = {
 				["enable"] = true,
 				["position"] = "TOP",
 				["xOffset"] = 0,
 				["yOffset"] = -20,
 			},
-			["coords"] = {
+
+			['coords'] = {
 				["enable"] = false,
 				["display"] = "SHOW",
 				["position"] = "BOTTOM",
@@ -524,7 +947,8 @@ P['KlixUI'] = {
 				["throttle"] = 0.2,
 				["color"] = {r = 1,g = 1,b = 1},
 			},
-			["cardinalPoints"] = {
+
+			['cardinalPoints'] = {
 				["enable"] = true,
 				["north"] = true,
 				["east"] = true,
@@ -537,9 +961,10 @@ P['KlixUI'] = {
 				["customColor"] = { r = 255/255, g = 227/255, b = 35/255 },
 			},
 		},
-		["worldmap"] = {
-			["scale"] = .7,
-			["zoom"] = true,
+
+		['worldmap'] = {
+			["scale"] = 1,
+			["worldquests"] = true,
 			["reveal"] = {
 				["enable"] = true,
 				["overlay"] = true,
@@ -549,8 +974,8 @@ P['KlixUI'] = {
 	},
 	
 	-- Media
-	["media"] = {
-		["fonts"] = {
+	['media'] = {
+		['fonts'] = {
 			["zone"] = {
 				["font"] = "Expressway",
 				["size"] = 32,
@@ -604,88 +1029,186 @@ P['KlixUI'] = {
 	},
 	
 	-- MicroBar
-	["microBar"] = {
-		["enable"] = true,
+	['microBar'] = {
+		["enable"] = false,
 		['scale'] = 1.0,
 		["hideInCombat"] = false,
-		["highlight"] = {
+		["hideInOrderHall"] = false,
+		['highlight'] = {
 			["enable"] = true,
 			["buttons"] = false,
 		},
-		["text"] = {
+		['text'] = {
 			["buttons"] = {
 				["position"] = "BOTTOM",
 			},
-			["friends"] = {
+			['friends'] = {
 				["enable"] = true,
 				["textSize"] = 12,
 				["xOffset"] = 0,
 				["yOffset"] = 5,
 			},
-			["guild"] = {
+			['guild'] = {
 				["enable"] = true,
 				["textSize"] = 12,
 				["xOffset"] = 0,
 				["yOffset"] = 5,
 			},
 			['colors'] = {
-				['customColor'] = 1,
-				['userColor'] = { r = 1, g = 1, b = 1 },
+				["customColor"] = 1,
+				["userColor"] = { r = 1, g = 1, b = 1 },
 			},
 		},
 	},
 	
 	-- Miscellaneous
-	["misc"] = {
-		["combatState"] = false,
+	['misc'] = {
+		["combatState"] = true,
 		["skillGains"] = false,
 		["gmotd"] = true,
 		["buyall"] = true,
+		["talkingHead"] = false,
+		["whistleLocation"] = true,
+		["whistleSound"] = true,
+		["toggleSoundCustom"] = false,
+		["whistleSoundCustom"] = "",
+		["lootSound"] = true,
+		["transmog"] = true,
+		["leaderSound"] = true,
 		["cursorFlash"] = {
 			["enable"] = true,
 			["alpha"] = 0.50,
 			["color"] = { r = KUI.r, g = KUI.g, b = KUI.b },
 			["visibility"] = "ALWAYS",
 		},
-		["alreadyknown"] = {
+		['alreadyknown'] = {
 			["enable"] = true,
 			["color"] = { r = 0, g = 1, b = 0 },
 		},
+		["AFKPetModel"] = {
+			["pet"] = "",
+			["animation"] = 0,
+			["modelScale"] = 1,
+			["facing"] = 15,
+		},
+		["vehicleSeat"] = {
+			["missing"] = true,
+		},
 		["merchant"] = {
+			["style"] = true,
+			["subpages"] = 2,
 			["itemlevel"] = true,
 			["equipslot"] = true,
 		},
+		["bloodlust"] = {
+			["enable"] = true,
+			["sound"] = true,
+			["text"] = true,
+			["faction"] = "HORDE",
+			["customSound"] = "",
+			["SoundOverride"] = false,
+			["UseCustomVolume"] = false,
+			["CustomVolume"] = 40,
+		},
+		["easyCurve"] = {
+			["enable"] = true,
+			["override"] = false,
+			["whispersAchievement"] = false,
+			["whispersKeystone"] = false,
+		},
 		["auto"] = {
-			["auction"] = true,
+			["keystones"] = true,
 			["gossip"] = true,
+			["auction"] = true,
+			["skipAA"] = true,
+			["teleportation"] = true,
+			["workorder"] = {
+				["orderhall"] = false,
+				["nomi"] = false,
+			},
 			["invite"] = {
                 ["enable"] = true,
                 ["ainvkeyword"] = "321",
                 ["inviteRank"] = {},
             },
+			["screenshot"] = {
+				["enable"] = false,
+			},
+			["rolecheck"] = {
+				["enable"] = true,
+				["confirm"] = true,
+				["timewalking"] = true,
+				["love"] = true,
+				["halloween"] = true,
+			},
 		},
 		["panels"] = {
 			["top"] = {
 				["show"] = false,
 				["style"] = true,
 				["transparency"] = true,
-				["height"] = 22
+				["height"] = 12
 			},
 			["bottom"] = {
 				["show"] = false,
 				["style"] = true,
 				["transparency"] = true,
-				["height"] = 22
+				["height"] = 12
 			},
 		},
-		["zoom"] = {
+		["scrapper"] = {
+			["enable"] = true,
+			["position"] = "BOTTOM",
+			["autoOpen"] = true,
+			["equipmentsets"] = true,
+			["azerite"] = false,
+			["boe"] = false,
+			["Itemlvl"] = false,
+			["Itemprint"] = true,
+			["specificilvl"] = false,
+			["specificilvlbox"] = "",
+			["itemlevel"] = {
+				["enable"] = true,
+				["fontSize"] = 12,
+				["fontOutline"] = "OUTLINE",
+			},
+		},
+		['zoom'] = {
 			["increment"] = 5,
 			["speed"] = 50,
-			["distance"] = 60,
-			["maxZoom"] = true,
+			["distance"] = 39,
 		},
+
+		['autolog'] = {
+			["enable"] = false,
+			["curLogging"] = false,
+			["allraids"] = false,
+			["dungeons"] = false,
+			["mythicdungeons"] = false,
+			["mythiclevel"] = 10,
+			["challenge"] = false,
+			["chatwarning"] = true,
+			["flex"] = nil,
+			["raids10"] = nil,
+			["raids25"] = nil,
+			["raids10h"] = nil,
+			["raids25h"] = nil,
+			["lfr"] = {["81UDI"] = false, ["82BDZ"] = false, ["83COS"] = false, ["84ETP"] = false, ["85NYA"] = false},
+			["normal"] = {["81UDI"] = true, ["82BDZ"] = true, ["83COS"] = true, ["84ETP"] = true, ["85NYA"] = true},
+			["heroic"] = {["81UDI"] = true, ["82BDZ"] = true, ["83COS"] = true, ["84ETP"] = true, ["85NYA"] = true},
+			["mythic"] = {["81UDI"] = true, ["82BDZ"] = true, ["83COS"] = true, ["84ETP"] = true, ["85NYA"] = true},
+		},
+		
+		['CA'] = {
+			["enable"] = true,
+			["nextSound"] = 1,
+			["soundProbabilityPercent"] = 10,
+			["passiveMode"] = true,
+			["intervalProbability"] = 900,
+		},
+		
 		["popupsEnable"] = true, -- Needs to be seperate, else the config fuck up!
-		["popups"] = {
+		['popups'] = {
 			["ABANDON_QUEST"] = true,
 			["ABANDON_QUEST_WITH_ITEMS"] = true,
 			["ACTIVATE_FOLLOWER"] = true,
@@ -766,7 +1289,7 @@ P['KlixUI'] = {
 	},
 	
 	-- Notification
-	["notification"] = {
+	['notification'] = {
 		["enable"] = true,
 		["width"] = 300,
 		["height"] = 50,
@@ -782,12 +1305,12 @@ P['KlixUI'] = {
 	},
 	
 	-- Professions
-	["professions"] = {
+	['professions'] = {
 		["tabs"] = true
 	},
 	
 	-- PvP
-	["pvp"] = {
+	['pvp'] = {
 		["killStreaks"] = true,
 		["autorelease"] = true,
 		["rebirth"] = true,
@@ -799,10 +1322,10 @@ P['KlixUI'] = {
 	},
 	
 	-- Quest
-	["quest"] = {
+	['quest'] = {
 		["objectiveProgress"] = true,
 		["auto"] = {
-			["enable"] = true,
+			["enable"] = false,
 			["diskey"] = 2,
 			["accept"] = true,
 			["complete"] = true,
@@ -813,10 +1336,41 @@ P['KlixUI'] = {
 			["greeting"] = true,
 			["reward"] = false,
 		},
+		
+		["announce"] = {
+			["enable"] = false,
+			["noDetail"] = false,
+			["instance"] = false,
+			["raid"] = false,
+			["party"] = false,
+			["solo"] = true,
+			["ignore_supplies"] = true,
+		},
+		
+		["smart"] = {
+			["enable"] = false,
+			["RemoveComplete"] = false,
+			["AutoRemove"] = true,
+			["AutoSort"] = true,
+			["ShowDailies"] = false,
+		},
+		
+		["visibility"] = {
+			["enable"] = false,
+			["bg"] = "COLLAPSED",
+			["arena"] = "COLLAPSED",
+			["dungeon"] = "FULL",
+			["raid"] = "COLLAPSED",
+			["scenario"] = "FULL",
+			["rested"] = "FULL",
+			["garrison"] = "FULL",
+			["orderhall"] = "FULL",
+			["combat"] = "NONE",
+		},
 	},
 	
 	-- Raid Marker Bar
-	["raidmarkers"] = {
+	['raidmarkers'] = {
 		["enable"] = true,
 		["visibility"] = "INPARTY",
 		["customVisibility"] = "[noexists, nogroup] hide; show",
@@ -834,71 +1388,126 @@ P['KlixUI'] = {
 			["markingButton1"] = 'alt',
 			["markingButton2"] = 'LeftButton',
 		},
+		
+		['automark'] = {
+			["enable"] = false,
+			["tankMark"] = 2,
+			["healerMark"] = 5,
+		},
 	},
 	
 	-- Reminders
-	["reminder"] = {
+	['reminder'] = {
 		["solo"] = {
 			["enable"] = true,
-			["size"] = 31,
+			["size"] = 30,
 			["strata"] = "LOW",
 			["glow"] = true,
 		},
-		["raid"] = {
+		
+		['raid'] = {
 			["enable"] = false,
 			["visibility"] = "INPARTY",
 			["class"] = false,
 			["alpha"] = 0.3,
-			["size"] = 25,
+			["size"] = 26,
 			["backdrop"] = true,
 			["glow"] = true,
 			["customVisibility"] = "[noexists, nogroup] hide; show",
 		},
 	},
 	
+	-- Talents 
+	['talents'] = {
+		["enable"] = true,
+		["borderGlow"] = true,
+		["DefaultToTalentsTab"] = true,
+		["AutoHidePvPTalents"] = false,
+	},
+	
+	-- Toasts
+	["toasts"] = {
+		["enable"] = true,
+		["growth_direction"] = "DOWN",
+		["max_active_toasts"] = 6,
+		["sfx_enable"] = true,
+		["fadeout_delay"] = 2.8,
+		["scale"] = 1.1,
+		["colored_names_enabled"] = true,
+		["achievement_enabled"] = true,
+		["archaeology_enabled"] = true,
+		["garrison_6_0_enabled"] = false,
+		["garrison_7_0_enabled"] = true,
+		["garrison_8_0_enabled"] = true,
+		["instance_enabled"] = true,
+		["loot_special_enabled"] = true,
+		["loot_common_enabled"] = true,
+		["loot_common_quality_threshold"] = 1,
+		["loot_currency_enabled"] = true,
+		--["loot_gold_enabled"] = true,
+		--["loot_gold_threshold"] = 1,
+		["recipe_enabled"] = true,
+		["world_enabled"] = true,
+		["transmog_enabled"] = true,
+		["dnd"] = {
+			["achievement"] = false,
+			["archaeology"] = false,
+			["garrison_6_0"] = false,
+			["garrison_7_0"] = true,
+			["garrison_8_0"] = true,
+			["instance"] = false,
+			["loot_special"] = false,
+			["loot_common"] = false,
+			["loot_currency"] = false,
+			--["loot_gold"] = false,
+			["recipe"] = false,
+			["world"] = false,
+			["transmog"] = false,
+		},
+	},
+	
 	-- ToolTip
-	["tooltip"] = {
+	['tooltip'] = {
 		["tooltip"] = true,
-		["titleColor"] = false,
+	        ["tooltipIcon"] = true,
+	        ["factionIcon"] = true,
+	        ["petIcon"] = true,
+		["titleColor"] = true,
 		["memberInfo"] = true,
 		["achievement"] = true,
 		["keystone"] = true,
-		["azerite"] = {
+		['azerite'] = {
 			["enable"] = true,
 			["RemoveBlizzard"] = true,
 			["OnlySpec"] = false,
 			["Compact"] = false,
 		},
-		["progressInfo"] = {
+		
+		['corruption'] = {
+			["enable"] = true,
+			["append"] = true,
+			["english"] = false,
+		},
+		
+		['progressInfo'] = {
 			["enable"] = true,
 			["display"] = "SHIFT",
 			["NameStyle"] = "SHORT",
 			["DifStyle"] = "SHORT",
 			["raids"] = {
-				["uldir"] = true,
-				["dazaralor"] = true,
-				["crucible"] = true,
-				["eternalpalace"] = true,
+				["uldir"] = false,
+				["dazaralor"] = false,
+				["crucible"] = false,
+				["eternalpalace"] = false,
+				["nyalotha"] = true,
 			},
 		},
-		--[[["realmInfo"] = {
-			["enable"] = true,
-			["timezone"] = false,
-			["type"] = true,
-			["language"] = true,
-			["connectedrealms"] = true,
-			["countryflag"] = "languageline",
-			["finder_counryflag"] = true,
-			["communities_countryflag"] = true,
-			["ttGrpFinder"] = true,
-			["ttPlayer"] = true,
-			["ttFriends"] = true,
-		},]]
 	},
+	
 	-- NameHover
-	["nameHover"] = {
+	['nameHover'] = {
 		["enable"] = true,
-		["guild"] = true,
+		["guild"] = false,
 		["guildRank"] = false,
 		["race"] = false,
 		["realm"] = true,
@@ -910,7 +1519,8 @@ P['KlixUI'] = {
 	},
 	
 	-- UnitFrames
-	["unitframes"] = {
+	['unitframes'] = {
+		["style"] = false,
 		["powerBar"] = true,
 		["healerMana"] = false,
 		["AuraIconSpacing"] = {
@@ -938,10 +1548,27 @@ P['KlixUI'] = {
 			['health'] = E.db.unitframe.statusbar,
 			['ignoreTransparency'] = false,
 			['power'] = E.db.unitframe.statusbar,
+			['castbar'] = E.db.unitframe.statusbar,
 		},
-		["eliteicon"] = {
+		['castbar'] = {
+			['text'] = {
+				['ShowInfoText'] = true,
+				['castText'] = true,
+				['forceTargetText'] = false,
+				['player'] = {
+					['yOffset'] = 0,
+					['textColor'] = {r = 1, g = 1, b = 1, a = 1},
+				},
+				['target'] = {
+					['yOffset'] = 0,
+					['textColor'] = {r = 1, g = 1, b = 1, a = 1},
+				},
+			},
+		},
+		
+		['eliteicon'] = {
 			["enable"] = true,
-			["size"] = 18,
+			["size"] = 22,
 			["point"] = "CENTER",
 			["relativePoint"] = "TOPRIGHT",
 			["xOffset"] = -1,
@@ -949,9 +1576,10 @@ P['KlixUI'] = {
 			["strata"] = '3-MEDIUM',
 			["level"] = 12,
 		},
-		["attackicon"] = {
+		
+		['attackicon'] = {
 			["enable"] = true,
-			["size"] = 18,
+			["size"] = 22,
 			["point"] = "CENTER",
 			["relativePoint"] = "TOPLEFT",
 			["xOffset"] = 1,
@@ -959,41 +1587,24 @@ P['KlixUI'] = {
 			["strata"] = '3-MEDIUM',
 			["level"] = 12,
 		},
+		
 		['icons'] = {
-			['role'] = "SupervillainUI",
-			['rdy'] = "BenikUI",
-			['klixri'] = true,
+			["role"] = "SupervillainUI",
+			["rdy"] = "BenikUI",
+			["klixri"] = true,
 		},
 	},
 }
 
--- DataTexts Continued Again
+-- Datatexts
 P.datatexts.panels.KuiLeftChatDTPanel = {
-	left = E.db.datatexts.panels.LeftChatDataPanel.left,
-	middle = E.db.datatexts.panels.LeftChatDataPanel.middle,
-	right = E.db.datatexts.panels.LeftChatDataPanel.right,
+	[1] = 'Spec Switch (KUI)',
+	[2] = 'Item Level (KUI)',
+	[3] = 'Durability',
 }
 
 P.datatexts.panels.KuiRightChatDTPanel = {
-	left = E.db.datatexts.panels.RightChatDataPanel.left,
-	middle = E.db.datatexts.panels.RightChatDataPanel.middle,
-	right = E.db.datatexts.panels.RightChatDataPanel.right,
-}
-
-P.datatexts.panels.KuiMiddleDTPanel = {
-	left = 'Friends',
-	middle = 'Coords',
-	right = 'Guild',
-}
-
-P.datatexts.panels.Left_ChatTab_Panel = {
-	left = '',
-	middle = '',
-	right = '',
-}
-
-P.datatexts.panels.Right_ChatTab_Panel = {
-	left = '',
-	middle = '',
-	right = '',
+	[1] = 'System',
+	[2] = 'Bags',
+	[3] = 'Gold',
 }

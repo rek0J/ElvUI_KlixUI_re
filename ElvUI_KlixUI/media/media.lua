@@ -25,48 +25,86 @@ local function ZoneTextPos()
 end
 
 local function MakeFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
-	obj:SetFont(font, size, style)
-	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
-	if sox and soy then obj:SetShadowOffset(sox, soy) end
-	if r and g and b then obj:SetTextColor(r, g, b)
-	elseif r then obj:SetAlpha(r) end
+	if obj and font and size then
+		style = type(style) == "string" and style ~= "NONE" and style ~= "" and style or ""
+		obj:SetFont(font, size, style)
+		if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
+		if sox and soy then obj:SetShadowOffset(sox, soy) end
+		if r and g and b then obj:SetTextColor(r, g, b)
+		elseif r then obj:SetAlpha(r) end
+	end
+end
+
+local function FontFlags(flags)
+	return type(flags) == "string" and flags ~= "NONE" and flags ~= "" and flags or ""
+end
+
+local function SetBlizzFont(obj, font, size, flags)
+	if obj and font and size then
+		obj:SetFont(font, size, flags or "")
+	end
 end
 
 function M:SetBlizzFonts()
 	if E.private.general.replaceBlizzFonts then
 		local db = E.db.KlixUI.media.fonts
-		_G["ZoneTextString"]:SetFont(E.LSM:Fetch('font', db.zone.font), db.zone.size, db.zone.outline) -- Main zone name
-		_G["PVPInfoTextString"]:SetFont(E.LSM:Fetch('font', db.pvp.font), db.pvp.size, db.pvp.outline) -- PvP status for main zone
-		_G["PVPArenaTextString"]:SetFont(E.LSM:Fetch('font', db.pvp.font), db.pvp.size, db.pvp.outline) -- PvP status for subzone
-		_G["SubZoneTextString"]:SetFont(E.LSM:Fetch('font', db.subzone.font), db.subzone.size, db.subzone.outline) -- Subzone name
+		if _G["ZoneTextString"] then SetBlizzFont(_G["ZoneTextString"], E.LSM:Fetch('font', db.zone.font), db.zone.size, FontFlags(db.zone.outline)) end -- Main zone name
+		if _G["PVPInfoTextString"] then SetBlizzFont(_G["PVPInfoTextString"], E.LSM:Fetch('font', db.pvp.font), db.pvp.size, FontFlags(db.pvp.outline)) end -- PvP status for main zone
+		if _G["PVPArenaTextString"] then SetBlizzFont(_G["PVPArenaTextString"], E.LSM:Fetch('font', db.pvp.font), db.pvp.size, FontFlags(db.pvp.outline)) end -- PvP status for subzone
+		if _G["SubZoneTextString"] then SetBlizzFont(_G["SubZoneTextString"], E.LSM:Fetch('font', db.subzone.font), db.subzone.size, FontFlags(db.subzone.outline)) end -- Subzone name
 
-		_G["SendMailBodyEditBox"]:SetFont(E.LSM:Fetch('font', db.mail.font), db.mail.size, db.mail.outline) --Writing letter text
-		_G["OpenMailBodyText"]:SetFont(E.LSM:Fetch('font', db.mail.font), db.mail.size, db.mail.outline) --Received letter text
-		_G["QuestFont"]:SetFont(E.LSM:Fetch('font', db.gossip.font), db.gossip.size, db.gossip.outline) -- Font in Quest Log/Petitions and shit. It's fucking hedious with any outline so fuck it.
-		-- _G["QuestFont_Large"]:SetFont(E.LSM:Fetch('font', db.questFontLarge.font), db.questFontLarge.size, db.questFontLarge.outline) -- No idea what that is for
-		_G["QuestFont_Super_Huge"]:SetFont(E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, db.questFontSuperHuge.outline) -- No idea what that is for
-		_G["QuestFont_Enormous"]:SetFont(E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, db.questFontSuperHuge.outline) -- No idea what that is for
-		_G["NumberFont_Shadow_Med"]:SetFont(E.LSM:Fetch('font', db.editbox.font), db.editbox.size, db.editbox.outline) --Chat editbox
+		if _G["SendMailBodyEditBox"] then
+			SetBlizzFont(_G["SendMailBodyEditBox"], E.LSM:Fetch('font', db.mail.font), db.mail.size, FontFlags(db.mail.outline))
+		end -- MoP Classic: only set font if frame exists
+		if _G["OpenMailBodyText"] and not _G["OpenMailBodyText"]:IsObjectType("SimpleHTML") then
+			SetBlizzFont(_G["OpenMailBodyText"], E.LSM:Fetch('font', db.mail.font), db.mail.size, FontFlags(db.mail.outline))
+		end -- MoP Classic: only set font if frame exists
+		if _G["QuestFont"] then SetBlizzFont(_G["QuestFont"], E.LSM:Fetch('font', db.gossip.font), db.gossip.size, FontFlags(db.gossip.outline)) end -- Font in Quest Log/Petitions
+		-- if _G["QuestFont_Large"] then _G["QuestFont_Large"]:SetFont(E.LSM:Fetch('font', db.questFontLarge.font), db.questFontLarge.size, db.questFontLarge.outline) end -- No idea what that is for
+		if _G["QuestFont_Super_Huge"] then SetBlizzFont(_G["QuestFont_Super_Huge"], E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, FontFlags(db.questFontSuperHuge.outline)) end
+		if _G["QuestFont_Enormous"] then SetBlizzFont(_G["QuestFont_Enormous"], E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, FontFlags(db.questFontSuperHuge.outline)) end
+		if _G["NumberFont_Shadow_Med"] then SetBlizzFont(_G["NumberFont_Shadow_Med"], E.LSM:Fetch('font', db.editbox.font), db.editbox.size, FontFlags(db.editbox.outline)) end --Chat editbox
 		--Objective Frame
-		if not _G["ObjectiveTrackerFrame"].KUIHookedFonts then
-				hooksecurefunc("ObjectiveTracker_Update", function(reason, id) 
-					-- _G["ObjectiveTrackerFrame"].HeaderMenu.Title:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-					_G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text:SetFont(E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, E.db.KlixUI.media.fonts.objectiveHeader.outline)
-					_G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text:SetFont(E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, E.db.KlixUI.media.fonts.objectiveHeader.outline)
-					_G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text:SetFont(E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, E.db.KlixUI.media.fonts.objectiveHeader.outline)
-					_G["WORLD_QUEST_TRACKER_MODULE"].Header.Text:SetFont(E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, E.db.KlixUI.media.fonts.objectiveHeader.outline)
-					_G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text:SetFont(E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, E.db.KlixUI.media.fonts.objectiveHeader.outline)
-				end)
-				_G["ObjectiveTrackerFrame"].KUIHookedFonts = true
+		if _G["ObjectiveTrackerFrame"] and not _G["ObjectiveTrackerFrame"].KUIHookedFonts then
+			hooksecurefunc("ObjectiveTracker_Update", function(reason, id)
+				if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].QuestHeader and _G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text then
+					SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))
+				end
+				if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].AchievementHeader and _G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text then
+					SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))
+				end
+				if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].ScenarioHeader and _G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text then
+					SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))
+				end
+				if _G["WORLD_QUEST_TRACKER_MODULE"] and _G["WORLD_QUEST_TRACKER_MODULE"].Header and _G["WORLD_QUEST_TRACKER_MODULE"].Header.Text then
+					SetBlizzFont(_G["WORLD_QUEST_TRACKER_MODULE"].Header.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))
+				end
+				if _G["BONUS_OBJECTIVE_TRACKER_MODULE"] and _G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header and _G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text then
+					SetBlizzFont(_G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))
+				end
+			end)
+			_G["ObjectiveTrackerFrame"].KUIHookedFonts = true
 		end
-		_G["ObjectiveTrackerFrame"].HeaderMenu.Title:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		_G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		_G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		_G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		_G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		_G["WORLD_QUEST_TRACKER_MODULE"].Header.Text:SetFont(E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, db.objectiveHeader.outline)
-		MakeFont(_G["ObjectiveFont"], E.LSM:Fetch('font', db.objective.font), db.objective.size, db.objective.outline)
-		if M.BonusObjectiveBarText then M.BonusObjectiveBarText:SetFont(E.LSM:Fetch('font', db.objective.font), db.objective.size, db.objective.outline) end
+		if _G["ObjectiveTrackerFrame"] and _G["ObjectiveTrackerFrame"].HeaderMenu and _G["ObjectiveTrackerFrame"].HeaderMenu.Title then
+			SetBlizzFont(_G["ObjectiveTrackerFrame"].HeaderMenu.Title, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].QuestHeader and _G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text then
+			SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].AchievementHeader and _G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text then
+			SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].AchievementHeader.Text, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].ScenarioHeader and _G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text then
+			SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].ScenarioHeader.Text, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["BONUS_OBJECTIVE_TRACKER_MODULE"] and _G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header and _G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text then
+			SetBlizzFont(_G["BONUS_OBJECTIVE_TRACKER_MODULE"].Header.Text, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["WORLD_QUEST_TRACKER_MODULE"] and _G["WORLD_QUEST_TRACKER_MODULE"].Header and _G["WORLD_QUEST_TRACKER_MODULE"].Header.Text then
+			SetBlizzFont(_G["WORLD_QUEST_TRACKER_MODULE"].Header.Text, E.LSM:Fetch('font', db.objectiveHeader.font), db.objectiveHeader.size, FontFlags(db.objectiveHeader.outline))
+		end
+		if _G["ObjectiveFont"] then MakeFont(_G["ObjectiveFont"], E.LSM:Fetch('font', db.objective.font), db.objective.size, db.objective.outline) end
+		if M.BonusObjectiveBarText then SetBlizzFont(M.BonusObjectiveBarText, E.LSM:Fetch('font', db.objective.font), db.objective.size, FontFlags(db.objective.outline)) end
 	end
 end
 
@@ -108,14 +146,10 @@ function M:Initialize()
 	if T.IsAddOnLoaded("ElvUI_SLE") then return; end
 
 	M:TextWidth()
-	hooksecurefunc(E, "UpdateBlizzardFonts", M.SetBlizzFonts)
+	hooksecurefunc(E, "UpdateBlizzardFonts", function() M:SetBlizzFonts() end)
 	hooksecurefunc("SetZoneText", ZoneTextPos)
-	M.SetBlizzFonts()
+	M:SetBlizzFonts()
 	M:Update()
 end
 
-local function InitializeCallback()
-	M:Initialize()
-end
-
-KUI:RegisterModule(M:GetName(), InitializeCallback)
+KUI:RegisterModule(M:GetName())

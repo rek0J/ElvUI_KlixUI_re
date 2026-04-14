@@ -1,15 +1,25 @@
 ﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local MI = KUI:GetModule("KuiMisc")
+local COMP = KUI:GetModule("KuiCompatibility")
 local KZ = KUI:GetModule("KuiZoom")
 local KAN = KUI:GetModule("KuiAnnounce")
-local PvP = KUI:GetModule("KuiPVP")
+local KBL = KUI:GetModule("KuiBloodLust")
+local KEC = KUI:GetModule("KuiEasyCurve")
+local THF = KUI:GetModule("TalkingHeadFrame")
+local AL = KUI:GetModule("AutoLog")
 local CSP = KUI:GetModule("ConfirmStaticPopups")
+local SCRAP = KUI:GetModule("Scrapper")
 
 local match = string.match
 local CUSTOM, PVP, DUEL, PET_BATTLE_PVP_DUEL, KILLING_BLOWS = CUSTOM, PVP, DUEL, PET_BATTLE_PVP_DUEL, KILLING_BLOWS
 
 local base = 15
-local maxfactor = 4
+local maxfactor = 2.6
+
+local raid_lfr = {"43DGS", "52MGS", "53TES", "51HOF", "54TOT", "55SOO", "61BRF", "62HGM", "63HFC", "71TEN", "72TNH", "73TOV", "74TOS", "75ABT", "81UDI", "82BDZ", "83COS", "84ETP", "85NYA"}
+local raid_normal = {"41BAH", "42BWD", "45BTW", "46TFW", "44FIR", "43DGS", "52MGS", "53TES", "51HOF", "54TOT", "55SOO", "61BRF", "62HGM", "63HFC", "71TEN", "72TNH", "73TOV", "74TOS", "75ABT", "81UDI", "82BDZ", "83COS", "84ETP", "85NYA"}
+local raid_heroic = {"42BWD", "45BTW", "46TFW", "44FIR", "43DGS", "52MGS", "53TES", "51HOF", "54TOT", "55SOO", "61BRF", "62HGM", "63HFC", "71TEN", "72TNH", "73TOV", "74TOS", "75ABT", "81UDI", "82BDZ", "83COS", "84ETP", "85NYA"}
+local raid_mythic = {"55SOO", "61BRF", "62HGM", "63HFC", "71TEN", "72TNH", "73TOV", "74TOS", "75ABT", "81UDI", "82BDZ", "83COS", "84ETP", "85NYA"}
 
 local function PopupOptions()
 	local args, index = {}, 1
@@ -80,6 +90,69 @@ local function Misc()
 						type = "toggle",
 						name = L["Buy Max Stack"],
 						desc = L["Alt-Click on an item, sold buy a merchant, to buy a full stack."],
+					},
+					talkingHead = {
+						order = 7,
+						type = "toggle",
+						name = L["Hide TalkingHeadFrame"],
+						desc = L["Hide the Talking Head Frame in Game"],
+					},
+					whistleLocation = {
+						order = 8,
+						type = "toggle",
+						name = L["Flight Master's Whistle Location"],
+						desc = L["Show the nearest Flight Master's Whistle Location on the minimap and in the tooltip."],
+						disabled = function() return T.IsAddOnLoaded("WhistledAway") end,
+						hidden = function() return T.IsAddOnLoaded("WhistledAway") end,
+					},
+					whistleSound = {
+						order = 9,
+						type = "toggle",
+						name = L["Flight Master's Whistle Sound"],
+						desc = L["Plays a sound when you use the Flight Master's Whistle."],
+					},
+					toggleSoundCustom = {
+						order = 10,
+						type = "toggle",
+						name = L["Custom Flight Master's Whistle Sound"],
+						desc = L["Use a custom sound when you use the Flight Master's Whistle."],
+						disabled = function() return not E.db.KlixUI.misc.whistleSound end,
+					},
+					whistleSoundCustom = {
+						type = 'input',
+						order = 11,
+						width = "double",
+						name = L["Custom Sound Path"],
+						desc = L["Example of a path string: path\\path\\path\\sound.mp3"],
+						hidden = function() return not E.db.KlixUI.misc.toggleSoundCustom end,
+						disabled = function() return not E.db.KlixUI.misc.whistleSound or not E.db.KlixUI.misc.toggleSoundCustom end,
+						set = function(_, value) E.db.KlixUI.misc.whistleSoundCustom = (value and (not value:match("^%s-$")) and value) or nil end,
+					},
+					lootSound = {
+						order = 12,
+						type = "toggle",
+						name = L["Loot container opening sound"],
+						desc = L["Plays a sound when you open a container, chest etc."],
+					},
+					transmog = {
+						type = "toggle",
+						order = 13,
+						name = L["Transmog Remover Button"],
+						desc = L["Enable/Disable the transmog remover button in the transmogrify window."],
+					},
+					leaderSound = {
+						order = 14,
+						type = "toggle",
+						name = L["Leader Change Sound"],
+						desc = L["Plays a sound when you become the group leader."],
+					},
+					vehicleSeatMissing = {
+						order = 15,
+						type = "toggle",
+						name = L["Missing Seat Indicators"],
+						desc = L["Add a seat indicator, to passenger mounts without an indicator, e.g. The Hivemind, Sandstone Drake, Heart of the Nightwing and Travel Form."],
+						get = function(info) return E.db.KlixUI.misc.vehicleSeat.missing end,
+						set = function(info, value) E.db.KlixUI.misc.vehicleSeat.missing = value; E:StaticPopup_Show("PRIVATE_RL") end,
 					},
 					space = {
 						order = 25,
@@ -180,8 +253,59 @@ local function Misc()
 							},
 						},
 					},
+					AFKPetModel = {
+						order = 30,
+						type = "group",
+						name = L["AFK Pet Model"],
+						guiInline = true,
+						get = function(info) return E.db.KlixUI.misc.AFKPetModel[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = value end,
+						args = {
+							pet = {
+								order = 1,
+								type = "input",
+								name = L["Companion Pet Name"],
+								width = "full",
+								set = function(info, value)
+									local speciesID = T.C_PetJournal_FindPetIDByName(value)
+									if speciesID then
+										E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = value
+									else
+										E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = T.select(8, T.C_PetJournal_GetPetInfoByIndex(1))
+									end
+									E.db.KlixUI.misc.AFKPetModel.modelScale = 1 --Reset scale when new pet is set
+								end,
+							},
+							modelScale = {
+								order = 2,
+								type = "range",
+								name = L["Model Scale"],
+								desc = L["Some pets will appear huge. Lower the scale when that happens."],
+								min = 0.05, max = 2, step = 0.05,
+							},
+							facing = {
+								order = 3,
+								type = "range",
+								name = L["Model Facing Direction"],
+								desc = L["Less than 0 faces the model to the left, more than 0 faces the model to the right"],
+								min = -180, max = 180, step = 5,
+							},
+							animation = {
+								order = 4,
+								type = "range",
+								name = L["Animation"],
+								desc = L["NPC animations are not documented anywhere, and as such you will just have to try out various settings until you find the animation you want. Default animation is 0 (idle)"],
+								min = 0, max = 822, step = 1,
+								set = function(info, value)
+									if value > 822 then value = 822 elseif value < 0 then value = 0 end
+									E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = value
+								end,
+							},
+						},
+					},
 				},
 			},
+			
 			merchant = {
 				order = 3,
 				type = "group",
@@ -189,6 +313,21 @@ local function Misc()
 				get = function(info) return E.db.KlixUI.misc.merchant[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.misc.merchant[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 				args = {
+					style = {
+						order = 1,
+						type = "toggle",
+						name = L["Style"],
+						desc = L["Display the MerchantFrame in one window instead of a small one with variouse amount of pages."],
+						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant end,
+					},
+					subpages = {
+						order = 2,
+						type = 'range',
+						name = L["Subpages"],
+						desc = L["Subpages are blocks of 10 items. This option set how many of subpages will be shown on a single page."],
+						min = 2, max = 5, step = 1,
+						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant or E.db.KlixUI.misc.merchant.style ~= true end,
+					},
 					itemlevel = {
 						order = 3,
 						type = "toggle",
@@ -203,7 +342,8 @@ local function Misc()
 					},
 				},
 			},
-			--[[bloodlust = {
+			
+			bloodlust = {
 				order = 4,
 				type = "group",
 				name = L["Bloodlust"],
@@ -215,12 +355,16 @@ local function Misc()
 						type = 'toggle',
 						name = L["Enable"],
 					},
-					spacer1 = {
+					testBloodlustSound = {
 						order = 2,
-						type = "description",
-						name = "",
+						type = "execute",
+						name = L["Test Bloodlust Sound"],
+						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable end,
+						func = function()
+							KBL:PlayCustomSound()
+						end,
 					},
-					spacer2 = {
+					spacer1 = {
 						order = 3,
 						type = "description",
 						name = "",
@@ -283,7 +427,117 @@ local function Misc()
 						set = function(_, value) E.db.KlixUI.misc.bloodlust.customSound = (value and (not value:match("^%s-$")) and value) or nil end,
 					},
 				},
-			},]]
+			},
+			
+			easyCurve = {
+				order = 5,
+				type = "group",
+				name = L["Easy Curve"],
+				get = function(info) return E.db.KlixUI.misc.easyCurve[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.easyCurve[ info[#info] ] = value; end,
+				args = {	
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						desc =  L["Enable/disable the Easy Curve popup frame."],
+						get = function(info) return E.db.KlixUI.misc.easyCurve.enable end,
+						set = function(info, value) E.db.KlixUI.misc.easyCurve.enable = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+					},
+					override = {
+						order = 2,
+						name = L["Enable Override"],
+						desc = L["Overrides the default achievements found and will always send the selected achievement from the dropdown."],
+						type = "toggle",
+						width = "full",
+						disabled = function() return not E.db.KlixUI.misc.easyCurve.enable end,
+						get = function() return E.db.KlixUI.misc.easyCurve.override end,
+						set = function(info, value) E.db.KlixUI.misc.easyCurve.override = value; end
+					},
+					search = {
+						order = 3,
+						name = L["Search Achievements"],
+						desc = L["Search term must be greater than 3 characters."],
+						type = "input",
+						width = "full",
+						disabled = function() return not E.db.KlixUI.misc.easyCurve.override or not E.db.KlixUI.misc.easyCurve.enable end,
+						set = function(info, value) 
+							T.SetAchievementSearchString(value) 
+							newSearch = true 
+						end,
+						validate = function(info, value) 
+							if string.len(value) < 3 then 
+								return L["Error: Search term must be greater than 3 characters"]
+							else 
+								return true 
+							end 
+						end
+					},
+					results = {
+						order = 4,
+						name = function()
+							if newSearch then 
+								return T.string_format("Select Override Achievement: %s Results Returned", T.tostring(KEC:TableLength(KEC.achievementSearchList)))
+							else
+								return L["Select Override Achievement"]
+							end
+						end,
+						desc = L["Results are limited to 500 and only completed achievemnts. Please try a more specific search term if you cannot find the achievement listed."],
+						type = "select",
+						values = KEC.achievementSearchList,
+						width = "full",
+						disabled = function() 
+							return not E.db.KlixUI.misc.easyCurve.override 
+								   or not E.db.KlixUI.misc.easyCurve.enable 
+								   or (not E.db.KlixUI.misc.easyCurve.overrideAchievement and not newSearch) 
+						end,
+						get = function() 
+							if E.db.KlixUI.misc.easyCurve.overrideAchievement then
+								return E.db.KlixUI.misc.easyCurve.overrideAchievement
+							else
+								return 1
+							end
+						end,
+						set = function(info, value) E.db.KlixUI.misc.easyCurve.overrideAchievement = value end,
+						validate = function(info, value) 
+							if value == 1 then 
+								return L["Error: Please select an achievement"] 
+							else 
+								return true 
+							end 
+						end
+					},
+
+					whispersAchievement = {
+						order = 5,
+						name = L["Always Check Achievement Whisper Dialog Checkbox"],
+						desc = L["This will always check the achievement whisper dialog checkbox when signing up for a group by default."],
+						type = "toggle",
+						width = "double",
+						disabled = function() return not E.db.KlixUI.misc.easyCurve.enable  end,
+						get = function() return E.db.KlixUI.misc.easyCurve.whispersAchievement end,
+						set = function(info, value) 
+							E.db.KlixUI.misc.easyCurve.whispersAchievement = value 
+							KEC.checkButtonAchievement:SetChecked(value) 
+						end,
+					},
+
+					whispersKeystone = {
+						order = 6,
+						name = L["Always Check Keystone Whisper Dialog Checkbox"],
+						desc = L["This will always check the keystone whisper dialog checkbox when signing up for a mythic plus group by default."],
+						type = "toggle",
+						width = "double",
+						disabled = function() return not E.db.KlixUI.misc.easyCurve.enable end,
+						get = function() return E.db.KlixUI.misc.easyCurve.whispersKeystone end,
+						set = function(info, value) 
+							E.db.KlixUI.misc.easyCurve.whispersKeystone = value 
+							KEC.checkButtonKeystone:SetChecked(value)  
+						end,
+					},
+				},
+			},
+
 			auto = {
 				order = 6,
 				type = "group",
@@ -291,11 +545,11 @@ local function Misc()
 				get = function(info) return E.db.KlixUI.misc.auto[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.misc.auto[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 				args = {
-					auction = {
+					keystones = {
 						order = 1,
 						type = "toggle",
-						name = L["Auto Auction"],
-						desc = L["Shift + Right-Click to auto buy auctions at the auctionhouse."],
+						name = L["Auto Keystones"],
+						desc = L["Automatically insert keystones when you open the keystonewindow in a dungeon."],
 					},
 					gossip = {
 						order = 2,
@@ -303,16 +557,64 @@ local function Misc()
 						name = L["Auto Gossip"],
 						desc = L["This setting will auto gossip some NPC's.\n|cffff8000Note: Holding down any modifier key before visiting/talking to the respective NPC's will briefly disable the automatization.|r"],
 					},
+					auction = {
+						order = 3,
+						type = "toggle",
+						name = L["Auto Auction"],
+						desc = L["Shift + Right-Click to auto buy auctions at the auctionhouse."],
+					},
+					skipAA = {
+						order = 4,
+						type = "toggle",
+						name = L["Skip Azerite Animations"],
+						desc = L["Skips the reveal animation of a new azerite armor piece and the animation after you select a trait."],
+						disabled = function() return E.Mists end,
+						hidden = function() return E.Mists end,
+					},
+					teleportation = {
+						order = 5,
+						type = "toggle",
+						name = L["Teleportation"]..E.NewSign,
+						desc = L["Automatically reequips your last item, after using an item, with teleportation feature."],
+					},
 					space1 = {
 						order = 9,
 						type = "description",
 						name = "",
 					},
+					workorder = {
+						order = 10,
+						type = "group",
+						name = L["Work Orders"],
+						get = function(info) return E.db.KlixUI.misc.auto.workorder[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.misc.auto.workorder[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						args = {
+							intro = {
+								order = 1,
+								type = "description",
+								name = L["WO_DESC"],
+							},
+							orderhall = {
+								order = 2,
+								type = "toggle",
+								name = L["OrderHall/Ship"],
+								desc = L["Auto start orderhall/ship workorders when visiting the npc."],
+								disabled = function() return E.Mists or (COMP.SLE and (E.db.sle.legacy.warwampaign.autoOrder.enable or E.db.sle.legacy.orderhall.autoOrder.enable)) end,
+								hidden = function() return E.Mists or (COMP.SLE and (E.db.sle.legacy.warwampaign.autoOrder.enable or E.db.sle.legacy.orderhall.autoOrder.enable)) end,
+							},
+							nomi = {
+								order = 3,
+								type = "toggle",
+								name = L["Nomi"],
+								desc = L["Auto start workorders when visiting Nomi."],
+							},
+						},
+					},
+
 					invite = {
 						order = 11,
 						type = "group",
 						name = L["Invite"],
-						guiInline = true,
 						get = function(info) return E.db.KlixUI.misc.auto.invite[ info[#info] ] end,
 						set = function(info, value) E.db.KlixUI.misc.auto.invite[ info[#info] ] = value end,
 						args = {
@@ -366,8 +668,95 @@ local function Misc()
 							},
 						},
 					},
+
+					screenshot = {
+						order = 12,
+						type = "group",
+						name = L["Screenshot"],
+						get = function(info) return E.db.KlixUI.misc.auto.screenshot[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.misc.auto.screenshot[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						args = {
+							enable = {
+								order = 1,
+								type = "toggle",
+								width = "full",
+								name = L["Enable"],
+								desc = L["Auto screenshot when you get an achievement."],
+							},
+							screenFormat = {
+								order = 2,
+								name = L["Screen Format"],
+								type = "select",
+								values = {
+									["jpeg"] = "JPG",
+									["tga"] = "TGA",
+								},
+								disabled = function() return not E.db.KlixUI.misc.auto.screenshot.enable end,
+								get = function(info) return T.GetCVar("screenshotFormat") end,
+								set = function(info, value) T.SetCVar("screenshotFormat", value) end,
+							},
+							screenQuality = {
+								order = 3,
+								name = L["Screen Quality"],
+								type = "range",
+								min = 3, max = 10, step = 1,
+								disabled = function() return not E.db.KlixUI.misc.auto.screenshot.enable end,
+								get = function(info) return T.tonumber(T.GetCVar("screenshotQuality")) end,
+								set = function(info, value) T.SetCVar("screenshotQuality", T.tostring(value)) end,
+							},
+						},
+					},
+
+					rolecheck = {
+						order = 13,
+						type = "group",
+						name = L["Role Check"],
+						get = function(info) return E.db.KlixUI.misc.auto.rolecheck[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.misc.auto.rolecheck[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						args = {
+							enable = {
+								order = 1,
+								type = "toggle",
+								name = L["Enable"],
+								desc =  L["Automatically accept all role check popups."],
+							},
+							confirm = {
+								order = 2,
+								type = "toggle",
+								name = L["Confirm Role Checks"],
+								desc =  L["After you join a custom group finder raid a box pops up telling you your role and won't dissapear until clicked, this gets rid of it."],
+							},
+							spacer1 = {
+								order = 3,
+								type = "description",
+								name = "",
+							},
+							timewalking = {
+								order = 4,
+								type = "toggle",
+								name = L["Timewalking"],
+								desc =  L["Automatically accept timewalking role check popups."],
+								disabled = function() return E.db.KlixUI.misc.auto.rolecheck.enable end,
+							},
+							love = {
+								order = 5,
+								type = "toggle",
+								name = L["Love is in the Air"],
+								desc =  L["Automatically accept Love is in the Air dungeon role check popups."],
+								disabled = function() return E.db.KlixUI.misc.auto.rolecheck.enable end,
+							},
+							halloween = {
+								order = 6,
+								type = "toggle",
+								name = L["Halloween"],
+								desc =  L["Automatically accept Halloween dungeon role check popups."],
+								disabled = function() return E.db.KlixUI.misc.auto.rolecheck.enable end,
+							},
+						},
+					},
 				},
 			},
+
 			panels = {
 				order = 7,
 				type = "group",
@@ -387,7 +776,7 @@ local function Misc()
 								name = SHOW,
 								desc = L["Display a panel across the top of the screen. This is for cosmetic only."],
 								get = function(info) return E.db.general.topPanel end,
-								set = function(info, value) E.db.general.topPanel = value; E:GetModule('Layout'):TopPanelVisibility() end
+								set = function(info, value) E.db.general.topPanel = value; E:GetModule('Layout'):UpdateTopPanel() end
 							},
 							spacer1 = {
 								order = 2,
@@ -432,7 +821,7 @@ local function Misc()
 								name = SHOW,
 								desc = L["Display a panel across the bottom of the screen. This is for cosmetic only."],
 								get = function(info) return E.db.general.bottomPanel end,
-								set = function(info, value) E.db.general.bottomPanel = value; E:GetModule('Layout'):BottomPanelVisibility() end
+								set = function(info, value) E.db.general.bottomPanel = value; E:GetModule('Layout'):UpdateBottomPanel() end
 							},
 							spacer1 = {
 								order = 2,
@@ -463,11 +852,132 @@ local function Misc()
 							},
 						},
 					},
-					gotogeneral = {
+					--[[gotogeneral = {
 						order = 3,
 						type = "execute",
 						name = L["ElvUI Panels"],
 						func = function() LibStub("AceConfigDialog-3.0-ElvUI"):SelectGroup("ElvUI", "general") end,
+					},]]
+				},
+			},
+
+			scrapper = {
+				order = 8,
+				type = "group",
+				name = L["Scrap Machine"],
+				get = function(info) return E.db.KlixUI.misc.scrapper[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.scrapper[ info[#info] ] = value end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						desc = L["Show the scrapbutton at the scrappingmachineUI."],
+						set = function(info, value) E.db.KlixUI.misc.scrapper[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+					},
+					position = {
+						order = 2,
+						type = "select",
+						name = L["Position"],
+						desc = L["Place scrap button at the top or the bottom of the scrappingmachineUI."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+						set = function(info, value) E.db.KlixUI.misc.scrapper[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						values = {
+							["TOP"] = L["Top"],
+							["BOTTOM"] = L["Bottom"],
+						},
+					},
+					autoOpen = {
+						order = 3,
+						type = "toggle",
+						name = L["Auto Open Bags"],
+						desc = L["Auto open bags when visiting the scrapping machine."],
+						disabled = function() return not E.private.bags.enable end,
+					},
+					equipmentsets = {
+						order = 4,
+						type = "toggle",
+						name = L["Equipment Sets"],
+						desc = L["Ignore items in equipment sets."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+					},
+					azerite = {
+						order = 5,
+						type = "toggle",
+						name = L["Azerite"],
+						desc = L["Ignore azerite items."],
+						disabled = function() return E.Mists or not E.db.KlixUI.misc.scrapper.enable end,
+						hidden = function() return E.Mists end,
+					},
+					boe = {
+						order = 6,
+						type = "toggle",
+						name = L["Bind-on-Equipped"],
+						desc = L["Ignore bind-on-equipped items."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+					},
+					Itemlvl = {
+						order = 7,
+						type = "toggle",
+						name = L["Equipped Item Level"],
+						desc = L["Don't insert items above equipped iLvl."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+					},
+					Itemprint = {
+						order = 8,
+						type = "toggle",
+						name = L["Item Print"],
+						desc = L["Print inserted scrap items to the chat window."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+					},
+					specificilvl = {
+						order = 8,
+						type = "toggle",
+						name = L["Specific Item Level"],
+						desc = L["Ignore items above specific item level."],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable end,
+					},
+					specificilvlbox = {
+						order = 9,
+						type = "input",
+						width = 0.75,
+						name = L["Item Level"],
+						disabled = function() return not E.db.KlixUI.misc.scrapper.enable or not E.db.KlixUI.misc.scrapper.specificilvl end,
+					},
+					itemlevel = {
+						order = 20,
+						type = "group",
+						name = L["Item Level"],
+						get = function(info) return E.db.KlixUI.misc.scrapper.itemlevel[ info[#info] ] end,
+						set = function(info, value) E.db.KlixUI.misc.scrapper.itemlevel[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+						guiInline = true,
+						args = {
+							enable = {
+								order = 1,
+								type = "toggle",
+								name = L["Enable"],
+								desc = L["Show the itemlevel on the items in the scrappingmachineUI."],
+							},
+							fontSize = {
+								order = 2,
+								name = FONT_SIZE,
+								type = "range",
+								min = 5, max = 22, step = 1,
+								disabled = function() return not E.db.KlixUI.misc.scrapper.itemlevel.enable end,
+							},
+							fontOutline = {
+								order = 3,
+								type = "select",
+								name = L["Font Outline"],
+								values = {
+									["NONE"] = NONE,
+									["OUTLINE"] = "OUTLINE",
+									["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
+									["THICKOUTLINE"] = "THICKOUTLINE",
+								},
+								disabled = function() return not E.db.KlixUI.misc.scrapper.itemlevel.enable end,
+							},
+						},
 					},
 				},
 			},
@@ -501,20 +1011,118 @@ local function Misc()
 						type = "range",
 						desc = OPTION_TOOLTIP_MAX_FOLLOW_DIST,
 						name = MAX_FOLLOW_DIST,
-						disabled = function() return E.db.KlixUI.misc.zoom.maxZoom end,
 						get = function(info) return T.GetCVar("cameraDistanceMaxZoomFactor") * base end,
 						set = function(info, value) E.db.KlixUI.misc.zoom.distance = value / base; T.SetCVar("cameraDistanceMaxZoomFactor", value / base) end,
 						min = base, max = base * maxfactor, step = 1.5, -- cvar gets rounded to 1 decimal
 					},
-					maxZoom = {
+				},
+			},
+
+			autolog = {
+				order = 10,
+				type = "group",
+				name = L["AutoLog"],
+				get = function(info) return E.db.KlixUI.misc.autolog[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; AL:CheckLog() end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						desc = L["Enable/disable automatically combat logging"],
+						set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end
+					},
+					allraids = {
+						order = 2,
+						type = "toggle",
+						name = L["All raids"],
+						desc = L["Combat log all raids regardless of individual raid settings"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+					},
+					chatwarning = {
+						order = 3,
+						type = "toggle",
+						name = L["Display in chat"],
+						desc = L["Display the combat log status in the chat window"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+					},
+					dungeons = {
 						order = 4,
 						type = "toggle",
-						name = L["Force Max Zoom"]..E.NewSign,
-						desc = L["This will force max zoom every time you enter the world"],
-						set = function(info, value) E.db.KlixUI.misc.zoom[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+						name = L["5 player heroic instances"],
+						desc = L["Combat log 5 player heroic instances"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+					},
+					challenge = {
+						order = 5,
+						type = "toggle",
+						name = L["5 player challenge mode instances"],
+						desc = L["Combat log 5 player challenge mode instances"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+					},
+					mythicdungeons = {
+						order = 6,
+						type = "toggle",
+						name = L["5 player mythic instances"],
+						desc = L["Combat log 5 player mythic instances"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+					},
+					mythiclevel = {
+						order = 7,
+						type = "select",
+						width = 0.45,
+						name = L["Minimum level"],
+						desc = L["Logging will not be enabled for mythic levels lower than this"],
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable or not E.db.KlixUI.misc.autolog.mythicdungeons end,
+						values = AL:getMythicLevelsList(),
+					},
+					lfr = {
+						order = 10,
+						type = "multiselect",
+						name = L["LFR Raids"],
+						desc = L["Raid finder instances where you want to log combat"],
+						values = AL:MakeList(raid_lfr),
+						tristate = false,
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						get = function(info, raid) return AL:GetSetting("lfr", raid) end,
+						set = function(info, raid, value) AL:SetSetting("lfr", raid, value) end,
+					},
+					raidsn = {
+						order = 11,
+						type = "multiselect",
+						name = L["Normal Raids"],
+						desc = L["Raid instances where you want to log combat"],
+						values = AL:MakeList(raid_normal),
+						tristate = false,
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						get = function(info, raid) return AL:GetSetting("normal", raid) end,
+						set = function(info, raid, value) AL:SetSetting("normal", raid, value) end,
+					},
+					raidsh = {
+						order = 12,
+						type = "multiselect",
+						name = L["Heroic Raids"],
+						desc = L["Raid instances where you want to log combat"],
+						values = AL:MakeList(raid_heroic),
+						tristate = false,
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						get = function(info, raid) return AL:GetSetting("heroic", raid) end,
+						set = function(info, raid, value) AL:SetSetting("heroic", raid, value) end,
+					},
+					mythic = {
+						order = 13,
+						type = "multiselect",
+						name = L["Mythic Raids"],
+						desc = L["Raid instances where you want to log combat"],
+						values = AL:MakeList(raid_mythic),
+						tristate = false,
+						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						get = function(info, raid) return AL:GetSetting("mythic", raid) end,
+						set = function(info, raid, value) AL:SetSetting("mythic", raid, value) end,
 					},
 				},
 			},
+
 			popups = {
 				order = 11,
 				type = "group",
@@ -545,69 +1153,51 @@ local function Misc()
 					},
 				},
 			},
-			pvp = {
+			CA = {
+				order = 50,
 				type = "group",
-				name = L["PvP"],
-				order = 40,
+				name = L["Corrupted Ashbringer"],
+				hidden = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				disabled = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				get = function(info) return E.db.KlixUI.misc.CA[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.CA[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 				args = {
-					killStreaks = {
+					enable = {
 						order = 1,
 						type = "toggle",
-						name = L["KillStreak Sounds"]..E.NewSign,
-						desc = L["Unreal Tournament sound effects for killing blow streaks."],
-						get = function(info) return E.db.KlixUI.pvp.killStreaks end,
-						set = function(info, value) E.db.KlixUI.pvp.killStreaks = value; E:StaticPopup_Show("PRIVATE_RL") end
+						name = L["Enable"],
+						desc =  L["Plays corrupted ashbringer sounds when entering combat."],
 					},
-					autorelease = {
-						type = "group",
-						name = PVP,
+					nextSound = {
 						order = 2,
-						guiInline = true,
-						disabled = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-						hidden = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-						args = {
-							enable = {
-								order = 1,
-								type = "toggle",
-								name = L["Enable"],
-								desc = L["Automatically release body when killed inside a battleground."],
-								get = function(info) return E.db.KlixUI.pvp.autorelease end,
-								set = function(info, value) E.db.KlixUI.pvp.autorelease = value; end
-							},
-							rebirth = {
-								order = 2,
-								type = "toggle",
-								name = L["Check for rebirth mechanics"],
-								desc = L["Do not release if reincarnation or soulstone is up."],
-								disabled = function() return not E.db.KlixUI.pvp.autorelease end,
-								get = function(info) return E.db.KlixUI.pvp.rebirth end,
-								set = function(info, value) E.db.KlixUI.pvp.rebirth = value; end
-							},
-						},
+						type = "range",
+						name = L["Sound Number"],
+						desc =  L["Changes which of the corrupted ashbringer sounds it should play in a numeric order."],
+						min = 1, max = 12, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
 					},
-					duels = {
-						type = "group",
-						name = DUEL,
+					soundProbabilityPercent = {
 						order = 3,
-						guiInline = true,
-						disabled = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-						hidden = function() return T.IsAddOnLoaded("ElvUI_SLE") end,
-						get = function(info) return E.db.KlixUI.pvp.duels[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.pvp.duels[ info[#info] ] = value end,
-						args = {
-							regular = {
-								order = 1,
-								type = "toggle",
-								name = PVP,
-								desc = L["Automatically cancel PvP duel requests."],
-							},
-							announce = {
-								order = 3,
-								type = "toggle",
-								name = L["Announce"],
-								desc = L["Announce in chat if duel was rejected."],
-							},
-						},
+						type = "range",
+						name = L["Sound Probability"],
+						desc = L["Changes the probability value, in percent, how often the sounds will play."],
+						min = 0, max = 100, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
+					},
+					passiveMode = {
+						order = 4,
+						type = "toggle",
+						name = L["Always Whisper"],
+						desc =  L["Plays the corrupted ashbringer while out of combat aswell."],
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
+					},
+					intervalProbability = {
+						order = 5,
+						type = "range",
+						name = L["Interval Probability"],
+						desc =  L["Changes the probability value, in seconds, how often the sounds will play."],
+						min = 1, max = 1200, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable or not E.db.KlixUI.misc.CA.passiveMode end,
 					},
 				},
 			},
@@ -615,3 +1205,25 @@ local function Misc()
 	}
 end
 T.table_insert(KUI.Config, Misc)
+
+--[[local function injectElvUIDataTextsOptions()
+	E.Options.args.general.args.general.args.spacer1 = {
+		order = 28,
+		type = 'description',
+		name = '',
+	}
+
+	E.Options.args.general.args.general.args.spacer2 = {
+		order = 29,
+		type = 'header',
+		name = '',
+	}
+	
+	E.Options.args.general.args.general.args.gotoklixui = {
+		order = 30,
+		type = "execute",
+		name = KUI:cOption(L["KlixUI Panels"]),
+		func = function() LibStub("AceConfigDialog-3.0-ElvUI"):SelectGroup("ElvUI", "KlixUI", "modules", "misc", "panels") end,
+	}
+end
+T.table_insert(KUI.Config, injectElvUIDataTextsOptions)]]
