@@ -8,6 +8,8 @@ SCT.frame = T.CreateFrame("Frame", nil, UIParent)
 -- Locals
 local _
 local animating = {}
+local C_NamePlate = rawget(_G, "C_NamePlate")
+local GetNamePlateForUnit = T.C_NamePlate_GetNamePlateForUnit or (C_NamePlate and C_NamePlate.GetNamePlateForUnit)
 
 local playerGUID = T.UnitGUID("player")
 local unitToGuid = {}
@@ -630,7 +632,7 @@ function SCT:DisplayText(guid, text, textWithoutIcons, size, animation, frameLev
     local nameplate;
 
     if (unit) then
-        nameplate = T.C_NamePlate_GetNamePlateForUnit(unit);
+        nameplate = GetNamePlateForUnit and GetNamePlateForUnit(unit);
     end
 
     -- if there isn't an anchor frame, make sure that there is a guidNameplatePosition cache entry
