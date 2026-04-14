@@ -54,36 +54,6 @@ local PartialIgnores = { 'Node', 'Note', 'Pin', 'POI' }
 
 local ButtonFunctions = { 'SetParent', 'ClearAllPoints', 'SetPoint', 'SetSize', 'SetScale', 'SetFrameStrata', 'SetFrameLevel' }
 
-local function HasTexture(texture)
-	return texture and texture.IsObjectType and texture:IsObjectType('Texture') and texture.GetTexture and texture:GetTexture()
-end
-
-local function GetPrimaryIconTexture(Button)
-	if not Button then return end
-
-	local name = Button:GetName()
-	local candidates = {
-		Button.icon,
-		Button.Icon,
-		name and _G[name.."Icon"] or nil,
-		name and _G[name.."IconTexture"] or nil,
-		Button.GetNormalTexture and Button:GetNormalTexture() or nil,
-	}
-
-	for _, texture in ipairs(candidates) do
-		if HasTexture(texture) then
-			return texture
-		end
-	end
-end
-
-local function IsLibDBIconButton(Button)
-	if not Button then return false end
-
-	local name = Button:GetName()
-	return (name and T.string_sub(name, 1, 12) == "LibDBIcon10_") or HasTexture(Button.icon) or HasTexture(Button.Icon)
-end
-
 local function NormalizeButtonToken(token)
 	token = token and strtrim(T.tostring(token)) or ""
 	return strupper(token)
@@ -557,8 +527,6 @@ function SMB:SkinMinimapButton(Button)
 
 	local Name = Button:GetName()
 	if not Name then return end
-	local IconTexture = GetPrimaryIconTexture(Button)
-	local IsLibDBIcon = IsLibDBIconButton(Button)
 
 	if T.tContains(ignoreButtons, Name) then return end
 
@@ -573,22 +541,20 @@ function SMB:SkinMinimapButton(Button)
 	for i = 1, Button:GetNumRegions() do
 		local Region = T.select(i, Button:GetRegions())
 		if Region.IsObjectType and Region:IsObjectType('Texture') then
-			local Texture = T.string_lower(T.tostring(Region:GetTexture()))
+			local Texture = Region.GetTexture and Region:GetTexture()
+			local TextureString = Texture and T.string_lower(T.tostring(Texture)) or ""
 
-			if IsLibDBIcon and Region ~= IconTexture then
+			if Region ~= IconTexture and IsDecorativeTexture(Region) then
 				Region:SetTexture(nil)
 				Region:SetAlpha(0)
 				Region:Hide()
-			elseif (T.string_find(Texture, "interface\\characterframe") or T.string_find(Texture, "interface\\minimap") or T.string_find(Texture, 'border') or T.string_find(Texture, 'background') or T.string_find(Texture, 'alphamask') or T.string_find(Texture, 'highlight')) then
-				Region:SetTexture(nil)
-				Region:SetAlpha(0)
 			else
 				if Name == 'BagSync_MinimapButton' then
 					Region:SetTexture('Interface\\AddOns\\BagSync\\media\\icon')
 				elseif Name == 'LibDBIcon10_DBM' then
 					Region:SetTexture('Interface\\Icons\\INV_Helmet_87')
 				elseif Name == 'OutfitterMinimapButton' then
-					if Texture == 'interface\\addons\\outfitter\\textures\\minimapbutton' then
+					if TextureString == 'interface\\addons\\outfitter\\textures\\minimapbutton' then
 						Region:SetTexture(nil)
 					end
 				elseif Name == 'SmartBuff_MiniMapButton' then
@@ -596,30 +562,39 @@ function SMB:SkinMinimapButton(Button)
 				elseif Name == 'VendomaticButtonFrame' then
 					Region:SetTexture('Interface\\Icons\\INV_Misc_Rabbit_2')
 				end
-				Region:ClearAllPoints()
-				Region:SetInside()
-				Region:SetTexCoord(T.unpack(self.TexCoords))
-				Button:HookScript('OnLeave', function() Region:SetTexCoord(T.unpack(self.TexCoords)) end)
-				Region:SetDrawLayer('ARTWORK')
-				Region:SetAlpha(1)
-				Region:Show()
-				Region.SetPoint = function() return end
+				if Region == IconTexture then
+					Region:ClearAllPoints()
+					Region:SetInside()
+					Region:SetTexCoord(T.unpack(self.TexCoords))
+					Button:HookScript('OnLeave', function() Region:SetTexCoord(T.unpack(self.TexCoords)) end)
+					Region:SetDrawLayer('ARTWORK')
+					Region:SetAlpha(1)
+					Region:Show()
+					Region.SetPoint = function() return end
+				end
 			end
 		end
 	end
 	
-	local HighlightTexture = Button.GetHighlightTexture and Button:GetHighlightTexture()
-	if HighlightTexture and HighlightTexture ~= IconTexture then
-		HighlightTexture:SetTexture(nil)
-		HighlightTexture:SetAlpha(0)
-		HighlightTexture:Hide()
+	local highlight = Button.GetHighlightTexture and Button:GetHighlightTexture()
+	if highlight and highlight ~= IconTexture then
+		highlight:SetTexture(nil)
+		highlight:SetAlpha(0)
+		highlight:Hide()
 	end
 
-	local PushedTexture = Button.GetPushedTexture and Button:GetPushedTexture()
-	if PushedTexture and PushedTexture ~= IconTexture then
-		PushedTexture:SetTexture(nil)
-		PushedTexture:SetAlpha(0)
-		PushedTexture:Hide()
+	local pushed = Button.GetPushedTexture and Button:GetPushedTexture()
+	if pushed and pushed ~= IconTexture then
+		pushed:SetTexture(nil)
+		pushed:SetAlpha(0)
+		pushed:Hide()
+	end
+
+	local normal = Button.GetNormalTexture and Button:GetNormalTexture()
+	if normal and normal ~= IconTexture and IsDecorativeTexture(normal) then
+		normal:SetTexture(nil)
+		normal:SetAlpha(0)
+		normal:Hide()
 	end
 
 	if IconTexture and IconTexture.ClearAllPoints then
@@ -631,14 +606,9 @@ function SMB:SkinMinimapButton(Button)
 		IconTexture:Show()
 	end
 
-	if IsLibDBIcon then
-		if Button.ishadow then
-			Button.ishadow:Hide()
-		end
-	else
-		Button:CreateIconShadow()
+	if Button.ishadow then
+		Button.ishadow:Hide()
 	end
-
 	Button:SetFrameLevel(_G.Minimap:GetFrameLevel() + 5)
 	Button:SetSize(SMB.db.iconSize, SMB.db.iconSize)
 	Button:CreateBackdrop()
@@ -989,6 +959,7 @@ function SMB:Initialize()
 
 	SMB.TexCoords = {T.unpack(E.TexCoords)}
 
+	SMB:HandleBlizzardButtons()
 	SMB:GrabMinimapButtons()
 	SMB:ScheduleRepeatingTimer('GrabMinimapButtons', 6)
 	SMB:ScheduleTimer('HandleBlizzardButtons', 7)
