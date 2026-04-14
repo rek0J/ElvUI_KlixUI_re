@@ -3,6 +3,7 @@ local SMB = KUI:NewModule("KuiSquareMinimapButtons", "AceEvent-3.0", "AceHook-3.
 local COMP = KUI:GetModule("KuiCompatibility")
 local floor = math.floor
 local ceil = math.ceil
+local max = math.max
 local min = math.min
 local ipairs = ipairs
 local sort = table.sort
@@ -53,14 +54,101 @@ local GenericIgnores = {
 local PartialIgnores = { 'Node', 'Note', 'Pin', 'POI' }
 
 local ButtonFunctions = { 'SetParent', 'ClearAllPoints', 'SetPoint', 'SetSize', 'SetScale', 'SetFrameStrata', 'SetFrameLevel' }
+local DecorativeTextureIDs = {
+	[-2718] = true,
+	[136430] = true,
+	[136467] = true,
+	[136477] = true,
+}
+
+local function HasTexture(texture)
+	return texture and texture.IsObjectType and texture:IsObjectType('Texture') and texture.GetTexture and texture:GetTexture()
+end
+
+local function IsDecorativeTextureValue(texture, layer)
+	if not texture then return true end
+	if DecorativeTextureIDs[texture] then return true end
+	if layer == "BACKGROUND" or layer == "BORDER" or layer == "HIGHLIGHT" then
+		return true
+	end
+
+	local textureString = T.string_lower(T.tostring(texture))
+	return textureString:find("border", 1, true) or textureString:find("background", 1, true) or textureString:find("overlay", 1, true) or textureString:find("highlight", 1, true) or textureString:find("mask", 1, true) or textureString:find("ring", 1, true)
+end
+
+local function IsLibDBIconButton(Button)
+	if not Button then return false end
+
+	local name = Button.GetName and Button:GetName()
+	return (name and T.string_sub(name, 1, 12) == "LibDBIcon10_") or (Button.dataObject ~= nil)
+end
+
+local function GetPrimaryIconTexture(Button)
+	if not Button then return end
+
+	local name = Button.GetName and Button:GetName()
+	local candidates = {
+		Button.icon,
+		Button.Icon,
+		name and _G[name.."Icon"] or nil,
+		name and _G[name.."IconTexture"] or nil,
+		Button.GetNormalTexture and Button:GetNormalTexture() or nil,
+	}
+
+	for _, texture in ipairs(candidates) do
+		if HasTexture(texture) and not IsDecorativeTextureValue(texture:GetTexture(), texture.GetDrawLayer and texture:GetDrawLayer()) then
+			return texture
+		end
+	end
+
+	for i = 1, Button:GetNumRegions() do
+		local region = T.select(i, Button:GetRegions())
+		if HasTexture(region) and not IsDecorativeTextureValue(region:GetTexture(), region.GetDrawLayer and region:GetDrawLayer()) then
+			return region
+		end
+	end
+
+	for _, texture in ipairs(candidates) do
+		if HasTexture(texture) then
+			return texture
+		end
+	end
+
+	for i = 1, Button:GetNumRegions() do
+		local region = T.select(i, Button:GetRegions())
+		if HasTexture(region) then
+			return region
+		end
+	end
+end
+
+local function IsDecorativeTexture(region)
+	if not region or not region.IsObjectType or not region:IsObjectType("Texture") then return false end
+
+	local texture = region.GetTexture and region:GetTexture()
+	local layer = region.GetDrawLayer and region:GetDrawLayer()
+	return IsDecorativeTextureValue(texture, layer)
+end
+
+local function GetTextureTexCoords(texture)
+	if not texture or not texture.GetTexCoord then return end
+
+	local coords = { texture:GetTexCoord() }
+	if #coords == 4 and coords[1] ~= nil then
+		local left, right, top, bottom = coords[1], coords[2], coords[3], coords[4]
+		return left, right, top, bottom
+	end
+end
 
 local function NormalizeButtonToken(token)
 	token = token and strtrim(T.tostring(token)) or ""
+	token = token:gsub("%s+", "")
 	return strupper(token)
 end
 
 local function BuildButtonAliases(key, kind)
 	local aliases = {}
+	key = NormalizeButtonToken(key)
 	if not key or key == "" then return aliases end
 
 	aliases[key] = true
@@ -74,6 +162,7 @@ local function BuildButtonAliases(key, kind)
 		short = short:gsub("_BUTTON$", "")
 		short = short:gsub("BUTTON$", "")
 		short = short:gsub("^SMB_", "")
+		short = NormalizeButtonToken(short)
 
 		if short ~= "" then
 			aliases[short] = true
@@ -526,6 +615,11 @@ function SMB:SkinMinimapButton(Button)
 	if (not Button) or Button.isSkinned then return end
 
 	local Name = Button:GetName()
+	local IsLibDB = IsLibDBIconButton(Button)
+	local OriginalIconTexture = GetPrimaryIconTexture(Button)
+	local IconTexture = OriginalIconTexture
+	local iconAsset = OriginalIconTexture and OriginalIconTexture.GetTexture and OriginalIconTexture:GetTexture()
+	local left, right, top, bottom = GetTextureTexCoords(OriginalIconTexture)
 	if not Name then return end
 
 	if T.tContains(ignoreButtons, Name) then return end
@@ -538,13 +632,27 @@ function SMB:SkinMinimapButton(Button)
 		if T.string_find(Name, PartialIgnores[i]) ~= nil then return end
 	end
 
+	if IsLibDB then
+		IconTexture = OriginalIconTexture
+
+		if Button.SMBIcon then
+			Button.SMBIcon:SetTexture(nil)
+			Button.SMBIcon:SetAlpha(0)
+			Button.SMBIcon:Hide()
+		end
+
+		if Button.SMBIconFrame then
+			Button.SMBIconFrame:Hide()
+		end
+	end
+
 	for i = 1, Button:GetNumRegions() do
 		local Region = T.select(i, Button:GetRegions())
 		if Region.IsObjectType and Region:IsObjectType('Texture') then
 			local Texture = Region.GetTexture and Region:GetTexture()
 			local TextureString = Texture and T.string_lower(T.tostring(Texture)) or ""
 
-			if Region ~= IconTexture and IsDecorativeTexture(Region) then
+			if Region ~= IconTexture and (IsLibDB or IsDecorativeTexture(Region)) then
 				Region:SetTexture(nil)
 				Region:SetAlpha(0)
 				Region:Hide()
@@ -563,11 +671,22 @@ function SMB:SkinMinimapButton(Button)
 					Region:SetTexture('Interface\\Icons\\INV_Misc_Rabbit_2')
 				end
 				if Region == IconTexture then
+					local anchor = Button.backdrop or Button
 					Region:ClearAllPoints()
-					Region:SetInside()
-					Region:SetTexCoord(T.unpack(self.TexCoords))
-					Button:HookScript('OnLeave', function() Region:SetTexCoord(T.unpack(self.TexCoords)) end)
-					Region:SetDrawLayer('ARTWORK')
+					Region:SetInside(anchor, 2, 2)
+					if IsLibDB and left ~= nil then
+						Region:SetTexCoord(left, right, top, bottom)
+						Button:HookScript('OnLeave', function() Region:SetTexCoord(left, right, top, bottom) end)
+						Region:SetDrawLayer('OVERLAY', 7)
+					elseif IsLibDB then
+						Region:SetTexCoord(0, 1, 0, 1)
+						Button:HookScript('OnLeave', function() Region:SetTexCoord(0, 1, 0, 1) end)
+						Region:SetDrawLayer('OVERLAY', 7)
+					else
+						Region:SetTexCoord(T.unpack(self.TexCoords))
+						Button:HookScript('OnLeave', function() Region:SetTexCoord(T.unpack(self.TexCoords)) end)
+						Region:SetDrawLayer('ARTWORK')
+					end
 					Region:SetAlpha(1)
 					Region:Show()
 					Region.SetPoint = function() return end
@@ -598,10 +717,28 @@ function SMB:SkinMinimapButton(Button)
 	end
 
 	if IconTexture and IconTexture.ClearAllPoints then
+		local anchor = Button.backdrop or Button
 		IconTexture:ClearAllPoints()
-		IconTexture:SetInside()
-		IconTexture:SetTexCoord(T.unpack(self.TexCoords))
-		IconTexture:SetDrawLayer('ARTWORK')
+		IconTexture:SetInside(anchor, 2, 2)
+		if IsLibDB and left ~= nil then
+			IconTexture:SetTexCoord(left, right, top, bottom)
+			IconTexture:SetDrawLayer('OVERLAY', 7)
+		elseif IsLibDB then
+			IconTexture:SetTexCoord(0, 1, 0, 1)
+			IconTexture:SetDrawLayer('OVERLAY', 7)
+		else
+			IconTexture:SetTexCoord(T.unpack(self.TexCoords))
+			IconTexture:SetDrawLayer('ARTWORK')
+		end
+		if IconTexture.SetVertexColor then
+			IconTexture:SetVertexColor(1, 1, 1, 1)
+		end
+		if IconTexture.SetDesaturated then
+			IconTexture:SetDesaturated(false)
+		end
+		if IconTexture.SetBlendMode then
+			IconTexture:SetBlendMode("BLEND")
+		end
 		IconTexture:SetAlpha(1)
 		IconTexture:Show()
 	end
@@ -611,7 +748,50 @@ function SMB:SkinMinimapButton(Button)
 	end
 	Button:SetFrameLevel(_G.Minimap:GetFrameLevel() + 5)
 	Button:SetSize(SMB.db.iconSize, SMB.db.iconSize)
-	Button:CreateBackdrop()
+	Button:CreateBackdrop("Default")
+	if Button.backdrop and Button.backdrop.SetTemplate then
+		Button.backdrop:SetTemplate("Default")
+	end
+	Button:CreateIconShadow()
+	if Button.ishadow then
+		Button.ishadow:SetParent(Button)
+		Button.ishadow:ClearAllPoints()
+		Button.ishadow:SetInside(Button, 0, 0)
+		Button.ishadow:Show()
+	end
+
+	if IsLibDB and iconAsset and Button.backdrop then
+		if not Button.SMBIcon then
+			Button.SMBIcon = Button.backdrop:CreateTexture(nil, "ARTWORK")
+		else
+			Button.SMBIcon:SetParent(Button.backdrop)
+		end
+
+		Button.SMBIcon:ClearAllPoints()
+		Button.SMBIcon:SetInside(Button.backdrop, 2, 2)
+		Button.SMBIcon:SetTexture(iconAsset)
+		if left ~= nil then
+			Button.SMBIcon:SetTexCoord(left, right, top, bottom)
+		else
+			Button.SMBIcon:SetTexCoord(0, 1, 0, 1)
+		end
+		Button.SMBIcon:SetVertexColor(1, 1, 1, 1)
+		if Button.SMBIcon.SetDesaturated then
+			Button.SMBIcon:SetDesaturated(false)
+		end
+		if Button.SMBIcon.SetBlendMode then
+			Button.SMBIcon:SetBlendMode("BLEND")
+		end
+		Button.SMBIcon:SetDrawLayer("ARTWORK", 7)
+		Button.SMBIcon:SetAlpha(1)
+		Button.SMBIcon:Show()
+
+		if OriginalIconTexture and OriginalIconTexture ~= Button.SMBIcon then
+			OriginalIconTexture:SetAlpha(0)
+			OriginalIconTexture:Hide()
+		end
+	end
+
 	Button:HookScript('OnEnter', function(self)
 		self.backdrop:SetBackdropBorderColor(T.unpack(E["media"].rgbvaluecolor))
 		if SMB.Bar:IsShown() then
@@ -619,7 +799,16 @@ function SMB:SkinMinimapButton(Button)
 		end
 	end)
 	Button:HookScript('OnLeave', function(self)
-		self:CreateBackdrop()
+		self:CreateBackdrop("Default")
+		if self.backdrop and self.backdrop.SetTemplate then
+			self.backdrop:SetTemplate("Default")
+		end
+		if self.ishadow then
+			self.ishadow:SetParent(self)
+			self.ishadow:ClearAllPoints()
+			self.ishadow:SetInside(self, 0, 0)
+			self.ishadow:Show()
+		end
 		if SMB.Bar:IsShown() and SMB.db.barMouseOver then
 			T.UIFrameFadeOut(SMB.Bar, 0.2, SMB.Bar:GetAlpha(), 0)
 		end
@@ -818,6 +1007,37 @@ function SMB:Update()
 		Button:SetScale(1)
 		Button:SetFrameStrata('MEDIUM')
 		Button:SetFrameLevel(self.Bar:GetFrameLevel() + 1)
+		Button:CreateBackdrop("Default")
+		if Button.backdrop then
+			if Button.backdrop.SetTemplate then
+				Button.backdrop:SetTemplate("Default")
+			end
+			Button.backdrop:SetFrameStrata(Button:GetFrameStrata())
+			Button.backdrop:SetFrameLevel(max(Button:GetFrameLevel() - 1, 0))
+		end
+		if Button.ishadow then
+			Button.ishadow:SetParent(Button)
+			Button.ishadow:ClearAllPoints()
+			Button.ishadow:SetInside(Button, 0, 0)
+			Button.ishadow:Show()
+		end
+		if Button.SMBIcon then
+			if Button.backdrop then
+				Button.SMBIcon:SetParent(Button.backdrop)
+				Button.SMBIcon:ClearAllPoints()
+				Button.SMBIcon:SetInside(Button.backdrop, 2, 2)
+			else
+				Button.SMBIcon:SetParent(Button)
+				Button.SMBIcon:ClearAllPoints()
+				Button.SMBIcon:SetInside(Button, 2, 2)
+			end
+			Button.SMBIcon:SetDrawLayer("ARTWORK", 7)
+			Button.SMBIcon:SetAlpha(1)
+			Button.SMBIcon:Show()
+		end
+		if Button.SMBIconFrame then
+			Button.SMBIconFrame:Hide()
+		end
 		Button:SetScript('OnDragStart', nil)
 		Button:SetScript('OnDragStop', nil)
 		SMB:LockButton(Button)
