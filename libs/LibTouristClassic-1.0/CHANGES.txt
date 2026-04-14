@@ -1,0 +1,12 @@
+tag b4255938cb1d3258c3ace50f4ae94805e78f48a0 WoW-5.5.3-release1
+Author:	Odica Jaedenar <odica.jaedenar@gmail.com>
+Date:	Thu Dec 11 22:09:21 2025 +0100
+
+Tagged as WoW-5.5.3-release1
+
+commit 683fd1ba735fb55bd536b0536cd516cd1277bea4
+Author: Odica Jaedenar <odica.jaedenar@gmail.com>
+Date:   Thu Dec 11 22:08:21 2025 +0100
+
+    Updated version in TOC to 50503
+

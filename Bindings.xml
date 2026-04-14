@@ -1,0 +1,47 @@
+<Bindings>
+	<Binding name="CLICK AutoSlotButton1:LeftButton" header="KLIXUI_AutoSlotButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton2:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton3:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton4:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton5:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton6:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton7:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton8:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton9:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton10:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton11:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoSlotButton12:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton1:LeftButton" header= "KLIXUI_AutoQuestButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton2:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton3:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton4:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton5:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton6:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton7:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton8:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton9:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton10:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton11:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK AutoQuestButton12:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	
+	<Binding name="CLICK Kui_ClearRaidFlares:LeftButton" header="KLIXUI_RAIDFLARE" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare1:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare2:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare3:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare4:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare5:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare6:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare7:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	<Binding name="CLICK Kui_RaidFlare8:LeftButton" category="BINDING_HEADER_KLIXUI"/>
+	
+	<Binding name="KLIXUI_GAME_MENU" runOnUp="true" header="KLIXUI_GAME_MENU" category="BINDING_HEADER_KLIXUI">
+		if KuiButton_2 then KuiGameMenu_OnMouseUp(KuiButton_2) end
+	</Binding>
+	
+	<Binding name="KLIXUI_HIDE_EMBED" runOnUp="false" header="KLIXUI_EMBED" category="BINDING_HEADER_KLIXUI">
+		if EmbedSystem_MainWindow then EmbedSystem_MainWindow:Hide() end
+	</Binding>
+	<Binding name="KLIXUI_SHOW_EMBED" runOnUp="false" category="BINDING_HEADER_KLIXUI">
+		if EmbedSystem_MainWindow then EmbedSystem_MainWindow:Show() end
+	</Binding>
+</Bindings>

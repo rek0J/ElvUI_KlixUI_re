@@ -1,0 +1,46 @@
+local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KEI = KUI:NewModule("KuiEliteIcon", "AceEvent-3.0")
+
+function KEI:SetEliteIcon()
+	self.frame:Size(KEI.db.size or 18, KEI.db.size or 18)
+	self.frame.Texture:SetTexture("Interface\\TARGETINGFRAME\\Nameplates")
+	local c = T.UnitClassification("target")
+	if c == 'elite' or c == "worldboss" then
+		self.frame.Texture:Show()
+		self.frame.Texture:SetTexCoord(0, 0.15, 0.25, 0.53)
+	elseif c == 'rareelite' or c == 'rare' then
+		self.frame.Texture:Show()
+		self.frame.Texture:SetTexCoord(0, 0.15, 0.52, 0.84)
+	else
+		self.frame.Texture:Hide()
+	end
+	
+	local targetFrame = _G["ElvUF_Target"]
+	if targetFrame then
+		local parent = targetFrame
+		local anchor = targetFrame.Health or targetFrame
+
+		self.frame:ClearAllPoints()
+		self.frame:Point(KEI.db.point or "CENTER", anchor, KEI.db.relativePoint or "TOPRIGHT", KEI.db.xOffset or -1, KEI.db.yOffset or 0)
+		self.frame:SetParent(parent)
+		self.frame:SetFrameStrata(T.string_sub(KEI.db.strata or "3-MEDIUM", 3))
+		self.frame:SetFrameLevel(KEI.db.level or 12)
+	else
+		self.frame:SetParent(E.UIParent)
+	end
+end
+
+function KEI:Initialize()
+	if not E.db.KlixUI.unitframes.eliteicon.enable then return end
+	
+	KEI.db = E.db.KlixUI.unitframes.eliteicon
+	
+	local frame = T.CreateFrame("Frame", "EliteIconFrame", E.UIParent)
+	frame.Texture = frame:CreateTexture(nil, "OVERLAY")
+	frame.Texture:SetAllPoints()
+	KEI.frame = frame
+	
+	KEI:RegisterEvent("PLAYER_TARGET_CHANGED", "SetEliteIcon")
+end
+
+KUI:RegisterModule(KEI:GetName())

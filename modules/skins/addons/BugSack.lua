@@ -1,0 +1,41 @@
+﻿local KUI, T, E, L, V, P, G = unpack(select(2, ...))
+local KS = KUI:GetModule('KuiSkins')
+local S = E:GetModule('Skins')
+
+-- WoW API / Variables
+local hooksecurefunc = hooksecurefunc
+-- GLOBALS: BugSack, BugSackFrame, BugSackTabAll
+
+local function styleBugSack()
+	if E.private.KlixUI.skins.addonSkins.bs ~= true or not T.IsAddOnLoaded("BugSack") then return end
+
+	hooksecurefunc(_G.BugSack, "OpenSack", function()
+		if not _G.BugSack.IsSkinned then
+			_G.BugSackFrame:StripTextures()
+
+			_G.BugSackFrame:CreateBackdrop("Transparent")
+			_G.BugSackFrame.backdrop:Styling()
+
+			_G.BugSackTabAll:ClearAllPoints()
+			_G.BugSackTabAll:Point("TOPLEFT", _G.BugSackFrame, "BOTTOMLEFT", 0, -1)
+
+			S:HandleTab(_G.BugSackTabAll)
+			S:HandleTab(_G.BugSackTabSession)
+			S:HandleTab(_G.BugSackTabLast)
+			S:HandleScrollBar(_G.BugSackScrollScrollBar)
+			S:HandleButton(_G.BugSackNextButton)
+			S:HandleButton(_G.BugSackSendButton)
+			S:HandleButton(_G.BugSackPrevButton)
+
+			for _, child in T.pairs({ _G.BugSackFrame:GetChildren() }) do
+				if (child:IsObjectType("Button") and child:GetScript("OnClick") == _G.BugSack.CloseSack) then
+				S:HandleCloseButton(child)
+			end
+		end
+
+			_G.BugSack.IsSkinned = true
+		end
+	end)
+end
+
+S:AddCallbackForAddon("BugSack", "KuiBugSack", styleBugSack)
