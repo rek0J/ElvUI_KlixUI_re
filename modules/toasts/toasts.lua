@@ -19,6 +19,8 @@ local activeToasts = {}
 local queuedToasts = {}
 local textsToAnimate = {}
 local toastCounter = 0
+local DEFAULT_ACHIEVEMENT_ICON = "Interface\\Icons\\Achievement_Quests_Completed_08"
+local DEFAULT_ACHIEVEMENT_BADGE = "Interface\\AchievementFrame\\UI-Achievement-TinyShield"
 
 local EQUIP_SLOTS = {
     ["INVTYPE_HEAD"] = {_G.INVSLOT_HEAD},
@@ -81,6 +83,10 @@ local function HasGarrisonToastSupport()
 		and _G.LE_FOLLOWER_TYPE_GARRISON_6_0 and _G.LE_GARRISON_TYPE_6_0
 end
 
+local function HasGarrisonFollowerTooltipSupport()
+	return HasGarrisonToastSupport() and T.GarrisonFollowerTooltip_Show and T.C_Garrison_GetFollowerTypeByID
+end
+
 local function HasWorldToastSupport()
 	return T.QuestUtils_IsQuestWorldQuest and T.C_Scenario_GetInfo and _G.LE_SCENARIO_TYPE_LEGION_INVASION
 end
@@ -88,6 +94,10 @@ end
 local function HasTransmogToastSupport()
 	return T.C_TransmogCollection_GetSourceInfo and T.C_TransmogCollection_GetAppearanceSources and T.C_TransmogCollection_GetAppearanceSourceInfo
 end
+
+local C_TradeSkillUI = _G.C_TradeSkillUI
+local GetTradeSkillLineForRecipe = T.C_TradeSkillUI_GetTradeSkillLineForRecipe or (C_TradeSkillUI and C_TradeSkillUI.GetTradeSkillLineForRecipe)
+local GetTradeSkillTexture = T.C_TradeSkillUI_GetTradeSkillTexture or (C_TradeSkillUI and C_TradeSkillUI.GetTradeSkillTexture)
 
 local function CanManageBlizzardAlertFrame()
 	return (E.Retail or E.TBC) and _G.AlertFrame and _G.GroupLootContainer and UIPARENT_MANAGED_FRAME_POSITIONS
@@ -121,6 +131,27 @@ local function ParseLink(link)
     end
 
     return T.table_concat(linkTable, ":"), linkTable[1], name
+end
+
+local GlobalGetCurrencyInfo = _G.GetCurrencyInfo
+
+local function GetCurrencyToastInfo(currencyLink, fallbackName)
+	local currencyID = currencyLink and T.tonumber(T.string_match(currencyLink, "currency:(%d+)"))
+	local name, icon
+
+	local getCurrencyInfo = T.type(T.GetCurrencyInfo) == "function" and T.GetCurrencyInfo or GlobalGetCurrencyInfo
+	if currencyID and T.type(getCurrencyInfo) == "function" then
+		local info1, info2, info3 = getCurrencyInfo(currencyID)
+		if T.type(info1) == "table" then
+			name = info1.name
+			icon = info1.iconFileID or info1.icon
+		else
+			name = info1
+			icon = info3
+		end
+	end
+
+	return name or fallbackName, icon or "Interface\\Icons\\INV_Misc_Coin_02"
 end
 
 -- XXX: Remove it, when it's implemented by Blizzard
@@ -355,6 +386,7 @@ local function ResetToast(toast)
     toast.itemCount = nil
     toast.soundFile = nil
     toast.usedRewards = nil
+    toast._skipIconCrop = nil
     toast:ClearAllPoints()
     toast:Hide()
     toast.BG:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\toasts\\toast-bg-default")
@@ -517,12 +549,18 @@ local function ToastButton_OnClick(self, button)
                 T.ShowUIPanel(_G.AchievementFrame)
                 AchievementFrame_SelectAchievement(self.id)
             elseif self.type == "follower" then
+                if not HasGarrisonToastSupport() or not T.Garrison_LoadUI or not T.ShowGarrisonLandingPage or not _G.GarrisonFollowerOptions then
+                    return
+                end
+
                 if not _G.GarrisonLandingPage then
                     T.Garrison_LoadUI()
                 end
 
-                if _G.GarrisonLandingPage then
-                    T.ShowGarrisonLandingPage(_G.GarrisonFollowerOptions[T.C_Garrison_GetFollowerInfo(self.id).followerTypeID].garrisonType)
+                local followerInfo = T.C_Garrison_GetFollowerInfo and T.C_Garrison_GetFollowerInfo(self.id)
+                local followerOptions = followerInfo and _G.GarrisonFollowerOptions[followerInfo.followerTypeID]
+                if _G.GarrisonLandingPage and followerOptions then
+                    T.ShowGarrisonLandingPage(followerOptions.garrisonType)
                 end
             elseif self.type == "misc" then
                 if self.link then
@@ -548,6 +586,10 @@ local function ToastButton_OnEnter(self)
             _G.GameTooltip:SetItemByID(self.id)
             _G.GameTooltip:Show()
         elseif self.type == "follower" then
+            if not HasGarrisonFollowerTooltipSupport() then
+                return
+            end
+
             local isOK, link = T.pcall(T.C_Garrison_GetFollowerLink, self.id)
 
             if not isOK then
@@ -559,10 +601,10 @@ local function ToastButton_OnEnter(self)
                 local followerType = T.C_Garrison_GetFollowerTypeByID(T.tonumber(garrisonFollowerID))
                 T.GarrisonFollowerTooltip_Show(T.tonumber(garrisonFollowerID), false, T.tonumber(quality), T.tonumber(level), 0, 0, T.tonumber(itemLevel), T.tonumber(spec1), T.tonumber(ability1), T.tonumber(ability2), T.tonumber(ability3), T.tonumber(ability4), T.tonumber(trait1), T.tonumber(trait2), T.tonumber(trait3), T.tonumber(trait4))
 
-                if followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 then
+                if followerType == LE_FOLLOWER_TYPE_SHIPYARD_6_2 and _G.GarrisonShipyardFollowerTooltip then
                     _G.GarrisonShipyardFollowerTooltip:ClearAllPoints()
                     _G.GarrisonShipyardFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", -2, 2)
-                else
+                elseif _G.GarrisonFollowerTooltip then
                     _G.GarrisonFollowerTooltip:ClearAllPoints()
                     _G.GarrisonFollowerTooltip:SetPoint("TOPLEFT", self, "BOTTOMRIGHT", -2, 2)
                 end
@@ -587,18 +629,26 @@ local function ToastButton_OnEnter(self)
         end
     end
 
-    self.AnimOut:Stop()
+    if KT.db.hold_on_mouseover then
+        self.AnimOut:Stop()
+    end
 
     KT:RegisterEvent("MODIFIER_STATE_CHANGED")
 end
 
 local function ToastButton_OnLeave(self)
     _G.GameTooltip:Hide()
-    _G.GarrisonFollowerTooltip:Hide()
-    _G.GarrisonShipyardFollowerTooltip:Hide()
+    if _G.GarrisonFollowerTooltip then
+        _G.GarrisonFollowerTooltip:Hide()
+    end
+    if _G.GarrisonShipyardFollowerTooltip then
+        _G.GarrisonShipyardFollowerTooltip:Hide()
+    end
     _G.BattlePetTooltip:Hide()
 
-    self.AnimOut:Play()
+    if KT.db.hold_on_mouseover then
+        self.AnimOut:Play()
+    end
 
     KT:UnregisterEvent("MODIFIER_STATE_CHANGED")
 end
@@ -841,7 +891,9 @@ local function CreateUpdateArrowsAnim(parent)
 end
 
 local function Reward_OnEnter(self)
-    self:GetParent().AnimOut:Stop()
+    if KT.db.hold_on_mouseover then
+        self:GetParent().AnimOut:Stop()
+    end
 
     _G.GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
 
@@ -863,7 +915,9 @@ local function Reward_OnEnter(self)
 end
 
 local function Reward_OnLeave(self)
-    self:GetParent().AnimOut:Play()
+    if KT.db.hold_on_mouseover then
+        self:GetParent().AnimOut:Play()
+    end
     _G.GameTooltip:Hide()
 end
 
@@ -1115,9 +1169,32 @@ function KT:PLAYER_REGEN_ENABLED()
 end
 
 -- Achievement
+local function GetAchievementToastTexture(icon, isCriteria)
+    local source = KT.db.achievement_icon_source or "ACHIEVEMENT"
+    local useFallback = KT.db.use_mop_fallback_icons
+    local texture = icon
+
+    if source == "BADGE" then
+        texture = DEFAULT_ACHIEVEMENT_BADGE
+    elseif source == "FALLBACK" then
+        texture = DEFAULT_ACHIEVEMENT_ICON
+    end
+
+    if (not texture or texture == 0 or texture == "") and useFallback then
+        texture = isCriteria and DEFAULT_ACHIEVEMENT_BADGE or DEFAULT_ACHIEVEMENT_ICON
+    end
+
+    if not texture or texture == 0 or texture == "" then
+        texture = icon or DEFAULT_ACHIEVEMENT_ICON
+    end
+
+    return texture, source ~= "ACHIEVEMENT"
+end
+
 local function AchievementToast_SetUp(achievementID, flag, isCriteria)
     local toast = GetToast("achievement")
     local _, name, points, _, _, _, _, _, _, icon = T.GetAchievementInfo(achievementID)
+    local texture, skipCrop = GetAchievementToastTexture(icon, isCriteria)
 
     if isCriteria then
         toast.Title:SetText(ACHIEVEMENT_PROGRESSED)
@@ -1142,7 +1219,11 @@ local function AchievementToast_SetUp(achievementID, flag, isCriteria)
         end
     end
 
-    toast.Icon:SetTexture(icon)
+    toast.Icon:SetTexture(texture)
+    toast._skipIconCrop = skipCrop
+    if skipCrop then
+        toast.Icon:SetTexCoord(0, 1, 0, 1)
+    end
     toast.id = achievementID
 
     KT:SpawnToast(toast, KT.db.dnd.achievement)
@@ -1847,7 +1928,8 @@ function KT:CHAT_MSG_CURRENCY(event, message)
         end
     end
 
-    itemLink = T.string_match(itemLink, "|H(.+)|h.+|h")
+    local rawLink, _, linkName = ParseLink(itemLink)
+    itemLink = rawLink or T.string_match(itemLink, "|H(.+)|h.+|h")
     quantity = T.tonumber(quantity) or 0
 
     local toast, isQueued = GetToastToUpdate(itemLink, "item")
@@ -1859,8 +1941,8 @@ function KT:CHAT_MSG_CURRENCY(event, message)
     end
 
     if not isUpdated then
-        --local name, _, icon, _, _, _, _, quality = T.GetCurrencyInfo(itemLink)
-        local color = ITEM_QUALITY_COLORS[quality or 1]
+        local name, icon = GetCurrencyToastInfo(itemLink, linkName)
+        local color = ITEM_QUALITY_COLORS[1]
 
         if KT.db.colored_names_enabled then
             toast.Text:SetTextColor(color.r, color.g, color.b)
@@ -1977,35 +2059,33 @@ end
 -- Recipe
 function KT:NEW_RECIPE_LEARNED(...)
     local _, recipeID = ...
-    local tradeSkillID = T.C_TradeSkillUI_GetTradeSkillLineForRecipe(recipeID)
+    local tradeSkillID = GetTradeSkillLineForRecipe and GetTradeSkillLineForRecipe(recipeID) or nil
+    local recipeName, _, recipeIcon = T.GetSpellInfo(recipeID)
 
-    if tradeSkillID then
-        local recipeName = T.GetSpellInfo(recipeID)
+    if recipeName then
+        local toast = GetToast("ability")
+        local rank = T.GetSpellRank(recipeID)
+        local rankTexture = ""
+        local icon = tradeSkillID and GetTradeSkillTexture and GetTradeSkillTexture(tradeSkillID) or nil
 
-        if recipeName then
-            local toast = GetToast("ability")
-            local rank = T.GetSpellRank(recipeID)
-            local rankTexture = ""
-
-            if rank == 1 then
-                rankTexture = "|TInterface\\LootFrame\\toast-star:12:12:0:0:32:32:0:21:0:21|t"
-            elseif rank == 2 then
-                rankTexture = "|TInterface\\LootFrame\\toast-star-2:12:24:0:0:64:32:0:42:0:21|t"
-            elseif rank == 3 then
-                rankTexture = "|TInterface\\LootFrame\\toast-star-3:12:36:0:0:64:32:0:64:0:21|t"
-            end
-
-            toast.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE)
-            toast.Text:SetText(recipeName)
-            toast.BG:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\toasts\\toast-bg-recipe")
-            toast.Rank:SetText(rankTexture)
-            toast.RankBG:SetShown(not not rank)
-            toast.Icon:SetTexture(T.C_TradeSkillUI_GetTradeSkillTexture(tradeSkillID))
-            toast.soundFile = SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST
-            toast.id = recipeID
-
-            KT:SpawnToast(toast, KT.db.dnd.recipe)
+        if rank == 1 then
+            rankTexture = "|TInterface\\LootFrame\\toast-star:12:12:0:0:32:32:0:21:0:21|t"
+        elseif rank == 2 then
+            rankTexture = "|TInterface\\LootFrame\\toast-star-2:12:24:0:0:64:32:0:42:0:21|t"
+        elseif rank == 3 then
+            rankTexture = "|TInterface\\LootFrame\\toast-star-3:12:36:0:0:64:32:0:64:0:21|t"
         end
+
+        toast.Title:SetText(rank and rank > 1 and UPGRADED_RECIPE_LEARNED_TITLE or NEW_RECIPE_LEARNED_TITLE)
+        toast.Text:SetText(recipeName)
+        toast.BG:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\toasts\\toast-bg-recipe")
+        toast.Rank:SetText(rankTexture)
+        toast.RankBG:SetShown(not not rank)
+        toast.Icon:SetTexture(icon or recipeIcon or T.GetSpellTexture(recipeID) or "Interface\\Icons\\INV_Scroll_03")
+        toast.soundFile = SOUNDKIT.UI_PROFESSIONS_NEW_RECIPE_LEARNED_TOAST
+        toast.id = recipeID
+
+        KT:SpawnToast(toast, KT.db.dnd.recipe)
     end
 end
 
@@ -2293,6 +2373,8 @@ end
 
 -- Tests
 local function SpawnTestGarrisonToast()
+    if not HasGarrisonToastSupport() then return end
+
     -- follower
     local followers = T.C_Garrison_GetFollowers(LE_FOLLOWER_TYPE_GARRISON_6_0)
     local follower = followers and followers[1]
@@ -2330,6 +2412,8 @@ local function SpawnTestGarrisonToast()
 end
 
 local function SpawnTestClassHallToast()
+    if not HasGarrisonToastSupport() then return end
+
     -- champion
     local followers = T.C_Garrison_GetFollowers(LE_FOLLOWER_TYPE_GARRISON_7_0)
     local follower = followers and followers[1]
@@ -2348,6 +2432,8 @@ local function SpawnTestClassHallToast()
 end
 
 local function SpawnTestWarEffortToast()
+    if not HasGarrisonToastSupport() then return end
+
     -- champion
     local followers = T.C_Garrison_GetFollowers(LE_FOLLOWER_TYPE_GARRISON_8_0)
     local follower = followers and followers[1]

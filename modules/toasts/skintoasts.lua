@@ -26,7 +26,11 @@ function KT:SkinToast(toast, toastType)
     toast.BG:SetAlpha(0.4)
 
     if toastType ~= "follower" and toastType ~= "mission" and title ~= ARCHAEOLOGY_DIGSITE_COMPLETE_TOAST_FRAME_TITLE then
-        toast.Icon:SetTexCoord(.08, .92, .08, .92)
+        if toast._skipIconCrop then
+            toast.Icon:SetTexCoord(0, 1, 0, 1)
+        else
+            toast.Icon:SetTexCoord(.08, .92, .08, .92)
+        end
         if not toast.Icon.b then
             toast.Icon.b = T.CreateFrame("Frame", nil, toast)
             toast.Icon.b:CreateBackdrop()
