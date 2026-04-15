@@ -248,10 +248,16 @@ local function ArmoryTable()
 				type = 'group',
 				name = STAT_CATEGORY_ATTRIBUTES,
 				order = 12,
-				disabled = function() return not E.db.KlixUI.armory.enable or T.IsAddOnLoaded("DejaCharacterStats") or T.IsAddOnLoaded("ElvUI_SLE") end,
+				disabled = function() return not E.db.KlixUI.armory.enable or E.Mists or T.IsAddOnLoaded("DejaCharacterStats") or T.IsAddOnLoaded("ElvUI_SLE") end,
 				get = function(info) return E.db.KlixUI.armory.stats[ info[#info] ] end,
 				set = function(info, value) E.db.KlixUI.armory.stats[ info[#info] ] = value; PaperDollFrame_UpdateStats() end,
 				args = {
+					mistsNotice = {
+						order = 0,
+						type = "description",
+						name = E.Mists and L["MoP Classic uses the native Blizzard character stats pane here. KlixUI's old custom stats override is disabled on this client."] or "",
+						hidden = function() return not E.Mists end,
+					},
 					IlvlFull = {
 						order = 1,
 						type = "toggle",
@@ -317,7 +323,7 @@ local function ArmoryTable()
 				type = "group",
 				name = STAT_CATEGORY_ATTRIBUTES..": "..L["Fonts"],
 				order = 13,
-				disabled = function() return not E.db.KlixUI.armory.enable or E.db.general.itemLevel.displayCharacterInfo or T.IsAddOnLoaded("DejaCharacterStats") or IsAddOnLoaded("ElvUI_SLE") end,
+				disabled = function() return not E.db.KlixUI.armory.enable or E.Mists or E.db.general.itemLevel.displayCharacterInfo or T.IsAddOnLoaded("DejaCharacterStats") or IsAddOnLoaded("ElvUI_SLE") end,
 				args = {
 					IlvlFont = {
 						type = 'group',
@@ -710,8 +716,8 @@ local function ArmoryTable()
 						type = "input",
 						width = "full",
 						multiline = true,
-						name = L["Custom Text"],
-						desc = L["Add, remove and edit the text on the stats panel to your preference."],
+						name = E.Mists and L["Custom Stat Priority Text"] or L["Custom Text"],
+						desc = E.Mists and L["Set your own MoP Classic stat priority text here. If empty, no default recommendation text will be shown."] or L["Add, remove and edit the text on the stats panel to your preference."],
 						disabled = function() return not E.db.KlixUI.armory.statsPanel.enable end,
 						set = function(info, value) E.db.KlixUI.armory.statsPanel.customStats = value; KA:UpdatePanel() end,
 					},

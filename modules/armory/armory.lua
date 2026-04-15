@@ -797,14 +797,27 @@ function KA:Initialize()
 	KA.db = E.db.KlixUI.armory
 
 	KUI:RegisterDB(self, "armory")
-	
+
+	local CharacterFrame = _G.CharacterFrame
+	local defaultCharacterWidth = CharacterFrame and CharacterFrame:GetWidth() or nil
+	local defaultCharacterHeight = CharacterFrame and CharacterFrame:GetHeight() or nil
+
 	if _G.CharacterFrame_Expand then
 		hooksecurefunc("CharacterFrame_Expand", function()
 	        if _G["PaperDollFrame"]:IsShown() then
 	            _G["CharacterFrame"]:SetWidth(650)
 	            _G["CharacterFrame"]:SetHeight(450)
+				KA:UpdatePanel()
 	        end
 	    end)
+	end
+	if _G.CharacterFrame_Collapse then
+		hooksecurefunc("CharacterFrame_Collapse", function()
+			if CharacterFrame and defaultCharacterWidth and defaultCharacterHeight then
+				CharacterFrame:SetSize(defaultCharacterWidth, defaultCharacterHeight)
+			end
+			KA:UpdatePanel()
+		end)
 	end
 	
 	
@@ -882,10 +895,12 @@ function KA:Initialize()
 
 	-- Stats
 	if not T.IsAddOnLoaded("DejaCharacterStats") then
-		hooksecurefunc("PaperDollFrame_UpdateStats", KA.PaperDollFrame_UpdateStats)
-		KA:ToggleStats()
-		if KA.DisableStatCategoryDragging then
-			KA:DisableStatCategoryDragging()
+		if not E.Mists then
+			hooksecurefunc("PaperDollFrame_UpdateStats", KA.PaperDollFrame_UpdateStats)
+			KA:ToggleStats()
+			if KA.DisableStatCategoryDragging then
+				KA:DisableStatCategoryDragging()
+			end
 		end
 	end
 	
@@ -899,6 +914,11 @@ function KA:Initialize()
 		KA:RegisterEvent("SPELLS_CHANGED")
 		if PaperDollFrame then
 			PaperDollFrame:HookScript("OnShow", function() KA:UpdatePanel() end)
+			PaperDollFrame:HookScript("OnHide", function()
+				if _G.IcyVeinStatFrame then
+					_G.IcyVeinStatFrame:Hide()
+				end
+			end)
 		end
 	end
 end

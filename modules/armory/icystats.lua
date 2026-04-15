@@ -3,9 +3,27 @@ local KA = KUI:GetModule('KuiArmory')
 local S = E:GetModule('Skins')
 local LSM = E.LSM or E.Libs.LSM
 local C_SpecializationInfo = _G.C_SpecializationInfo
-local GetSpecialization = T.GetSpecialization or (C_SpecializationInfo and C_SpecializationInfo.GetSpecialization)
-local GetSpecializationInfo = T.GetSpecializationInfo or (C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo)
+local GetSpecialization = T.GetSpecialization or _G.GetSpecialization or (C_SpecializationInfo and C_SpecializationInfo.GetSpecialization)
+local GetSpecializationInfo = T.GetSpecializationInfo or _G.GetSpecializationInfo or (C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo)
 local gsub = string.gsub
+
+local function GetStatsPanelWidth()
+	local characterFrame = _G.CharacterFrame
+	if characterFrame and characterFrame.GetWidth then
+		return T.math_max(characterFrame:GetWidth(), 1)
+	end
+
+	local paperDoll = _G.PaperDollFrame
+	if paperDoll and paperDoll.GetWidth then
+		return T.math_max(paperDoll:GetWidth(), 1)
+	end
+
+	return 1
+end
+
+local function GetStatsPanelAnchorFrame()
+	return _G.CharacterFrame or _G.PaperDollFrame or E.UIParent
+end
 
 -- Stats updated on Ice-Veins.com as of 14th of January 2020.
 local StatTable = {
@@ -62,10 +80,10 @@ function KA:CreateIcyStatFrame()
     local paperDoll = _G["PaperDollFrame"]
     if paperDoll and paperDoll:IsVisible() then
         if not IcyVeinStatFrame then
-            local IcyVeinStatFrame = T.CreateFrame("Frame", "IcyVeinStatFrame", E.UIParent)
+            local IcyVeinStatFrame = T.CreateFrame("Frame", "IcyVeinStatFrame", GetStatsPanelAnchorFrame())
             IcyVeinStatFrame:CreateBackdrop("Transparent")
             IcyVeinStatFrame:SetFrameStrata("TOOLTIP")
-            IcyVeinStatFrame:SetWidth(paperDoll:GetWidth()) 
+            IcyVeinStatFrame:SetWidth(GetStatsPanelWidth())
 			IcyVeinStatFrame:Styling()
 			
     	    IcyVeinStatFrame.Text = IcyVeinStatFrame:CreateFontString(nil, "OVERLAY")
@@ -108,6 +126,10 @@ function KA:UpdateIcyStatFrame()
         local s = sId and StatTable[className .. "-" .. sId]
         if E.db.KlixUI.armory.statsPanel.customStats ~= "" then
 			IcyVeinStatFrame.Text:SetText(E.db.KlixUI.armory.statsPanel.customStats)
+			return
+		elseif E.Mists then
+			IcyVeinStatFrame.Text:SetText("")
+			return
 		elseif s then
             s = gsub(s, "Strength", "Strength")
             s = gsub(s, "Agility", "Agility")
@@ -121,19 +143,26 @@ function KA:UpdateIcyStatFrame()
 end
 
 function KA:UpdatePanel()
-	if not KA:CreateIcyStatFrame() or not IcyVeinStatFrame then return end
+	local paperDoll = _G["PaperDollFrame"]
+	local anchorFrame = GetStatsPanelAnchorFrame()
+	if not KA:CreateIcyStatFrame() or not IcyVeinStatFrame or not paperDoll then return end
+	if not paperDoll:IsShown() then
+		IcyVeinStatFrame:Hide()
+		return
+	end
 	KA:UpdateIcyStatFrame(E.db.KlixUI.armory.statsPanel.customStats)
+	IcyVeinStatFrame:SetWidth(GetStatsPanelWidth())
 	IcyVeinStatFrame:SetHeight(E.db.KlixUI.armory.statsPanel.height)
 	
 	if E.db.KlixUI.armory.statsPanel.position == "TOP" then
 		IcyVeinStatFrame:ClearAllPoints()
-		IcyVeinStatFrame:SetPoint("BOTTOMRIGHT", _G["PaperDollFrame"], "TOPRIGHT", 0, 1)
-        IcyVeinStatFrame:SetParent(_G["PaperDollFrame"])
+		IcyVeinStatFrame:SetPoint("BOTTOMRIGHT", anchorFrame, "TOPRIGHT", 0, 1)
+        IcyVeinStatFrame:SetParent(anchorFrame)
         IcyVeinStatFrame:Show()
 	else
 		IcyVeinStatFrame:ClearAllPoints()
-		IcyVeinStatFrame:SetPoint("TOPRIGHT", _G["PaperDollFrame"], "BOTTOMRIGHT", 0, -1)
-		IcyVeinStatFrame:SetParent(_G["PaperDollFrame"])
+		IcyVeinStatFrame:SetPoint("TOPRIGHT", anchorFrame, "BOTTOMRIGHT", 0, -1)
+		IcyVeinStatFrame:SetParent(anchorFrame)
         IcyVeinStatFrame:Show()
 	end
 end

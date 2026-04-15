@@ -3,6 +3,11 @@ local KA = KUI:GetModule("KuiArmory")
 
 if T.IsAddOnLoaded("DejaCharacterStats") or T.IsAddOnLoaded('ElvUI_SLE') then return end
 
+local C_SpecializationInfo = _G.C_SpecializationInfo
+local GetSpecialization = T.GetSpecialization or _G.GetSpecialization or (C_SpecializationInfo and C_SpecializationInfo.GetSpecialization)
+local GetSpecializationInfo = T.GetSpecializationInfo or _G.GetSpecializationInfo or (C_SpecializationInfo and C_SpecializationInfo.GetSpecializationInfo)
+local GetSpecializationRole = T.GetSpecializationRole or _G.GetSpecializationRole or (C_SpecializationInfo and C_SpecializationInfo.GetSpecializationRole)
+
 local LE_UNIT_STAT_STRENGTH, LE_UNIT_STAT_AGILITY, LE_UNIT_STAT_INTELLECT = LE_UNIT_STAT_STRENGTH, LE_UNIT_STAT_AGILITY, LE_UNIT_STAT_INTELLECT
 local STAT_ATTACK_SPEED_BASE_TOOLTIP = STAT_ATTACK_SPEED_BASE_TOOLTIP
 local FONT_COLOR_CODE_CLOSE, HIGHLIGHT_FONT_COLOR_CODE = FONT_COLOR_CODE_CLOSE, HIGHLIGHT_FONT_COLOR_CODE
@@ -23,6 +28,44 @@ local MAX_SPELL_SCHOOLS = MAX_SPELL_SCHOOLS
 local RED_FONT_COLOR_CODE = RED_FONT_COLOR_CODE
 
 local totalShown = 0
+local defaultOptionalStats = {
+	HEALTH = true,
+	POWER = true,
+	ALTERNATEMANA = true,
+	ATTACK_DAMAGE = true,
+	ATTACK_AP = true,
+	ATTACK_ATTACKSPEED = true,
+	SPELLPOWER = true,
+	ENERGY_REGEN = true,
+	RUNE_REGEN = true,
+	FOCUS_REGEN = true,
+	MOVESPEED = true,
+}
+
+local function EnsureArmoryStatListDefaults()
+	local armory = E.db and E.db.KlixUI and E.db.KlixUI.armory
+	local statsDB = armory and armory.stats
+	local statsList = statsDB and statsDB.List
+	if not statsDB or not statsList or statsDB.ListInitialized then return end
+
+	local hasEnabledEntry = false
+	for statKey in T.pairs(defaultOptionalStats) do
+		if statsList[statKey] then
+			hasEnabledEntry = true
+			break
+		end
+	end
+
+	if not hasEnabledEntry then
+		for statKey, enabled in T.pairs(defaultOptionalStats) do
+			statsList[statKey] = enabled
+		end
+	end
+
+	statsDB.ListInitialized = true
+end
+
+if E.Mists then return end
 
 --Replacing broken Blizz function and adding some decimals
 --Atteack speed
@@ -362,7 +405,7 @@ function KA:ResetAllStats()
 				[3] = { stat = "ATTACK_ATTACKSPEED", option = true, hideAt = 0 },
 				[4] = { stat = "SPELLPOWER", option = true, hideAt = 0 },
 				[5] = { stat = "MANAREGEN", power = "MANA" },
-				[6] = { stat = "ENERGY_REGEN", power = "ENERGY", hideAt = 0, roles = {"TANK", "DAMAGER"},  classes = {"ROUGE", "DRUID", "MONK"} },
+				[6] = { stat = "ENERGY_REGEN", power = "ENERGY", hideAt = 0, roles = {"TANK", "DAMAGER"},  classes = {"ROGUE", "DRUID", "MONK"} },
 				[7] = { stat = "FOCUS_REGEN", power = "FOCUS", hideAt = 0, classes = {"HUNTER"} },
 				[8] = { stat = "RUNE_REGEN", power = "RUNIC_POWER", hideAt = 0, classes = {"DEATHKNIGHT"} },
 			},
@@ -385,14 +428,17 @@ function KA:ResetAllStats()
 end
 
 function KA:ToggleStats()
+	EnsureArmoryStatListDefaults()
 	KA:ResetAllStats()
 	PaperDollFrame_UpdateStats();
 	KA:DisableStatCategoryDragging()
 end
 
 function KA:PaperDollFrame_UpdateStats()
+	if E.Mists then return end
 	local statsPane = _G["CharacterStatsPane"]
 	if not statsPane or not statsPane.statsFramePool then return end
+	EnsureArmoryStatListDefaults()
 
 	local itemLevelFrame = statsPane.ItemLevelFrame
 	local itemLevelCategory = statsPane.ItemLevelCategory
@@ -441,14 +487,8 @@ function KA:PaperDollFrame_UpdateStats()
 	end
 
 
-	local spec, role
-	if T.GetSpecialization and T.GetSpecializationInfo then
-		spec = T.GetSpecialization()
-		role = T.GetSpecializationRole and T.GetSpecializationRole(spec) or nil
-	else
-		spec = nil
-		role = nil
-	end
+	local spec = GetSpecialization and GetSpecialization() or E.myspec
+	local role = GetSpecializationRole and spec and GetSpecializationRole(spec) or nil
 	local _, powerType = T.UnitPowerType("player")
 
 	-- print(T.GetSpecializationInfo and T.GetSpecializationInfo(spec) or "No GetSpecializationInfo")
@@ -470,10 +510,10 @@ function KA:PaperDollFrame_UpdateStats()
 			if stat.option and not  E.db.KlixUI.armory.stats.List[stat.stat] then showStat = false end
 			if ( showStat and stat.primary ) then
 				local primaryStat = nil
-				if T.GetSpecializationInfo and spec then
-					primaryStat = T.select(6, T.GetSpecializationInfo(spec, nil, nil, nil, T.UnitSex("player")));
+				if GetSpecializationInfo and spec then
+					primaryStat = T.select(6, GetSpecializationInfo(spec, nil, nil, nil, T.UnitSex("player")));
 				end
-				if ( stat.primary ~= primaryStat ) and E.db.KlixUI.armory.stats.OnlyPrimary then
+				if primaryStat and ( stat.primary ~= primaryStat ) and E.db.KlixUI.armory.stats.OnlyPrimary then
 					showStat = false;
 				end
 			end
@@ -534,6 +574,8 @@ function KA:PaperDollFrame_UpdateStats()
 		KA.Scrollbar:Hide()
 	end
 end
+
+if E.Mists then return end
 
 --Creating new scroll
 --Scrollframe Parent Frame
