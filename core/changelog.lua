@@ -8,14 +8,14 @@ local DISABLED_FONT_COLOR = DISABLED_FONT_COLOR
 
 local ChangeLogData = {
 	"Changes:",
-		"- MoP Classic compatibility and stability pass across core, options, maps, datatexts and skins",
-		"- Fixed outdated ElvUI and KlixUI config calls, old option paths and missing defaults or guards",
-		"- Fixed Bags, AutoButtons, MicroBar, SpecSwitch, Time, Talents and Professions related issues",
-		"- Fixed Armory, IcyStats and CharacterStats integration for MoP spec, stats and tooltip paths",
-		"- Fixed multiple Blizzard skin modules for MoP UI differences and retail-only hook paths",
-		"- Restored Maps, World Map, Minimap styling and Square Minimap Buttons compatibility",
-		"- Fixed layout, dropdown, game menu, locpanel, autolog and elite icon parenting issues",
-		"- Added MoP-safe feature detection for retail-only APIs instead of hard Lua errors",
+		"- Continued MoP Classic compatibility cleanup across Armory, Toasts, Movers, Minimap Buttons and Blizzard skins",
+		"- Fixed Character, Talent and Trainer related MoP issues by disabling incompatible overlays and retail-only extra skins",
+		"- Fixed Armory stats panel sizing and anchoring, MoP stat/spec paths and restored native Blizzard stats handling where needed",
+		"- Fixed SpeedyLoot, Gossip, CombatText, recipe and currency toast paths with MoP-safe API fallbacks and guards",
+		"- Fixed multiple Blizzard skin modules for MoP UI differences, missing subframes and unsupported retail-only systems",
+		"- Improved Square Minimap Buttons filtering, broker naming, tooltip styling and LibDBIcon compatibility follow-up",
+		"- Improved Blizzard frame mover anchoring/session handling and cleaned up missing-frame and slider edge cases",
+		"- Added safer MoP feature detection so unsupported systems are skipped defensively instead of hard crashing",
 		" ", -- Section space!
 
 	" ",
