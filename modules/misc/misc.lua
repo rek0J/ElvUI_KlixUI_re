@@ -2,9 +2,82 @@
 local MI = KUI:NewModule("KuiMisc", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 local S = E:GetModule('Skins')
 local COMP = KUI:GetModule("KuiCompatibility")
+local C_GossipInfo = _G.C_GossipInfo
+local C_SpecializationInfo = _G.C_SpecializationInfo
 
 local function HasRetailMiscEvents()
 	return E.Retail
+end
+
+local function GetPlayerSpecialization()
+	if T.GetSpecialization then
+		return T.GetSpecialization()
+	elseif C_SpecializationInfo and C_SpecializationInfo.GetSpecialization then
+		return C_SpecializationInfo.GetSpecialization()
+	elseif _G.GetSpecialization then
+		return _G.GetSpecialization()
+	end
+
+	return E.myspec
+end
+
+local function GetGossipAvailableQuestCount()
+	if T.GetNumGossipAvailableQuests then
+		return T.GetNumGossipAvailableQuests() or 0
+	elseif _G.GetNumGossipAvailableQuests then
+		return _G.GetNumGossipAvailableQuests() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetNumAvailableQuests then
+		return C_GossipInfo.GetNumAvailableQuests() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetAvailableQuests then
+		local quests = C_GossipInfo.GetAvailableQuests()
+		return quests and #quests or 0
+	end
+
+	return 0
+end
+
+local function GetGossipActiveQuestCount()
+	if T.GetNumGossipActiveQuests then
+		return T.GetNumGossipActiveQuests() or 0
+	elseif _G.GetNumGossipActiveQuests then
+		return _G.GetNumGossipActiveQuests() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetNumActiveQuests then
+		return C_GossipInfo.GetNumActiveQuests() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetActiveQuests then
+		local quests = C_GossipInfo.GetActiveQuests()
+		return quests and #quests or 0
+	end
+
+	return 0
+end
+
+local function GetGossipOptionCount()
+	if T.GetNumGossipOptions then
+		return T.GetNumGossipOptions() or 0
+	elseif _G.GetNumGossipOptions then
+		return _G.GetNumGossipOptions() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetNumOptions then
+		return C_GossipInfo.GetNumOptions() or 0
+	elseif C_GossipInfo and C_GossipInfo.GetOptions then
+		local options = C_GossipInfo.GetOptions()
+		return options and #options or 0
+	end
+
+	return 0
+end
+
+local function SelectGossipOptionByIndex(index)
+	if _G.SelectGossipOption then
+		return _G.SelectGossipOption(index)
+	elseif C_GossipInfo and C_GossipInfo.GetOptions and C_GossipInfo.SelectOption then
+		local options = C_GossipInfo.GetOptions()
+		local option = options and options[index]
+		local optionID = option and (option.gossipOptionID or option.optionID or option.orderIndex)
+
+		if optionID then
+			return C_GossipInfo.SelectOption(optionID)
+		end
+	end
 end
 
 function MI:LoadMisc()
@@ -136,7 +209,7 @@ function MI:RUReset()
 end
 
 function MI:SetRole()
-	local spec = T.GetSpecialization()
+	local spec = GetPlayerSpecialization()
 	if T.UnitLevel("player") >= 10 and not T.InCombatLockdown() then
 		if spec == nil and T.UnitGroupRolesAssigned("player") ~= "NONE" then
 			T.UnitSetRole("player", "NONE")
@@ -607,25 +680,11 @@ function MI:Initialize()
 	-- Auto gossip when visiting BfA mission ship and rogue order hall doors in legion.
 	if E.db.KlixUI.misc.auto.gossip then
 		GossipFrame:HookScript("OnShow",function()
-		local targetid = tonumber(string.match(tostring(UnitGUID("target")), "-([^-]+)-[^-]+$"))
+		local targetid = tonumber(string.match(tostring(UnitGUID("target") or ""), "-([^-]+)-[^-]+$"))
 
-		-- Shadowlands prepatch stuff START
-		local GetNumGossipAvailableQuests = GetNumGossipAvailableQuests or C_GossipInfo.GetNumAvailableQuests
-		local GetNumGossipActiveQuests = GetNumGossipActiveQuests or C_GossipInfo.GetNumActiveQuests
-		local GetNumGossipOptions = GetNumGossipOptions or C_GossipInfo.GetNumOptions
-
-		local GetGossipAvailableQuests = GetGossipAvailableQuests or C_GossipInfo.GetAvailableQuests
-		local GetGossipActiveQuests = GetGossipActiveQuests or C_GossipInfo.GetActiveQuests
-		local GetGossipOptions = GetGossipOptions or C_GossipInfo.GetOptions
-
-		local SelectGossipAvailableQuest = SelectGossipAvailableQuest or C_GossipInfo.SelectAvailableQuest
-		local SelectGossipActiveQuest = SelectGossipActiveQuest or C_GossipInfo.SelectActiveQuest
-		local SelectGossipOption = SelectGossipOption or C_GossipInfo.SelectOption
-
-		local CloseGossip = CloseGossip or C_GossipInfo.CloseGossip
-
-		local ActionStatus_DisplayMessage = ActionStatus_DisplayMessage or function(self) ActionStatus:DisplayMessage(self) end
-		-- Shadowlands prepatch stuff END
+		if not (_G.SelectGossipOption or (C_GossipInfo and C_GossipInfo.SelectOption)) then
+			return
+		end
 
 		-- Stop if modifier key is held down
 			if
@@ -639,8 +698,8 @@ function MI:Initialize()
 		-- Stop if NPC has quests or quest turn-ins
 			if
 			(
-				GetNumGossipActiveQuests() > 0						
-				or GetNumGossipAvailableQuests() > 0						
+				GetGossipActiveQuestCount() > 0						
+				or GetGossipAvailableQuestCount() > 0						
 			)
 			then 
 				return
@@ -661,10 +720,10 @@ function MI:Initialize()
 		-- Auto select option if only 1 is available	
 			if
 			(
-				GetNumGossipOptions() == 1						
+				GetGossipOptionCount() == 1						
 			)
 			then 
-				SelectGossipOption(1)
+				SelectGossipOptionByIndex(1)
 				KUI:Print("Gossip option automatically chosen")
 				KUI:Print("Hold any modifier key whilst clicking NPC to choose manually")
 			end
@@ -672,7 +731,7 @@ function MI:Initialize()
 		-- Auto select option 1 if more than one option is available for the listed NPCs	
 			if
 			(
-				GetNumGossipOptions() > 1							
+				GetGossipOptionCount() > 1							
 			)
 			then
 				if
@@ -688,7 +747,7 @@ function MI:Initialize()
 					or targetid == 57850		-- Teleportologist Fozlebub (Darkmoon Faire)
 				)
 				then
-					SelectGossipOption(1)
+					SelectGossipOptionByIndex(1)
 					KUI:Print("Gossip option automatically chosen")
 					KUI:Print("Hold any modifier key whilst clicking NPC to choose manually")
 				end
@@ -700,7 +759,7 @@ function MI:Initialize()
 					or targetid == 35005		-- Arelas Brightstar (Trial of the Champion)
 				)
 				then
-					SelectGossipOption(2)
+					SelectGossipOptionByIndex(2)
 					KUI:Print("Gossip option automatically chosen")
 					KUI:Print("Hold any modifier key whilst clicking NPC to choose manually")
 				end

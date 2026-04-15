@@ -1,0 +1,8 @@
+BetterTalent anpassen für MoP
+
+Ich habe deshalb nur einen sauberen MoP-Disable-Pfad gesetzt:
+
+KuiBetterTalents läuft auf E.Mists nicht mehr an
+KuiBetterTalentsProfiles läuft auf E.Mists nicht mehr an
+die Optionsgruppe in modules/talents/options.lua ist auf MoP jetzt deaktiviert
+

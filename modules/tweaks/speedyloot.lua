@@ -1,6 +1,7 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 
 local Frame, FrameEvents = T.CreateFrame('Frame'), {}
+local GetLootMethod = _G.GetLootMethod or T.GetLootMethod
 
 local block = {
 	['TradeSkillMaster_Destroying'] = 'TSMDestroyingFrame',
@@ -20,7 +21,8 @@ if E.global.KlixUI.speedyLoot == false or T.IsAddOnLoaded("FasterLoot") then ret
 	end
 	
 	for k, v in pairs(block) do
-		if T.IsAddOnLoaded(k) and _G[v]:IsVisible() then
+		local blockedFrame = _G[v]
+		if T.IsAddOnLoaded(k) and blockedFrame and blockedFrame.IsVisible and blockedFrame:IsVisible() then
 			return
 		end
 	end
@@ -28,10 +30,11 @@ if E.global.KlixUI.speedyLoot == false or T.IsAddOnLoaded("FasterLoot") then ret
 	if (GetCVar('autoLootDefault') == '1' and not T.IsModifiedClick('AUTOLOOTTOGGLE')) or (T.GetCVar('autoLootDefault') ~= '1' and T.IsModifiedClick('AUTOLOOTTOGGLE')) then
 		Frame.ready = true
 		Frame.count = 5
+		Frame.group = false
 		
-		if T.IsInGroup() then
-			method = T.GetLootMethod()
-			Frame.group = method == 'master' and true or false
+		if T.IsInGroup() and GetLootMethod then
+			method = GetLootMethod()
+			Frame.group = method == 'master'
 		end
 		
 		if #Frame.items ~= 0 then
@@ -39,12 +42,13 @@ if E.global.KlixUI.speedyLoot == false or T.IsAddOnLoaded("FasterLoot") then ret
 				T.table_remove(Frame.items, i)
 			end
 		end
+
+		local threshold = T.GetLootThreshold and T.GetLootThreshold() or 0
 		for i = T.GetNumLootItems(), 1, -1 do
 			_, _, _, rarity, locked = T.GetLootSlotInfo(i)
-			threshold = T.GetLootThreshold()
 			
 			if locked ~= nil and not locked then
-				if (Frame.group and rarity < threshold) or not Frame.group then
+				if (Frame.group and rarity and rarity < threshold) or not Frame.group then
 					T.table_insert(Frame.items, i)
 				end
 			end

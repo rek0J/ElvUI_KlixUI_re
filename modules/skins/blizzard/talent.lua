@@ -16,6 +16,7 @@ local NUM_TALENT_COLUMNS = _G.NUM_TALENT_COLUMNS or 3
 local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 
 local function styleTalents()
+	if E.Mists then return end
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.talent ~= true or E.private.KlixUI.skins.blizzard.talent ~= true then return end
 	
 	_G.PlayerTalentFrame:Styling()

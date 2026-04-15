@@ -82,7 +82,7 @@ local function styleQuestFrame()
 		if self.backdrop then
 			self.backdrop:Hide()
 		end
-		if not E.private.skins.parchmentRemoverEnable then
+		if not E.private.skins.parchmentRemoverEnable and self.spellTex then
 			self.spellTex:SetTexture("")
 			self:Height(self:GetHeight() - 2)
 		end
@@ -144,7 +144,7 @@ local function styleQuestFrame()
 		if self.backdrop then
 			self.backdrop:Hide()
 		end
-		if not E.private.skins.parchmentRemoverEnable then
+		if not E.private.skins.parchmentRemoverEnable and self.spellTex then
 			self.spellTex:SetTexture("")
 			self:Height(self:GetHeight() - 2)
 		end

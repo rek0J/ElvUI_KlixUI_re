@@ -123,18 +123,40 @@ B.SpecialDefaults = {
 }
 
 B.OriginalDefaults = {}
+B.SessionPoints = {}
 
 local function IsBlizzMoveSupported()
-	return E.Retail or E.TBC
+	return E.Retail or E.TBC or E.Mists
+end
+
+local function ResolveAnchorParent(parent)
+	if T.type(parent) == "string" then
+		return _G[parent] or _G.UIParent
+	end
+
+	return parent or _G.UIParent
+end
+
+local function GetAnchorData(frame)
+	local point, relativeTo, relativePoint, xOfs, yOfs = frame:GetPoint()
+	local parentName
+
+	if relativeTo and relativeTo.GetName then
+		parentName = relativeTo:GetName()
+	end
+
+	if (not parentName or parentName == "") and frame:GetParent() and frame:GetParent().GetName then
+		parentName = frame:GetParent():GetName()
+	end
+
+	return point, parentName or "UIParent", relativePoint, xOfs, yOfs
 end
 
 local function OnDragStart(self)
 	if T.UnitAffectingCombat("player") then return end -- Not allowed to move in combat, cause reasons.
 	local Name = self:GetName()
 	if not E.private.KlixUI.module.blizzmove.remember and not B.OriginalDefaults[Name] then
-		local a, _, c, d, e = self:GetPoint()
-		local b = self:GetParent():GetName() or _G.UIParent
-		B.OriginalDefaults[Name] = {a, b, c, d, e}
+		B.OriginalDefaults[Name] = {GetAnchorData(self)}
 	end
 	self.IsMoving = true
 	self:StartMoving()
@@ -144,9 +166,13 @@ end
 local function OnDragStop(self)
 	self:StopMovingOrSizing()
 	local Name = self:GetName()
+	local a, b, c, d, e = GetAnchorData(self)
+
+	if self:IsShown() then
+		B.SessionPoints[Name] = {a, b, c, d, e}
+	end
+
 	if E.private.KlixUI.module.blizzmove.remember and not B.TempOnly[Name] then -- Saving positions only if option is enabled and frame is not temporary movable
-		local a, _, c, d, e = self:GetPoint()
-		local b = self:GetParent():GetName() or _G.UIParent
 		if Name == "QuestFrame" or Name == "GossipFrame" then -- These 2 frames should always be in the same place. So having coordinates for them at the same time
 			E.private.KlixUI.module.blizzmove.points["GossipFrame"] = {a, b, c, d, e}
 			E.private.KlixUI.module.blizzmove.points["QuestFrame"] = {a, b, c, d, e}
@@ -154,9 +180,8 @@ local function OnDragStop(self)
 			E.private.KlixUI.module.blizzmove.points[Name] = {a, b, c, d, e}
 		end
 		self:SetUserPlaced(true)
-	elseif self:IsUserPlaced() then --Unfuck the game
-		self:ClearAllPoints()
-		self:SetUserPlaced(false)
+	elseif self:IsShown() then
+		self:SetUserPlaced(true)
 	end
 	self.IsMoving = false
 end
@@ -168,10 +193,10 @@ local function LoadPosition(self)
 	if not self:GetPoint() then -- Some frames don't have set positions when show script runs (e.g. CharacterFrame). For those set default position and save that.
 		if B.SpecialDefaults[Name] then
 			local a,b,c,d,e = T.unpack(B.SpecialDefaults[Name])
-			self:SetPoint(a,b,c,d,e, true)
+			self:SetPoint(a, ResolveAnchorParent(b), c, d, e, true)
 		elseif B.OriginalDefaults[Name] then
 			local a,b,c,d,e = T.unpack(B.OriginalDefaults[Name])
-			self:SetPoint(a,b,c,d,e, true)
+			self:SetPoint(a, ResolveAnchorParent(b), c, d, e, true)
 		else
 			self:SetPoint('TOPLEFT', UIParent, 'TOPLEFT', 16, -116, true)
 		end
@@ -181,7 +206,11 @@ local function LoadPosition(self)
 	if E.private.KlixUI.module.blizzmove.remember and E.private.KlixUI.module.blizzmove.points[Name] then
 		self:ClearAllPoints()
 		local a,b,c,d,e = T.unpack(E.private.KlixUI.module.blizzmove.points[Name])
-		self:SetPoint(a,b,c,d,e, true)
+		self:SetPoint(a, ResolveAnchorParent(b), c, d, e, true)
+	elseif not E.private.KlixUI.module.blizzmove.remember and B.SessionPoints[Name] then
+		self:ClearAllPoints()
+		local a,b,c,d,e = T.unpack(B.SessionPoints[Name])
+		self:SetPoint(a, ResolveAnchorParent(b), c, d, e, true)
 	end
 
 	if B.ExlusiveFrames[Name] then
@@ -196,13 +225,21 @@ end
 --Hooking this to movable frames' SetPoint.
 --Blizz love to move some frames when stuff happens, so if SetPoint is not passing an additional arg we call SetPoint again with saved position.
 function B:RewritePoint(anchor, parent, point, x, y, KUIcalled)
-	if not KUIcalled then LoadPosition(self) end
+	if KUIcalled or self.IsMoving then return end
+
+	local name = self:GetName()
+	if not E.private.KlixUI.module.blizzmove.remember and B.SessionPoints[name] then
+		local a,b,c,d,e = T.unpack(B.SessionPoints[name])
+		self:ClearAllPoints()
+		self:SetPoint(a, ResolveAnchorParent(b), c, d, e, true)
+	else
+		LoadPosition(self)
+	end
 end
 
 function B:MakeMovable(Name)
 	local frame = _G[Name]
-	if not frame then --Frame in the list was removed since the last time I checked
-		KUI:Print("Frame to move doesn't exist: "..(Name or "Unknown"), "error")
+	if not frame then -- Some Blizzard frames are expansion/client specific and simply do not exist on MoP Classic.
 		return
 	end
 

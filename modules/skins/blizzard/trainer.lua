@@ -5,26 +5,34 @@ local S = E:GetModule('Skins')
 local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 
 local function styleTrainer()
+	if E.Mists then return end
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.trainer ~= true or E.private.KlixUI.skins.blizzard.trainer ~= true then return end
 
 	local ClassTrainerFrame = _G.ClassTrainerFrame
 	ClassTrainerFrame:Styling()
 
-	_G.ClassTrainerStatusBarSkillRank:ClearAllPoints()
-	_G.ClassTrainerStatusBarSkillRank:SetPoint("CENTER", _G.ClassTrainerStatusBar, "CENTER", 0, 0)
+	if _G.ClassTrainerStatusBarSkillRank and _G.ClassTrainerStatusBar then
+		_G.ClassTrainerStatusBarSkillRank:ClearAllPoints()
+		_G.ClassTrainerStatusBarSkillRank:SetPoint("CENTER", _G.ClassTrainerStatusBar, "CENTER", 0, 0)
+	end
 
-	local bg = T.CreateFrame("Frame", nil, _G.ClassTrainerFrameSkillStepButton)
-	bg:SetPoint("TOPLEFT", 42, -2)
-	bg:SetPoint("BOTTOMRIGHT", 0, 2)
-	bg:SetFrameLevel(_G.ClassTrainerFrameSkillStepButton:GetFrameLevel()-1)
-	KS:CreateBD(bg, .25)
+	if _G.ClassTrainerFrameSkillStepButton then
+		local bg = T.CreateFrame("Frame", nil, _G.ClassTrainerFrameSkillStepButton)
+		bg:SetPoint("TOPLEFT", 42, -2)
+		bg:SetPoint("BOTTOMRIGHT", 0, 2)
+		bg:SetFrameLevel(_G.ClassTrainerFrameSkillStepButton:GetFrameLevel()-1)
+		KS:CreateBD(bg, .25)
 
-	_G.ClassTrainerFrameSkillStepButton.selectedTex:SetPoint("TOPLEFT", 43, -3)
-	_G.ClassTrainerFrameSkillStepButton.selectedTex:SetPoint("BOTTOMRIGHT", -1, 3)
-	_G.ClassTrainerFrameSkillStepButton.selectedTex:SetTexture(E["media"].normTex)
-	_G.ClassTrainerFrameSkillStepButton.selectedTex:SetVertexColor(r, g, b, .2)
+		if _G.ClassTrainerFrameSkillStepButton.selectedTex then
+			_G.ClassTrainerFrameSkillStepButton.selectedTex:SetPoint("TOPLEFT", 43, -3)
+			_G.ClassTrainerFrameSkillStepButton.selectedTex:SetPoint("BOTTOMRIGHT", -1, 3)
+			_G.ClassTrainerFrameSkillStepButton.selectedTex:SetTexture(E["media"].normTex)
+			_G.ClassTrainerFrameSkillStepButton.selectedTex:SetVertexColor(r, g, b, .2)
+		end
+	end
 
 	hooksecurefunc("ClassTrainerFrame_Update", function()
+		if not ClassTrainerFrame.scrollFrame or not ClassTrainerFrame.scrollFrame.buttons then return end
 		for _, bu in T.next, ClassTrainerFrame.scrollFrame.buttons do
 			if not bu.styled then
 				local bg = T.CreateFrame("Frame", nil, bu)
@@ -56,11 +64,13 @@ local function styleTrainer()
 		end
 	end)
 
-	local bd = T.CreateFrame("Frame", nil, _G.ClassTrainerStatusBar)
-	bd:SetPoint("TOPLEFT", -1, 1)
-	bd:SetPoint("BOTTOMRIGHT", 1, -1)
-	bd:SetFrameLevel(_G.ClassTrainerStatusBar:GetFrameLevel()-1)
-	KS:CreateBD(bd, .25)
+	if _G.ClassTrainerStatusBar then
+		local bd = T.CreateFrame("Frame", nil, _G.ClassTrainerStatusBar)
+		bd:SetPoint("TOPLEFT", -1, 1)
+		bd:SetPoint("BOTTOMRIGHT", 1, -1)
+		bd:SetFrameLevel(_G.ClassTrainerStatusBar:GetFrameLevel()-1)
+		KS:CreateBD(bd, .25)
+	end
 end
 
 S:AddCallbackForAddon("Blizzard_TrainerUI", "KuiTrainer", styleTrainer)

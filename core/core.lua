@@ -12,6 +12,7 @@ KUI.RegisteredModules = {}
 KUI.styling = {}
 KUI.iconShadow = {}
 KUI.softGlow = {}
+KUI.MinimapButtonName = "KlixUI"
 KUI.Title = string.format('|cfff960d9%s |r', 'KlixUI')
 KUI.Version = GetAddOnMetadata('ElvUI_KlixUI', 'Version')
 KUI.Logo = [[Interface\AddOns\ElvUI_KlixUI\media\textures\KlixUILogo.tga]]

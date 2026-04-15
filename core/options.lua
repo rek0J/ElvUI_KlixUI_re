@@ -160,9 +160,9 @@ local function Core()
 						set = function(info, value)
 							E.db.KlixUI.general.minimap.hide = not value
 							if value then
-								LibStub("LibDBIcon-1.0"):Show(KUI.Title)
+								LibStub("LibDBIcon-1.0"):Show(KUI.MinimapButtonName or KUI.Title or "KlixUI")
 							else
-								LibStub("LibDBIcon-1.0"):Hide(KUI.Title)
+								LibStub("LibDBIcon-1.0"):Hide(KUI.MinimapButtonName or KUI.Title or "KlixUI")
 							end
 						end,
 					},

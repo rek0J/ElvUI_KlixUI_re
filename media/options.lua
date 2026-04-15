@@ -1,6 +1,10 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local M = KUI:GetModule("KuiMedia")
 
+local function GetMediaTextWidthMax()
+	return T.math_max(512, E.eyefinity or E.screenwidth or 512)
+end
+
 local function mediaTable()
 	E.Options.args.KlixUI.args.media = {
 		type = "group",
@@ -70,7 +74,7 @@ local function mediaTable()
 								order = 4,
 								name = L["Width"],
 								type = "range",
-								min = 512, max = E.eyefinity or E.screenwidth, step = 1,
+								min = 512, max = GetMediaTextWidthMax(), step = 1,
 								set = function(info, value) E.db.KlixUI.media.fonts.zone.width = value; M:TextWidth() end,
 							},
 						},
@@ -112,7 +116,7 @@ local function mediaTable()
 								order = 4,
 								name = L["Width"],
 								type = "range",
-								min = 512, max = E.eyefinity or E.screenwidth, step = 1,
+								min = 512, max = GetMediaTextWidthMax(), step = 1,
 								set = function(info, value) E.db.KlixUI.media.fonts.subzone.width = value; M:TextWidth() end,
 							},
 							offset = {
@@ -160,7 +164,7 @@ local function mediaTable()
 								order = 4,
 								name = L["Width"],
 								type = "range",
-								min = 512, max = E.eyefinity or E.screenwidth, step = 1,
+								min = 512, max = GetMediaTextWidthMax(), step = 1,
 								set = function(info, value) E.db.KlixUI.media.fonts.pvp.width = value; M:TextWidth() end,
 							},
 						},

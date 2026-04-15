@@ -4,6 +4,7 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LDBI = LibStub("LibDBIcon-1.0")
 
 local Broker_KlixUI
+local BrokerName = KUI.MinimapButtonName or "KlixUI"
 
 function KMB:IconChange()
 	if Broker_KlixUI.icon == KUI.MBL then
@@ -13,8 +14,9 @@ function KMB:IconChange()
 	end
 end
 
-Broker_KlixUI = LDB:NewDataObject(KUI.Title, {
+Broker_KlixUI = LDB:NewDataObject(BrokerName, {
 	type = "launcher",
+	label = KUI.Title,
 	text = KUI.Title,
 	icon = KUI.MBL,
 	OnClick = function(_, button)
@@ -41,7 +43,7 @@ Broker_KlixUI = LDB:NewDataObject(KUI.Title, {
 })
 
 function KMB:Initialize()
-	LDBI:Register(KUI.Title, Broker_KlixUI, E.db.KlixUI.general.minimap)
+	LDBI:Register(BrokerName, Broker_KlixUI, E.db.KlixUI.general.minimap)
 end
 
 KUI:RegisterModule(KMB:GetName())

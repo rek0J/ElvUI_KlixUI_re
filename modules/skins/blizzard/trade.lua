@@ -23,6 +23,7 @@ local UnitGUID = UnitGUID
 	end
 
 local function styleTradeFrame()
+	if E.Mists then return end
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.trade ~= true or E.private.KlixUI.skins.blizzard.trade ~= true then return end
 
 	local TradeFrame = _G.TradeFrame

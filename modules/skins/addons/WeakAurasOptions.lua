@@ -5,20 +5,27 @@ local S = E:GetModule('Skins')
 local r, g, b = T.unpack(E.media.rgbvaluecolor)
 
 local function InitStyleWAO()
+	local function GetWeakAurasOptionsFrame()
+		if _G.WeakAurasOptions then
+			return _G.WeakAurasOptions
+		end
+
+		if WeakAuras and type(WeakAuras.OptionsFrame) == "function" then
+			return WeakAuras.OptionsFrame()
+		end
+	end
+
 	local function Skin_WeakAurasOptions(...)
 		--T.print("Options opened", ...)
 		if not T.IsAddOnLoaded("WeakAuras") or not E.private.KlixUI.skins.addonSkins.wa then return end
 
-		local frame = WeakAuras.OptionsFrame()
-		if frame.skinned then return end
-		
-		local children = {frame:GetChildren()}
+		local frame = GetWeakAurasOptionsFrame()
+		if not frame or frame.skinned then return end
 
-		-- Close button
-		children[1]:Hide()
-		local close = children[1]:GetChildren()
-		close:SetParent(frame)
-		S:HandleCloseButton(close)
+		local close = frame.CloseButton
+		if close then
+			S:HandleCloseButton(close)
+		end
 
 		-- Disable import check
 		--[[children[2]:Hide()
@@ -33,22 +40,28 @@ local function InitStyleWAO()
 		--children[3]
 
 		-- Frame size handle
-		local sizer = children[4]
-		sizer:SetNormalTexture("")
-		sizer:SetHighlightTexture("")
-		sizer:SetPushedTexture("")
+		local sizer = frame.bottomRightResizer
+		if sizer then
+			sizer:SetNormalTexture("")
+			sizer:SetHighlightTexture("")
+			sizer:SetPushedTexture("")
 
-		for i = 1, 3 do
-			local tex = sizer:CreateTexture(nil, "OVERLAY")
-			tex:SetSize(2, 2)
-			tex:SetTexture(E["media"].normTex)
-			tex:SetVertexColor(r, g, b, .8)
-			tex:Show()
-			sizer[i] = tex
+			if not sizer.KlixUISizerTextures then
+				sizer.KlixUISizerTextures = {}
+				for i = 1, 3 do
+					local tex = sizer:CreateTexture(nil, "OVERLAY")
+					tex:SetSize(2, 2)
+					tex:SetTexture(E.media.normTex)
+					tex:SetVertexColor(r, g, b, .8)
+					tex:Show()
+					sizer.KlixUISizerTextures[i] = tex
+				end
+			end
+
+			sizer.KlixUISizerTextures[1]:SetPoint("BOTTOMLEFT", sizer, "BOTTOMLEFT", 6, 6)
+			sizer.KlixUISizerTextures[2]:SetPoint("BOTTOMLEFT", sizer.KlixUISizerTextures[1], "TOPLEFT", 0, 4)
+			sizer.KlixUISizerTextures[3]:SetPoint("BOTTOMLEFT", sizer.KlixUISizerTextures[1], "BOTTOMRIGHT", 4, 0)
 		end
-		sizer[1]:SetPoint("BOTTOMLEFT", sizer, "BOTTOMLEFT", 6, 6)
-		sizer[2]:SetPoint("BOTTOMLEFT", sizer[1], "TOPLEFT", 0, 4)
-		sizer[3]:SetPoint("BOTTOMLEFT", sizer[1], "BOTTOMRIGHT", 4, 0)
 
 		-- Tutorial
 		--children[6]
@@ -67,7 +80,10 @@ local function InitStyleWAO()
 		]]
 
 		-- Search
-		S:HandleEditBox(WeakAurasFilterInput)
+		local filterInput = frame.filterInput or _G.WeakAurasFilterInput
+		if filterInput then
+			S:HandleEditBox(filterInput)
+		end
 
 		-- Remove Title BG
 		frame:StripTextures()
