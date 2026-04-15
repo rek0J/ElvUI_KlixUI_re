@@ -329,6 +329,7 @@ end
 ---------- MAIN ----------
 
 function KBT:Initialize()
+	if E.Mists then return end
 	if not E.db.KlixUI.talents.enable then return end
     if not (GetSpecialization and GetNumSpecializations and GetSpecializationInfo and SetSpecialization and GetActiveSpecGroup) then return end
     -- register events

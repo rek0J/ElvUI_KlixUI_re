@@ -397,6 +397,7 @@ end
 ---------- MAIN ----------
 
 function KBTP:Initialize()
+	if E.Mists then return end
 	if not E.db.KlixUI.talents.enable then return end
     if not (GetSpecialization and GetNumSpecializations and GetActiveSpecGroup) then return end
     -- register events

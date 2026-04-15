@@ -6,14 +6,20 @@ local function BetterTalentsTable()
 		type = "group",
 		name = L["Talents"],
 		order = 29,
+		disabled = function() return E.Mists end,
 		args = {
 			name = {
 				order = 1,
 				type = "header",
 				name = KUI:cOption(L["Talents"]),
 			},
-			gototalents = {
+			mistsNotice = {
 				order = 2,
+				type = "description",
+				name = E.Mists and L["This module is disabled on MoP Classic because the KlixUI Better Talents overlay is not compatible with the native MoP talent frame."] or "",
+			},
+			gototalents = {
+				order = 3,
 				type = "execute",
 				name = L["Toggle Talent Frame"],
 				func = function()
@@ -25,17 +31,17 @@ local function BetterTalentsTable()
 				end,
 			},
 			space1 = {
-				order = 3,
-				type = "description",
-				name = "",
-			},
-			space2 = {
 				order = 4,
 				type = "description",
 				name = "",
 			},
-			enable = {
+			space2 = {
 				order = 5,
+				type = "description",
+				name = "",
+			},
+			enable = {
+				order = 6,
 				type = "toggle",
 				name = L["Enable"],
 				desc = L["Enable/disable the |cfff960d9KlixUI|r Better Talents Frame."],
@@ -43,12 +49,12 @@ local function BetterTalentsTable()
 				set = function(info, value) E.db.KlixUI.talents.enable = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 			},
 			space1 = {
-				order = 6,
+				order = 7,
 				type = "description",
 				name = "",
 			},
 			borderGlow = {
-				order = 7,
+				order = 8,
 				type = "toggle",
 				name = L["Border Glow"],
 				desc = L["Shows an animated border glow for the currently selected talents."],
@@ -57,7 +63,7 @@ local function BetterTalentsTable()
 				set = function(info, value) E.db.KlixUI.talents.borderGlow = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 			},
 			DefaultToTalentsTab = {
-				order = 8,
+				order = 9,
 				type = "toggle",
 				name = L["Default to Talents Tab"],
 				desc = L["Defaults to the talents tab of the talent frame on login. By default WoW shows you the specialization tab."],
@@ -70,7 +76,7 @@ local function BetterTalentsTable()
 				end,
 			},
 			AutoHidePvPTalents = {
-				order = 9,
+				order = 10,
 				type = "toggle",
 				name = L["Auto Hide PvP Talents"],
 				desc = L["Closes the PvP talents flyout on login. PvP talents and warmode flag are still accessible by manually opening the PvP talents flyout."],
