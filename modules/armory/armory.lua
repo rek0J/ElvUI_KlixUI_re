@@ -2,6 +2,7 @@
 local KA = KUI:NewModule('KuiArmory', 'AceEvent-3.0', 'AceTimer-3.0', 'AceHook-3.0')
 local LCG = LibStub('LibCustomGlow-1.0')
 local LSM = E.LSM or E.Libs.LSM
+local S = E:GetModule('Skins')
 if IsAddOnLoaded("ElvUI_SLE") then return end
 
 local Enum = _G.Enum or {}
@@ -14,6 +15,8 @@ local HasAnyUnselectedPowers = C_AzeriteEmpoweredItem.HasAnyUnselectedPowers or 
 
 local initialized = false
 local updateTimer
+local classCrest
+local nakedButton
 
 local socketsTable = { -- These bonusIDs should be sockets
 	-- /dump T.string_split(":", T.GetInventoryItemLink("player", i))
@@ -171,6 +174,73 @@ end
 
 local function HasArmoryGarrisonSupport()
 	return E.Retail and _G.C_Garrison and _G.LE_GARRISON_TYPE_6_0
+end
+
+local function EnsureNakedButton()
+	if nakedButton or not E.db.KlixUI.armory.naked then return end
+	if not _G.PaperDollFrame or not _G.CharacterHeadSlot then return end
+
+	local function Button_OnEnter(self)
+		_G.GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT', 0, 4)
+		_G.GameTooltip:ClearLines()
+		_G.GameTooltip:AddLine(L["Instantly remove all your equipped gear."])
+		_G.GameTooltip:Show()
+	end
+
+	local function Button_OnLeave()
+		_G.GameTooltip:Hide()
+	end
+
+	local function UnequipItemInSlot(i)
+		if T.InCombatLockdown() then return end
+		local action = T.EquipmentManager_UnequipItemInSlot and T.EquipmentManager_UnequipItemInSlot(i)
+		if action and T.EquipmentManager_RunAction then
+			T.EquipmentManager_RunAction(action)
+		end
+	end
+
+	nakedButton = T.CreateFrame("Button", "KuiArmoryNakedButton", _G.PaperDollFrame, "UIPanelButtonTemplate")
+	nakedButton:SetFrameStrata("HIGH")
+	nakedButton:Size(62, 20)
+	nakedButton:Point("BOTTOMLEFT", _G.CharacterHeadSlot, "TOPLEFT", 0, 4)
+
+	nakedButton.text = KUI:CreateText(nakedButton, "OVERLAY", 12, nil)
+	nakedButton.text:Point("CENTER")
+	nakedButton.text:SetText(L["Naked"])
+
+	nakedButton:SetScript('OnEnter', Button_OnEnter)
+	nakedButton:SetScript('OnLeave', Button_OnLeave)
+	nakedButton:SetScript("OnClick", function()
+		for i = 1, 17 do
+			if T.GetInventoryItemTexture('player', i) then
+				UnequipItemInSlot(i)
+			end
+		end
+	end)
+
+	if S and S.HandleButton then
+		S:HandleButton(nakedButton)
+	end
+end
+
+local function UpdateClassCrest()
+	local insetRight = _G.CharacterFrameInsetRight
+	if not insetRight then return end
+
+	if E.db.KlixUI.armory.classCrests then
+		if not classCrest then
+			classCrest = insetRight:CreateTexture(nil, "BORDER")
+			classCrest:Point("BOTTOM", insetRight, "BOTTOM", 0, 40)
+			classCrest:Size(126, 120)
+			classCrest:SetAlpha(.45)
+			classCrest:SetDesaturated(true)
+		end
+
+		classCrest:SetTexture("Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\classIcons\\CLASS-"..E.myclass)
+		classCrest:Show()
+	elseif classCrest then
+		classCrest:Hide()
+	end
 end
 
 function KA:UpdatePaperDoll()
@@ -865,6 +935,9 @@ function KA:Initialize()
 	    frame.BG:SetPoint("BOTTOMRIGHT", CharacterModelFrame, 0, 0)
 	    KA:Update_BG(frame)
 	end
+
+	EnsureNakedButton()
+	UpdateClassCrest()
 	
 	KA:RegisterEvent("UPDATE_INVENTORY_DURABILITY", "UpdatePaperDoll", false)
 	KA:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "UpdatePaperDoll", false)
