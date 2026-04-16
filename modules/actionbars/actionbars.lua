@@ -157,40 +157,52 @@ end
 -- Random Hearthstone
 local HearthStoneListChecked = {}
 local HearthStoneName = {}
+local PlayerHasToy = T.PlayerHasToy or _G.PlayerHasToy
+local DefaultHearthstone = "item:6948"
+local TableWipe = T.wipe or _G.wipe or function(tbl)
+	for key in T.pairs(tbl) do
+		tbl[key] = nil
+	end
+end
+local HearthStoneToUse = DefaultHearthstone
+local RandomHearthStone
+
+local function GetDefaultHearthstone()
+	return DefaultHearthstone
+end
 
 local function HearthStoneToUse_UpdateList()
+	TableWipe(HearthStoneListChecked)
+	TableWipe(HearthStoneName)
+
+	if not PlayerHasToy then return end
+
 	for k, v in T.ipairs(HearthStoneList) do
-		if T.PlayerHasToy(v) then
-			T.table_insert(HearthStoneListChecked, v)
-		end
-	end
-	local num = #HearthStoneListChecked
-	if num and num >=1 then
-		for k, v in T.ipairs(HearthStoneListChecked) do
-			local name = T.GetItemInfo(v)
-			if name then
-				T.table_insert(HearthStoneName, name)
-				T.table_remove(HearthStoneListChecked, k)
-			end
+		if PlayerHasToy(v) then
+			T.table_insert(HearthStoneName, "item:"..v)
 		end
 	end
 end
 
 local function HearthStoneToUse_Random(frame)
-	if (#HearthStoneName >= 1) then
-		if (not T.InCombatLockdown()) then
-			HearthStoneToUse = HearthStoneName[T.random(#HearthStoneName)]
-			frame:SetAttribute("item", HearthStoneToUse)
-			frame.NeedToRandom = false
-		else
-			frame.NeedToRandom = true
-		end
+	local itemToUse = GetDefaultHearthstone()
+
+	if #HearthStoneName >= 1 then
+		itemToUse = HearthStoneName[T.random(#HearthStoneName)]
+	end
+
+	if not T.InCombatLockdown() then
+		HearthStoneToUse = itemToUse
+		frame:SetAttribute("macrotext", "/use "..itemToUse)
+		frame.NeedToRandom = false
+	else
+		frame.NeedToRandom = true
 	end
 end
 
 function KAB:Macro_Refresh()
 	local name = T.GetMacroInfo("KuiRHS")
-	local HSNAME = T.GetItemInfo(6948)
+	local HSNAME = GetDefaultHearthstone()
 	if (not HSNAME) or (T.InCombatLockdown()) then return end
 	if not name then
 		local gNum, pNum = T.GetNumMacros()
@@ -216,10 +228,14 @@ function KAB:Macro_Refresh()
 	end
 end
 
-local HearthStoneToUse = T.GetItemInfo(6948)
-local RandomHearthStone = T.CreateFrame("Button", "RandomHearthStone", nil, "SecureActionButtonTemplate")
-RandomHearthStone:SetAttribute("type","item")
-RandomHearthStone:SetAttribute("item", HearthStoneToUse)
+RandomHearthStone = T.CreateFrame("Button", "RandomHearthStone", E.UIParent, "SecureActionButtonTemplate")
+RandomHearthStone:SetSize(1, 1)
+RandomHearthStone:SetPoint("TOPLEFT", E.UIParent, "TOPLEFT", -100, -100)
+RandomHearthStone:EnableMouse(true)
+RandomHearthStone:Show()
+RandomHearthStone:RegisterForClicks("AnyUp", "AnyDown")
+RandomHearthStone:SetAttribute("type", "macro")
+RandomHearthStone:SetAttribute("macrotext", "/use "..HearthStoneToUse)
 RandomHearthStone.NeedToRandom = false
 
 RandomHearthStone:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -276,17 +292,16 @@ function KAB:Initialize()
     KAB:RegisterEvent("PLAYER_TARGET_CHANGED", "OnEvent")
 	KAB:RegisterBucketEvent("BAG_UPDATE", 0.2, DeleteHearthstone)
 	
-	if E.db.KlixUI.actionbars.hearthstone.enable then
-		SlashCmdList["RHS"] = function(msg)
-			if msg == "check" then
-				HearthStoneToUse_UpdateList()
-				HearthStoneToUse_Random(RandomHearthStone)
-			else
-				self:Macro_Refresh()
-			end
+	SlashCmdList["RHS"] = function(msg)
+		if msg == "check" then
+			HearthStoneToUse_UpdateList()
+			HearthStoneToUse_Random(RandomHearthStone)
+			KUI:Print("Random Hearthstone:", HearthStoneToUse)
+		else
+			self:Macro_Refresh()
 		end
-		SLASH_RHS1 = "/rhs"
 	end
+	SLASH_RHS1 = "/rhs"
 end
 
 KUI:RegisterModule(KAB:GetName())
