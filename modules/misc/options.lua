@@ -12,6 +12,8 @@ local SCRAP = KUI:GetModule("Scrapper")
 
 local match = string.match
 local CUSTOM, PVP, DUEL, PET_BATTLE_PVP_DUEL, KILLING_BLOWS = CUSTOM, PVP, DUEL, PET_BATTLE_PVP_DUEL, KILLING_BLOWS
+local HAS_MYTHIC_DUNGEONS = false
+local HAS_MYTHIC_RAIDS = false
 
 local base = 15
 local maxfactor = 2.6
@@ -860,7 +862,269 @@ local function Misc()
 					},]]
 				},
 			},
+			-- hier war scrapper
+			zoom = {
+				order = 9,
+				type = "group",
+				name = L["Character Zoom"],
+				get = function(info) return E.db.KlixUI.misc.zoom[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.zoom[ info[#info] ] = value end,
+				args = {
+					increment = {
+						order = 1,
+						type = "range",
+						desc = L["Adjust the increment the camera will follow behind you."],
+						name = L["Zoom Increment"],
+						get = function(info) return E.db.KlixUI.misc.zoom.increment end,
+						set = function(info, value) E.db.KlixUI.misc.zoom.increment = value end,
+						min = 1, max = 10, softMax = 5, step = .5,
+					},
+					speed = {
+						order = 2,
+						type = "range",
+						desc = L["Adjust the zoom speed the camera will follow behind you."],
+						name = L["Zoom Speed"],
+						get = function(info) return T.tonumber(T.GetCVar("cameraZoomSpeed")) end,
+						set = function(info, value)  E.db.KlixUI.misc.zoom.speed = value; T.SetCVar("cameraZoomSpeed", value) end,
+						min = 1, max = 50, step = 1,
+					},
+					distance = {
+						order = 3,
+						type = "range",
+						desc = OPTION_TOOLTIP_MAX_FOLLOW_DIST,
+						name = MAX_FOLLOW_DIST,
+						get = function(info) return T.GetCVar("cameraDistanceMaxZoomFactor") * base end,
+						set = function(info, value) E.db.KlixUI.misc.zoom.distance = value / base; T.SetCVar("cameraDistanceMaxZoomFactor", value / base) end,
+						min = base, max = base * maxfactor, step = 1.5, -- cvar gets rounded to 1 decimal
+					},
+				},
+			},
 
+			autolog = {
+				order = 10,
+				type = "group",
+				name = L["AutoLog"],
+				get = function(info) return E.db.KlixUI.misc.autolog[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; AL:CheckLog() end,
+				args = (function()
+					local args = {
+						enable = {
+							order = 1,
+							type = "toggle",
+							name = L["Enable"],
+							desc = L["Enable/disable automatically combat logging"],
+							set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end
+						},
+						allraids = {
+							order = 2,
+							type = "toggle",
+							name = L["All raids"],
+							desc = L["Combat log all raids regardless of individual raid settings"],
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						},
+						chatwarning = {
+							order = 3,
+							type = "toggle",
+							name = L["Display in chat"],
+							desc = L["Display the combat log status in the chat window"],
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						},
+						dungeons = {
+							order = 4,
+							type = "toggle",
+							name = L["5 player heroic instances"],
+							desc = L["Combat log 5 player heroic instances"],
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						},
+						challenge = {
+							order = 5,
+							type = "toggle",
+							name = L["5 player challenge mode instances"],
+							desc = L["Combat log 5 player challenge mode instances"],
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+						},
+						lfr = {
+							order = 10,
+							type = "multiselect",
+							name = L["LFR Raids"],
+							desc = L["Raid finder instances where you want to log combat"],
+							values = AL:MakeList(raid_lfr),
+							tristate = false,
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+							get = function(info, raid) return AL:GetSetting("lfr", raid) end,
+							set = function(info, raid, value) AL:SetSetting("lfr", raid, value) end,
+						},
+						raidsn = {
+							order = 11,
+							type = "multiselect",
+							name = L["Normal Raids"],
+							desc = L["Raid instances where you want to log combat"],
+							values = AL:MakeList(raid_normal),
+							tristate = false,
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+							get = function(info, raid) return AL:GetSetting("normal", raid) end,
+							set = function(info, raid, value) AL:SetSetting("normal", raid, value) end,
+						},
+						raidsh = {
+							order = 12,
+							type = "multiselect",
+							name = L["Heroic Raids"],
+							desc = L["Raid instances where you want to log combat"],
+							values = AL:MakeList(raid_heroic),
+							tristate = false,
+							disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
+							get = function(info, raid) return AL:GetSetting("heroic", raid) end,
+							set = function(info, raid, value) AL:SetSetting("heroic", raid, value) end,
+						},
+				}
+				if HAS_MYTHIC_RAIDS then
+					args.mythic = {
+						order = 13,
+						type = "multiselect",
+						name = L["Mythic Raids"],
+						desc = L["Raid instances where you want to log combat"],
+						values = AL:MakeList(raid_mythic),
+						tristate = false,
+						disabled = function()
+							return not E.db.KlixUI.misc.autolog.enable
+						end,
+						get = function(info, raid)
+							return AL:GetSetting("mythic", raid)
+						end,
+						set = function(info, raid, value)
+							AL:SetSetting("mythic", raid, value)
+						end,
+					}
+					args.lfr = {
+						order = 10,
+						type = "multiselect",
+						name = L["LFR Raids"],
+						desc = L["Raid finder instances where you want to log combat"],
+						values = AL:MakeList(raid_lfr),
+						tristate = false,
+						disabled = function()
+							return not E.db.KlixUI.misc.autolog.enable
+						end,
+						get = function(info, raid)
+							return AL:GetSetting("lfr", raid)
+						end,
+						set = function(info, raid, value)
+							AL:SetSetting("lfr", raid, value)
+						end,
+					}
+				end
+				if HAS_MYTHIC_DUNGEONS then
+						args.mythicdungeons = {
+							order = 6,
+							type = "toggle",
+							name = L["5 player mythic instances"],
+							desc = L["Combat log 5 player mythic instances"],
+							disabled = function()
+								return not E.db.KlixUI.misc.autolog.enable
+							end,
+						}
+
+						args.mythiclevel = {
+							order = 7,
+							type = "select",
+							width = 0.45,
+							name = L["Minimum level"],
+							desc = L["Logging will not be enabled for mythic levels lower than this"],
+							disabled = function()
+								return not E.db.KlixUI.misc.autolog.enable or not E.db.KlixUI.misc.autolog.mythicdungeons
+							end,
+							values = AL:getMythicLevelsList(),
+						}
+
+					end
+
+					return args
+				end)(),
+			},
+			popups = {
+				order = 11,
+				type = "group",
+				name = L["Confirm Static Popups"],
+				get = function(info) return E.db.KlixUI.misc.popups[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.popups[ info[#info] ] = value; end,
+				args = {
+					info = {
+						order = 1,
+						type = "description",
+						name = L["CSP_DESC"],
+					},
+					enable = {
+						order = 2,
+						type = "toggle",
+						name = L["Enable"],
+						desc = L["Automatically accept various static popups encountered in-game."],
+						get = function(info) return E.db.KlixUI.misc.popupsEnable end,
+						set = function(info, value) E.db.KlixUI.misc.popupsEnable = value; end
+					},	
+					toggle = {
+						order = 3,
+						type = "group",
+						name = L["Auto Answer"],
+						guiInline = true,
+						disabled = function() return not E.db.KlixUI.misc.popupsEnable end,
+						args = PopupOptions(),
+					},
+				},
+			},
+			CA = {
+				order = 50,
+				type = "group",
+				name = L["Corrupted Ashbringer"],
+				hidden = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				disabled = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
+				get = function(info) return E.db.KlixUI.misc.CA[ info[#info] ] end,
+				set = function(info, value) E.db.KlixUI.misc.CA[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+				args = {
+					enable = {
+						order = 1,
+						type = "toggle",
+						name = L["Enable"],
+						desc =  L["Plays corrupted ashbringer sounds when entering combat."],
+					},
+					nextSound = {
+						order = 2,
+						type = "range",
+						name = L["Sound Number"],
+						desc =  L["Changes which of the corrupted ashbringer sounds it should play in a numeric order."],
+						min = 1, max = 12, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
+					},
+					soundProbabilityPercent = {
+						order = 3,
+						type = "range",
+						name = L["Sound Probability"],
+						desc = L["Changes the probability value, in percent, how often the sounds will play."],
+						min = 0, max = 100, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
+					},
+					passiveMode = {
+						order = 4,
+						type = "toggle",
+						name = L["Always Whisper"],
+						desc =  L["Plays the corrupted ashbringer while out of combat aswell."],
+						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
+					},
+					intervalProbability = {
+						order = 5,
+						type = "range",
+						name = L["Interval Probability"],
+						desc =  L["Changes the probability value, in seconds, how often the sounds will play."],
+						min = 1, max = 1200, step = 1,
+						disabled = function() return not E.db.KlixUI.misc.CA.enable or not E.db.KlixUI.misc.CA.passiveMode end,
+					},
+				},
+			},
+		},
+	}
+end
+
+if KUI.Features.ScrappingMachine then
+    E.Options.args.KlixUI.args.modules.args.misc.args.scrapper = {	
 			scrapper = {
 				order = 8,
 				type = "group",
@@ -981,229 +1245,10 @@ local function Misc()
 					},
 				},
 			},
-			zoom = {
-				order = 9,
-				type = "group",
-				name = L["Character Zoom"],
-				get = function(info) return E.db.KlixUI.misc.zoom[ info[#info] ] end,
-				set = function(info, value) E.db.KlixUI.misc.zoom[ info[#info] ] = value end,
-				args = {
-					increment = {
-						order = 1,
-						type = "range",
-						desc = L["Adjust the increment the camera will follow behind you."],
-						name = L["Zoom Increment"],
-						get = function(info) return E.db.KlixUI.misc.zoom.increment end,
-						set = function(info, value) E.db.KlixUI.misc.zoom.increment = value end,
-						min = 1, max = 10, softMax = 5, step = .5,
-					},
-					speed = {
-						order = 2,
-						type = "range",
-						desc = L["Adjust the zoom speed the camera will follow behind you."],
-						name = L["Zoom Speed"],
-						get = function(info) return T.tonumber(T.GetCVar("cameraZoomSpeed")) end,
-						set = function(info, value)  E.db.KlixUI.misc.zoom.speed = value; T.SetCVar("cameraZoomSpeed", value) end,
-						min = 1, max = 50, step = 1,
-					},
-					distance = {
-						order = 3,
-						type = "range",
-						desc = OPTION_TOOLTIP_MAX_FOLLOW_DIST,
-						name = MAX_FOLLOW_DIST,
-						get = function(info) return T.GetCVar("cameraDistanceMaxZoomFactor") * base end,
-						set = function(info, value) E.db.KlixUI.misc.zoom.distance = value / base; T.SetCVar("cameraDistanceMaxZoomFactor", value / base) end,
-						min = base, max = base * maxfactor, step = 1.5, -- cvar gets rounded to 1 decimal
-					},
-				},
-			},
-
-			autolog = {
-				order = 10,
-				type = "group",
-				name = L["AutoLog"],
-				get = function(info) return E.db.KlixUI.misc.autolog[ info[#info] ] end,
-				set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; AL:CheckLog() end,
-				args = {
-					enable = {
-						order = 1,
-						type = "toggle",
-						name = L["Enable"],
-						desc = L["Enable/disable automatically combat logging"],
-						set = function(info, value) E.db.KlixUI.misc.autolog[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end
-					},
-					allraids = {
-						order = 2,
-						type = "toggle",
-						name = L["All raids"],
-						desc = L["Combat log all raids regardless of individual raid settings"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-					},
-					chatwarning = {
-						order = 3,
-						type = "toggle",
-						name = L["Display in chat"],
-						desc = L["Display the combat log status in the chat window"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-					},
-					dungeons = {
-						order = 4,
-						type = "toggle",
-						name = L["5 player heroic instances"],
-						desc = L["Combat log 5 player heroic instances"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-					},
-					challenge = {
-						order = 5,
-						type = "toggle",
-						name = L["5 player challenge mode instances"],
-						desc = L["Combat log 5 player challenge mode instances"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-					},
-					mythicdungeons = {
-						order = 6,
-						type = "toggle",
-						name = L["5 player mythic instances"],
-						desc = L["Combat log 5 player mythic instances"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-					},
-					mythiclevel = {
-						order = 7,
-						type = "select",
-						width = 0.45,
-						name = L["Minimum level"],
-						desc = L["Logging will not be enabled for mythic levels lower than this"],
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable or not E.db.KlixUI.misc.autolog.mythicdungeons end,
-						values = AL:getMythicLevelsList(),
-					},
-					lfr = {
-						order = 10,
-						type = "multiselect",
-						name = L["LFR Raids"],
-						desc = L["Raid finder instances where you want to log combat"],
-						values = AL:MakeList(raid_lfr),
-						tristate = false,
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-						get = function(info, raid) return AL:GetSetting("lfr", raid) end,
-						set = function(info, raid, value) AL:SetSetting("lfr", raid, value) end,
-					},
-					raidsn = {
-						order = 11,
-						type = "multiselect",
-						name = L["Normal Raids"],
-						desc = L["Raid instances where you want to log combat"],
-						values = AL:MakeList(raid_normal),
-						tristate = false,
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-						get = function(info, raid) return AL:GetSetting("normal", raid) end,
-						set = function(info, raid, value) AL:SetSetting("normal", raid, value) end,
-					},
-					raidsh = {
-						order = 12,
-						type = "multiselect",
-						name = L["Heroic Raids"],
-						desc = L["Raid instances where you want to log combat"],
-						values = AL:MakeList(raid_heroic),
-						tristate = false,
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-						get = function(info, raid) return AL:GetSetting("heroic", raid) end,
-						set = function(info, raid, value) AL:SetSetting("heroic", raid, value) end,
-					},
-					mythic = {
-						order = 13,
-						type = "multiselect",
-						name = L["Mythic Raids"],
-						desc = L["Raid instances where you want to log combat"],
-						values = AL:MakeList(raid_mythic),
-						tristate = false,
-						disabled = function() return not E.db.KlixUI.misc.autolog.enable end,
-						get = function(info, raid) return AL:GetSetting("mythic", raid) end,
-						set = function(info, raid, value) AL:SetSetting("mythic", raid, value) end,
-					},
-				},
-			},
-
-			popups = {
-				order = 11,
-				type = "group",
-				name = L["Confirm Static Popups"],
-				get = function(info) return E.db.KlixUI.misc.popups[ info[#info] ] end,
-				set = function(info, value) E.db.KlixUI.misc.popups[ info[#info] ] = value; end,
-				args = {
-					info = {
-						order = 1,
-						type = "description",
-						name = L["CSP_DESC"],
-					},
-					enable = {
-						order = 2,
-						type = "toggle",
-						name = L["Enable"],
-						desc = L["Automatically accept various static popups encountered in-game."],
-						get = function(info) return E.db.KlixUI.misc.popupsEnable end,
-						set = function(info, value) E.db.KlixUI.misc.popupsEnable = value; end
-					},	
-					toggle = {
-						order = 3,
-						type = "group",
-						name = L["Auto Answer"],
-						guiInline = true,
-						disabled = function() return not E.db.KlixUI.misc.popupsEnable end,
-						args = PopupOptions(),
-					},
-				},
-			},
-			CA = {
-				order = 50,
-				type = "group",
-				name = L["Corrupted Ashbringer"],
-				hidden = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
-				disabled = function() return not (KUI:IsDeveloper() and KUI:IsDeveloperRealm()) end,
-				get = function(info) return E.db.KlixUI.misc.CA[ info[#info] ] end,
-				set = function(info, value) E.db.KlixUI.misc.CA[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
-				args = {
-					enable = {
-						order = 1,
-						type = "toggle",
-						name = L["Enable"],
-						desc =  L["Plays corrupted ashbringer sounds when entering combat."],
-					},
-					nextSound = {
-						order = 2,
-						type = "range",
-						name = L["Sound Number"],
-						desc =  L["Changes which of the corrupted ashbringer sounds it should play in a numeric order."],
-						min = 1, max = 12, step = 1,
-						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
-					},
-					soundProbabilityPercent = {
-						order = 3,
-						type = "range",
-						name = L["Sound Probability"],
-						desc = L["Changes the probability value, in percent, how often the sounds will play."],
-						min = 0, max = 100, step = 1,
-						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
-					},
-					passiveMode = {
-						order = 4,
-						type = "toggle",
-						name = L["Always Whisper"],
-						desc =  L["Plays the corrupted ashbringer while out of combat aswell."],
-						disabled = function() return not E.db.KlixUI.misc.CA.enable end,
-					},
-					intervalProbability = {
-						order = 5,
-						type = "range",
-						name = L["Interval Probability"],
-						desc =  L["Changes the probability value, in seconds, how often the sounds will play."],
-						min = 1, max = 1200, step = 1,
-						disabled = function() return not E.db.KlixUI.misc.CA.enable or not E.db.KlixUI.misc.CA.passiveMode end,
-					},
-				},
-			},
-		},
 	}
 end
+
+			
 T.table_insert(KUI.Config, Misc)
 
 --[[local function injectElvUIDataTextsOptions()

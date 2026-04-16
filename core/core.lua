@@ -6,6 +6,17 @@ local addon, Engine = ...
 
 local KUI = E.Libs.AceAddon:NewAddon(addon, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
+-- TEST
+
+KUI.IsMoP = true -- oder aus toc/build sauber ableiten
+KUI.Features = KUI.Features or {}
+
+KUI.Features.ScrappingMachine = _G.C_ScrappingMachineUI ~= nil
+KUI.Features.Garrison = _G.C_Garrison ~= nil or _G.GarrisonMissionFrame ~= nil
+KUI.Features.Azerite = _G.C_AzeriteItem ~= nil
+KUI.Features.Wardrobe = _G.WardrobeCollectionFrame ~= nil
+KUI.Features.Communities = _G.CommunitiesFrame ~= nil
+
 KUI.dummy = function() return end
 KUI.Config = {}
 KUI.RegisteredModules = {}
@@ -30,6 +41,9 @@ BINDING_NAME_KLIXUI_SHOW_EMBED = 'Show Embed Window'
 KUI.WoWPatch, KUI.WoWBuild, KUI.WoWPatchReleaseDate, KUI.TocVersion = GetBuildInfo()
 KUI.WoWBuild = select(2, GetBuildInfo()) KUI.WoWBuild = tonumber(KUI.WoWBuild)
 KUI.Discord = "https://discord.gg/GbQbDRX"
+
+
+
 
 -- Create toolkit table
 local Toolkit = {}
