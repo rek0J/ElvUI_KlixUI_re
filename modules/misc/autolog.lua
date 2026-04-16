@@ -3,7 +3,12 @@
 -------------------------------------------------------------------------------
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local AL = KUI:NewModule("AutoLog", "AceEvent-3.0", "AceTimer-3.0")
+
 local C_Garrison = _G.C_Garrison
+
+local HAS_MYTHIC_DUNGEONS = false
+local HAS_MYTHIC_RAIDS = false
+
 local C_ChallengeMode = _G.C_ChallengeMode
 local GetActiveKeystoneInfo = T.C_ChallengeMode_GetActiveKeystoneInfo or (C_ChallengeMode and C_ChallengeMode.GetActiveKeystoneInfo)
 
