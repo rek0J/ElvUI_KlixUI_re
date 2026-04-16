@@ -25,10 +25,20 @@ local LevelPlayTimeOffset
 local eventRequesting = false
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
 local APM = { TIMEMANAGER_PM, TIMEMANAGER_AM }
-local europeDisplayFormat = '';
-local ukDisplayFormat = '';
-local europeDisplayFormat_nocolor = T.string_join("", "%02d", ":|r%02d")
-local ukDisplayFormat_nocolor = T.string_join("", "", "%d", ":|r%02d", " %s|r")
+local europeDisplayFormat = "%02d:%02d"
+local ukDisplayFormat = "%d:%02d %s"
+local europeDisplayFormat_nocolor = "%02d:%02d"
+local ukDisplayFormat_nocolor = "%d:%02d %s"
+
+local function ValueColorUpdate(hex)
+	europeDisplayFormat = T.string_join("", "%02d", hex, ":|r%02d")
+	ukDisplayFormat = T.string_join("", "%d", hex, ":|r%02d", hex, " %s|r")
+
+	if lastPanel ~= nil then
+		Update(lastPanel, 20000)
+	end
+end
+
 local lockoutInfoFormat = "%s%s %s |cffaaaaaa(%s, %s/%s)"
 local lockoutInfoFormatNoEnc = "%s%s %s |cffaaaaaa(%s)"
 local formatBattleGroundInfo = "%s: "
@@ -132,6 +142,7 @@ end
 -- https://github.com/siweia/NDui/blob/master/Interface/AddOns/NDui/Modules/Infobar/Time.lua
 -- Modified by Rhythm
 -- Check Invasion Status
+local HAS_INVASIONS = E.Retail
 local invIndex = {
     {
         title = L["Faction Assault:"], -- BfA Invasions
@@ -162,6 +173,9 @@ local invIndex = {
 }
 
 local function GetCurrentInvasion(index)
+	if not HAS_INVASIONS then
+		return nil
+	end
     local inv = invIndex[index]
     local currentTime = T.time()
     local baseTime = inv.baseTime[region]
@@ -177,8 +191,11 @@ local function GetCurrentInvasion(index)
 end
 
 local function GetFutureInvasion(index, length)
+	if not HAS_INVASIONS then
+		return {}
+	end
     if not length then length = 1 end
-    local tbl, i = {}
+    local tbl = {}
     local inv = invIndex[index]
     local currentTime = T.time()
     local baseTime = inv.baseTime[region]
@@ -211,6 +228,9 @@ local mapAreaPoiIDs = {
 }
 
 local function GetInvasionInfo(mapID)
+	if not HAS_INVASIONS then
+		return nil
+	end
 	local areaPoiID = mapAreaPoiIDs[mapID]
 	local seconds = T.C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID)
 	local mapInfo = T.C_Map_GetMapInfo(mapID)
@@ -218,6 +238,9 @@ local function GetInvasionInfo(mapID)
 end
 
 local function CheckInvasion(index)
+	if not HAS_INVASIONS then
+		return nil
+	end
 	for _, mapID in T.pairs(invIndex[index].maps) do
 		local timeLeft, name = T.GetInvasionInfo(mapID)
 		if timeLeft and timeLeft > 0 then
@@ -225,6 +248,7 @@ local function CheckInvasion(index)
 		end
 	end
 end
+
 
 local collectedInstanceImages = false
 local function OnEnter(self)
@@ -419,7 +443,7 @@ local function OnEnter(self)
 	end
 	
 	-- Invasions
-	if E.db.KlixUI.timeDT.invasions then
+	if HAS_INVASIONS and E.db.KlixUI.timeDT.invasions then
 		DT.tooltip:AddLine(" ")
 		for index, value in T.ipairs(invIndex) do
 			DT.tooltip:AddLine(value.title)

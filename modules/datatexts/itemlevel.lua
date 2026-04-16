@@ -37,9 +37,18 @@ local levelColors = {
 }
 
 local function OnEvent(self)
-	self.avgItemLevel, self.avgEquipItemLevel = T.GetAverageItemLevel()
-	self.text:SetFormattedText(displayString, ITEM_LEVEL_ABBR, T.math_floor(self.avgEquipItemLevel), T.math_floor(self.avgItemLevel))
-	lastPanel = self
+	self.avgItemLevel, self.avgEquipItemLevel = GetAverageItemLevel()
+	--self.text:SetFormattedText(displayString, ITEM_LEVEL_ABBR, T.math_floor(self.avgEquipItemLevel), T.math_floor(self.avgItemLevel))
+	--lastPanel = self
+	    local avg, equipped = GetAverageItemLevel()
+
+    if not avg or avg == 0 then
+        self.text:SetText("iLvl: ?")
+        return
+    end
+
+    self.text:SetFormattedText("%s %d (%d)", ITEM_LEVEL_ABBR, equipped, avg)
+    lastPanel = self
 end
 
 local ArtifactsIlvl = {}

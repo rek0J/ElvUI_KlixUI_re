@@ -60,6 +60,7 @@ local function OnEvent(self, event, ...)
 		end
 	
 	end
+	self.text:SetFormattedText("|cffc79c6d%s|r", L['Professions'])
 end
 
 local function Click(self, button)

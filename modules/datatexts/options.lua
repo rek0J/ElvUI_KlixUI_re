@@ -122,7 +122,8 @@ local function Datatexts()
 						type = "group",
 						name = L["Professions Datatext"],
 						get = function(info) return E.db.KlixUI.profDT[info[#info]] end,
-						set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; DT:LoadDataTexts() end,
+						--set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; DT:LoadDataTexts() end,
+						set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; E:StaticPopup_Show("PRIVATE_RL") end,
 						args = {
 							prof = {
 								type = "select",
