@@ -13,6 +13,8 @@ local strtrim = strtrim
 
 SMB.Buttons = {}
 SMB.Collapsed = false
+SMB.MouseOver = false
+SMB.NeedsFullScan = true
 
 local ignoreButtons = {
 	'HelpOpenWebTicketButton',
@@ -30,6 +32,8 @@ local ignoreButtons = {
 	'TukuiMinimapZone',
 	'TukuiMinimapCoord',
 	'RecipeRadarMinimapButtonFrame',
+	'SquareMinimapButtonBar',
+	'KUI_SquareMinimapButtonBarMover',
 }
 
 local GenericIgnores = {
@@ -90,6 +94,8 @@ local function GetPrimaryIconTexture(Button)
 	local candidates = {
 		Button.icon,
 		Button.Icon,
+		Button.texture,
+		Button.Texture,
 		name and _G[name.."Icon"] or nil,
 		name and _G[name.."IconTexture"] or nil,
 		Button.GetNormalTexture and Button:GetNormalTexture() or nil,
@@ -137,6 +143,35 @@ local function GetTextureTexCoords(texture)
 	if #coords == 4 and coords[1] ~= nil then
 		local left, right, top, bottom = coords[1], coords[2], coords[3], coords[4]
 		return left, right, top, bottom
+	end
+end
+
+local function SyncTextureState(target, source, left, right, top, bottom)
+	if not target or not source then return end
+
+	if source.GetTexture then
+		local texture = source:GetTexture()
+		if texture then
+			target:SetTexture(texture)
+		end
+	end
+
+	if left ~= nil then
+		target:SetTexCoord(left, right, top, bottom)
+	elseif source.GetTexCoord then
+		target:SetTexCoord(source:GetTexCoord())
+	end
+
+	if source.GetVertexColor and target.SetVertexColor then
+		target:SetVertexColor(source:GetVertexColor())
+	end
+
+	if source.GetDesaturated and target.SetDesaturated then
+		target:SetDesaturated(source:GetDesaturated())
+	end
+
+	if source.GetBlendMode and target.SetBlendMode then
+		target:SetBlendMode(source:GetBlendMode())
 	end
 end
 
@@ -228,6 +263,19 @@ local function GetButtonTokenOrder(buttonData, orderMap)
 	end
 
 	return best
+end
+
+local function RemoveButtonTokensFromList(value, buttonData)
+	local _, _, ordered = ParseButtonTokens(value)
+	local kept = {}
+
+	for _, token in ipairs(ordered) do
+		if not (buttonData and (token == buttonData.key or (buttonData.aliases and buttonData.aliases[token]))) then
+			T.table_insert(kept, token)
+		end
+	end
+
+	return T.table_concat(kept, ",")
 end
 
 local function GetGrowthSettings(direction)
@@ -382,6 +430,26 @@ function SMB:RefreshButtonFilters()
 	self.Collapsed = self.db.enableCollapse and self.db.collapsed
 end
 
+function SMB:RemoveHiddenButtonFromConfiguredLists(Button)
+	local data = Button and Button.SMBData
+	if not data or data.kind == "blizzard" then return end
+
+	local newWhiteList = RemoveButtonTokensFromList(self.db.whitelist, data)
+	local newCollapsed = RemoveButtonTokensFromList(self.db.collapsedButtons, data)
+
+	if newWhiteList ~= self.db.whitelist or newCollapsed ~= self.db.collapsedButtons then
+		self.db.whitelist = newWhiteList
+		self.db.collapsedButtons = newCollapsed
+		self:RefreshButtonFilters()
+	end
+
+	T.C_Timer_After(0, function()
+		if SMB and SMB.Update then
+			SMB:Update()
+		end
+	end)
+end
+
 function SMB:ApplyBarPosition()
 	if not self.Bar or not self.db.useCustomPosition then return end
 
@@ -493,7 +561,7 @@ function SMB:HandleBlizzardButtons()
 		Frame:HookScript('OnLeave', function(self)
 			_G.GameTooltip:Hide()
 			self:SetTemplate()
-			if SMB.Bar:IsShown() and SMB.db.BarMouseOver then
+			if SMB.Bar:IsShown() and SMB.db.barMouseOver then
 				T.UIFrameFadeOut(SMB.Bar, 0.2, SMB.Bar:GetAlpha(), 0)
 			end
 		end)
@@ -569,11 +637,16 @@ function SMB:HandleBlizzardButtons()
 		Frame.Icon:SetTexture([[Interface\LFGFrame\LFG-Eye]])
 		Frame.Icon:SetTexCoord(0, 64 / 512, 0, 64 / 256)
 		Frame:SetScript('OnMouseDown', function()
+			if not _G.PVEFrame then return end
 			if _G.PVEFrame:IsShown() then
 				T.HideUIPanel(_G.PVEFrame)
 			else
 				T.ShowUIPanel(_G.PVEFrame)
-				T.GroupFinderFrame_ShowGroupFrame()
+				if T.GroupFinderFrame_ShowGroupFrame then
+					T.GroupFinderFrame_ShowGroupFrame()
+				elseif _G.GroupFinderFrame_ShowGroupFrame then
+					_G.GroupFinderFrame_ShowGroupFrame()
+				end
 			end
 		end)
 		Frame:HookScript('OnEnter', function(self)
@@ -594,12 +667,18 @@ function SMB:HandleBlizzardButtons()
 		queueButton:ClearAllPoints()
 		queueButton:SetPoint("CENTER", Frame, "CENTER", 0, 0)
 
-		queueButton:SetHighlightTexture(nil)
+		if queueButton.SetHighlightTexture then
+			queueButton:SetHighlightTexture("")
+		end
 
 		queueButton:HookScript('OnShow', function(self)
 			Frame:EnableMouse(false)
 		end)
-		queueButton:HookScript('PostClick', T.QueueStatusMinimapButton_OnLeave)
+		if T.QueueStatusMinimapButton_OnLeave then
+			queueButton:HookScript('PostClick', T.QueueStatusMinimapButton_OnLeave)
+		elseif _G.QueueStatusMinimapButton_OnLeave then
+			queueButton:HookScript('PostClick', _G.QueueStatusMinimapButton_OnLeave)
+		end
 		queueButton:HookScript('OnHide', function(self)
 			Frame:EnableMouse(true)
 		end)
@@ -613,6 +692,7 @@ end
 
 function SMB:SkinMinimapButton(Button)
 	if (not Button) or Button.isSkinned then return end
+	if Button == self.Bar or Button == self.Hider or Button == self.Toggle then return end
 
 	local Name = Button:GetName()
 	local IsLibDB = IsLibDBIconButton(Button)
@@ -730,13 +810,13 @@ function SMB:SkinMinimapButton(Button)
 			IconTexture:SetTexCoord(T.unpack(self.TexCoords))
 			IconTexture:SetDrawLayer('ARTWORK')
 		end
-		if IconTexture.SetVertexColor then
+		if IconTexture.SetVertexColor and not IsLibDB then
 			IconTexture:SetVertexColor(1, 1, 1, 1)
 		end
-		if IconTexture.SetDesaturated then
+		if IconTexture.SetDesaturated and not IsLibDB then
 			IconTexture:SetDesaturated(false)
 		end
-		if IconTexture.SetBlendMode then
+		if IconTexture.SetBlendMode and not IsLibDB then
 			IconTexture:SetBlendMode("BLEND")
 		end
 		IconTexture:SetAlpha(1)
@@ -759,6 +839,17 @@ function SMB:SkinMinimapButton(Button)
 		Button.ishadow:SetInside(Button, 0, 0)
 		Button.ishadow:Show()
 	end
+	Button.SMBOriginalIcon = (not IsLibDB and OriginalIconTexture) and OriginalIconTexture or nil
+
+	if Button.SMBOriginalIcon then
+		local anchor = Button.backdrop or Button
+		Button.SMBOriginalIcon:SetParent(anchor)
+		Button.SMBOriginalIcon:ClearAllPoints()
+		Button.SMBOriginalIcon:SetInside(anchor, 2, 2)
+		Button.SMBOriginalIcon:SetDrawLayer("ARTWORK", 7)
+		Button.SMBOriginalIcon:SetAlpha(1)
+		Button.SMBOriginalIcon:Show()
+	end
 
 	if IsLibDB and iconAsset and Button.backdrop then
 		if not Button.SMBIcon then
@@ -769,20 +860,8 @@ function SMB:SkinMinimapButton(Button)
 
 		Button.SMBIcon:ClearAllPoints()
 		Button.SMBIcon:SetInside(Button.backdrop, 2, 2)
-		Button.SMBIcon:SetTexture(iconAsset)
-		if left ~= nil then
-			Button.SMBIcon:SetTexCoord(left, right, top, bottom)
-		else
-			Button.SMBIcon:SetTexCoord(0, 1, 0, 1)
-		end
-		Button.SMBIcon:SetVertexColor(1, 1, 1, 1)
-		if Button.SMBIcon.SetDesaturated then
-			Button.SMBIcon:SetDesaturated(false)
-		end
-		if Button.SMBIcon.SetBlendMode then
-			Button.SMBIcon:SetBlendMode("BLEND")
-		end
 		Button.SMBIcon:SetDrawLayer("ARTWORK", 7)
+		SyncTextureState(Button.SMBIcon, OriginalIconTexture, left, right, top, bottom)
 		Button.SMBIcon:SetAlpha(1)
 		Button.SMBIcon:Show()
 
@@ -790,16 +869,46 @@ function SMB:SkinMinimapButton(Button)
 			OriginalIconTexture:SetAlpha(0)
 			OriginalIconTexture:Hide()
 		end
+
+		if OriginalIconTexture and not Button.SMBIconHooksInstalled then
+			Button.SMBIconHooksInstalled = true
+
+			hooksecurefunc(OriginalIconTexture, "SetTexture", function(source)
+				SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+			end)
+			hooksecurefunc(OriginalIconTexture, "SetTexCoord", function(source)
+				local l, r2, t, b2 = GetTextureTexCoords(source)
+				left, right, top, bottom = l, r2, t, b2
+				SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+			end)
+			hooksecurefunc(OriginalIconTexture, "SetVertexColor", function(source)
+				SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+			end)
+			hooksecurefunc(OriginalIconTexture, "SetAlpha", function(source)
+				SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+			end)
+			if OriginalIconTexture.SetDesaturated then
+				hooksecurefunc(OriginalIconTexture, "SetDesaturated", function(source)
+					SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+				end)
+			end
+			if OriginalIconTexture.SetBlendMode then
+				hooksecurefunc(OriginalIconTexture, "SetBlendMode", function(source)
+					SyncTextureState(Button.SMBIcon, source, left, right, top, bottom)
+				end)
+			end
+		end
 	end
 
 	Button:HookScript('OnEnter', function(self)
+		SMB.MouseOver = true
 		self.backdrop:SetBackdropBorderColor(T.unpack(E["media"].rgbvaluecolor))
 		if SMB.Bar:IsShown() then
 			T.UIFrameFadeIn(SMB.Bar, 0.2, SMB.Bar:GetAlpha(), 1)
 		end
 	end)
 	Button:HookScript('OnLeave', function(self)
-		self:CreateBackdrop("Default")
+		SMB.MouseOver = false
 		if self.backdrop and self.backdrop.SetTemplate then
 			self.backdrop:SetTemplate("Default")
 		end
@@ -809,8 +918,54 @@ function SMB:SkinMinimapButton(Button)
 			self.ishadow:SetInside(self, 0, 0)
 			self.ishadow:Show()
 		end
+		if self.SMBIcon then
+			if self.backdrop then
+				self.SMBIcon:SetParent(self.backdrop)
+				self.SMBIcon:ClearAllPoints()
+				self.SMBIcon:SetInside(self.backdrop, 2, 2)
+			else
+				self.SMBIcon:SetParent(self)
+				self.SMBIcon:ClearAllPoints()
+				self.SMBIcon:SetInside(self, 2, 2)
+			end
+			self.SMBIcon:SetDrawLayer("ARTWORK", 7)
+			self.SMBIcon:SetAlpha(1)
+			self.SMBIcon:Show()
+		end
+		if self.SMBOriginalIcon then
+			if self.backdrop then
+				self.SMBOriginalIcon:SetParent(self.backdrop)
+				self.SMBOriginalIcon:ClearAllPoints()
+				self.SMBOriginalIcon:SetInside(self.backdrop, 2, 2)
+			else
+				self.SMBOriginalIcon:SetParent(self)
+				self.SMBOriginalIcon:ClearAllPoints()
+				self.SMBOriginalIcon:SetInside(self, 2, 2)
+			end
+			self.SMBOriginalIcon:SetDrawLayer("ARTWORK", 7)
+			self.SMBOriginalIcon:SetAlpha(1)
+			self.SMBOriginalIcon:Show()
+		end
 		if SMB.Bar:IsShown() and SMB.db.barMouseOver then
 			T.UIFrameFadeOut(SMB.Bar, 0.2, SMB.Bar:GetAlpha(), 0)
+		end
+	end)
+	Button:HookScript("OnMouseDown", function(self, button)
+		self.SMBPendingRightClickHide = (button == "RightButton")
+	end)
+	Button:HookScript("OnMouseUp", function(self)
+		if self.SMBPendingRightClickHide then
+			T.C_Timer_After(0.5, function()
+				if self and self.SMBPendingRightClickHide and self:IsShown() then
+					self.SMBPendingRightClickHide = nil
+				end
+			end)
+		end
+	end)
+	Button:HookScript("OnHide", function(self)
+		if self.SMBPendingRightClickHide and self:GetParent() ~= SMB.Hider then
+			self.SMBPendingRightClickHide = nil
+			SMB:RemoveHiddenButtonFromConfiguredLists(self)
 		end
 	end)
 
@@ -833,18 +988,24 @@ end
 
 function SMB:GrabMinimapButtons()
 	if T.InCombatLockdown() or IsInPetBattle() then return end
+	local changed = false
 
 	for _, Frame in T.pairs({ _G.Minimap, _G.MinimapBackdrop, _G.MinimapCluster }) do
 		if Frame then
 			local NumChildren = Frame:GetNumChildren()
-			if NumChildren < (Frame.SMBNumChildren or 0) then return end
-			for i = 1, NumChildren do
-				local object = T.select(i, Frame:GetChildren())
-				if object then
-					local name = object:GetName()
-					local width = object:GetWidth()
-					if name and width > 15 and width < 52 and (object:IsObjectType('Button') or object:IsObjectType('Frame')) then
-						self:SkinMinimapButton(object)
+			if self.NeedsFullScan or NumChildren ~= (Frame.SMBNumChildren or 0) then
+				for i = 1, NumChildren do
+					local object = T.select(i, Frame:GetChildren())
+					if object then
+						local name = object:GetName()
+						local width = object:GetWidth()
+						if name and width > 15 and width < 52 and (object:IsObjectType('Button') or object:IsObjectType('Frame')) then
+							local wasSkinned = object.isSkinned
+							self:SkinMinimapButton(object)
+							if not wasSkinned and object.isSkinned then
+								changed = true
+							end
+						end
 					end
 				end
 			end
@@ -853,7 +1014,45 @@ function SMB:GrabMinimapButtons()
 		end
 	end
 
-	self:Update()
+	for _, object in T.pairs({
+		_G.WIM3MinimapButton,
+		_G["AllTheThings-Minimap"],
+	}) do
+		if object and object.GetWidth and object:GetWidth() > 15 and object:GetWidth() < 80 then
+			local wasSkinned = object.isSkinned
+			self:SkinMinimapButton(object)
+			if not wasSkinned and object.isSkinned then
+				changed = true
+			end
+		end
+	end
+
+	local uiParentChildren = UIParent:GetNumChildren()
+	if self.NeedsFullScan or uiParentChildren ~= (self.UIParentNumChildren or 0) then
+		for i = 1, uiParentChildren do
+			local object = T.select(i, UIParent:GetChildren())
+			if object and object ~= self.Bar and object ~= self.Hider and object ~= self.Toggle and (not object.IsForbidden or not object:IsForbidden()) and (object:IsObjectType('Button') or object:IsObjectType('Frame')) then
+				local width = object:GetWidth()
+				local name = object:GetName()
+
+				if name and width and width > 15 and width < 52 then
+					if name ~= "SquareMinimapButtonBar" and name ~= "KUI_SquareMinimapButtonBarMover" and (T.string_find(name, "Minimap") or T.string_find(name, "MiniMap") or name == "WIM3MinimapButton") then
+						local wasSkinned = object.isSkinned
+						self:SkinMinimapButton(object)
+						if not wasSkinned and object.isSkinned then
+							changed = true
+						end
+					end
+				end
+			end
+		end
+	end
+	self.UIParentNumChildren = uiParentChildren
+	self.NeedsFullScan = false
+
+	if changed then
+		self:Update()
+	end
 end
 
 function SMB:Update()
@@ -1035,6 +1234,20 @@ function SMB:Update()
 			Button.SMBIcon:SetAlpha(1)
 			Button.SMBIcon:Show()
 		end
+		if Button.SMBOriginalIcon then
+			if Button.backdrop then
+				Button.SMBOriginalIcon:SetParent(Button.backdrop)
+				Button.SMBOriginalIcon:ClearAllPoints()
+				Button.SMBOriginalIcon:SetInside(Button.backdrop, 2, 2)
+			else
+				Button.SMBOriginalIcon:SetParent(Button)
+				Button.SMBOriginalIcon:ClearAllPoints()
+				Button.SMBOriginalIcon:SetInside(Button, 2, 2)
+			end
+			Button.SMBOriginalIcon:SetDrawLayer("ARTWORK", 7)
+			Button.SMBOriginalIcon:SetAlpha(1)
+			Button.SMBOriginalIcon:Show()
+		end
 		if Button.SMBIconFrame then
 			Button.SMBIconFrame:Hide()
 		end
@@ -1051,8 +1264,10 @@ function SMB:Update()
 	self:UpdateCollapseToggle()
 
 	if SMB.db.backdrop then
-		self.Bar:CreateBackdrop("Transparent", true)
-		self.Bar:Styling()
+    	self.Bar:CreateBackdrop("Transparent", true)
+    		if self.Bar.Styling then
+        	self.Bar:Styling()
+    	end
 	else
 		self.Bar:SetBackdrop(nil)
 		if self.Bar.squares or self.Bar.gradient or self.Bar.mshadow then
@@ -1068,8 +1283,22 @@ function SMB:Update()
 		self.Bar:Show()
 	end
 
+	self.MouseOver = (self.Bar and self.Bar:IsMouseOver()) or (self.Toggle and self.Toggle:IsMouseOver()) or false
+	if not self.MouseOver then
+		for _, Button in ipairs(LayoutButtons) do
+			if Button.IsMouseOver and Button:IsMouseOver() then
+				self.MouseOver = true
+				break
+			end
+		end
+	end
+
 	if SMB.db['barMouseOver'] then
-		T.UIFrameFadeOut(self.Bar, 0.2, self.Bar:GetAlpha(), 0)
+		if self.MouseOver then
+			T.UIFrameFadeIn(self.Bar, 0.2, self.Bar:GetAlpha(), 1)
+		else
+			T.UIFrameFadeOut(self.Bar, 0.2, self.Bar:GetAlpha(), 0)
+		end
 	else
 		T.UIFrameFadeIn(self.Bar, 0.2, self.Bar:GetAlpha(), 1)
 	end
@@ -1158,8 +1387,12 @@ function SMB:Initialize()
 		SMB:Update()
 	end)
 
-	SMB.Bar:SetScript('OnEnter', function(self) T.UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1) end)
+	SMB.Bar:SetScript('OnEnter', function(self)
+		SMB.MouseOver = true
+		T.UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
+	end)
 	SMB.Bar:SetScript('OnLeave', function(self)
+		SMB.MouseOver = false
 		if SMB.db['barMouseOver'] then
 			T.UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
 		end
@@ -1167,6 +1400,7 @@ function SMB:Initialize()
 
 	function SMB:ForUpdateAll()
 		SMB.db = E.db.KlixUI.maps.minimap.buttons
+		SMB.NeedsFullScan = true
 		SMB:RefreshSettings()
 	end
 	SMB:ForUpdateAll()
