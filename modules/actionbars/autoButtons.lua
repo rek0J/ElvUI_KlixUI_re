@@ -595,7 +595,8 @@ function ABS:UpdateAutoButton()
             lastColumnButton = _G["AutoSlotButton" .. i - buttonsPerRow]
             
             if ABS.db.slotAutoButtons.slotNum < ABS.db.slotAutoButtons.slotPerRow then
-                buttonsPerRow = ABS.db.questAutoButtons.questNum
+                --buttonsPerRow = ABS.db.questAutoButtons.questNum
+                buttonsPerRow = ABS.db.slotAutoButtons.slotNum
             end
             f:ClearAllPoints()
             
