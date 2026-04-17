@@ -22,6 +22,26 @@ for i = 1, 12 do
 	_G["BINDING_NAME_CLICK AutoQuestButton"..i..":LeftButton"] = L["Auto QuestItem Button"]..i
 end
 
+local C_Item = rawget(_G, "C_Item")
+
+local function SafeIsItemInRange(itemID, unit)
+	if not itemID or not unit or not UnitExists(unit) then
+		return nil
+	end
+
+	if T.InCombatLockdown() then
+		return nil
+	end
+
+	if C_Item and C_Item.IsItemInRange then
+		return C_Item.IsItemInRange(itemID, unit)
+	elseif T.IsItemInRange then
+		return T.IsItemInRange(itemID, unit)
+	end
+
+	return nil
+end
+
 local function GetWatchedQuestCount()
 	if C_QuestLog_GetNumQuestWatches then
 		return C_QuestLog_GetNumQuestWatches()
@@ -370,16 +390,29 @@ function ABS:ScanItem(event)
             end
             
             AutoButton:SetScript("OnUpdate", function(self, elapsed)
+            	self.rangeElapsed = (self.rangeElapsed or 0) + elapsed
+
                 local start, duration, enable
-                if self.questLogIndex > 0 then
+                if self.questLogIndex and self.questLogIndex > 0 then
                     start, duration, enable = T.GetQuestLogSpecialItemCooldown(self.questLogIndex)
                 else
                     start, duration, enable = T.GetItemCooldown(self.itemID)
                 end
+
                 T.CooldownFrame_Set(self.Cooldown, start, duration, enable)
-                if (duration and duration > 0 and enable and enable == 0) then
+
+                if duration and duration > 0 and enable and enable == 0 then
                     self.Texture:SetVertexColor(0.4, 0.4, 0.4)
-                elseif T.IsItemInRange(itemID, "target") == 0 then
+                    return
+                end
+
+                if self.rangeElapsed < 0.5 then
+		            return
+	            end
+	            self.rangeElapsed = 0
+
+                local inRange = SafeIsItemInRange(self.itemID, "target")
+                if inRange == false then
                     self.Texture:SetVertexColor(1, 0, 0)
                 else
                     self.Texture:SetVertexColor(1, 1, 1)
