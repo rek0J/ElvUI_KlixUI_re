@@ -2,61 +2,99 @@
 local KS = KUI:GetModule('KuiSkins')
 local S = E:GetModule('Skins')
 
---Cache global variables
+-- Cache globals
 local _G = _G
 local select, unpack = select, unpack
---WoW API / Variables
+
+-- WoW API / Variables
 local hooksecurefunc = hooksecurefunc
 local GetInspectSpecialization = GetInspectSpecialization
 local GetSpecializationRoleByID = GetSpecializationRoleByID
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local UnitGUID = UnitGUID
--- GLOBALS:
 
-local r, g, b = T.unpack(E["media"].rgbvaluecolor)
+local r, g, b = T.unpack(E.media.rgbvaluecolor)
 
 local function updateIcon(self)
-		local spec = nil
+	if not self or not self.specIcon then return end
 
-		if INSPECTED_UNIT ~= nil then
-			spec = T.GetInspectSpecialization(INSPECTED_UNIT)
-		end
+	local spec
+	if _G.INSPECTED_UNIT then
+		spec = T.GetInspectSpecialization(_G.INSPECTED_UNIT)
+	end
 
-		if spec ~= nil and spec > 0 then
-			local role1 = T.GetSpecializationRoleByID(spec)
-			if role1 ~= nil then
-				local _, _, _, icon = T.GetSpecializationInfoByID(spec)
+	if spec and spec > 0 then
+		local role = T.GetSpecializationRoleByID(spec)
+		if role then
+			local _, _, _, icon = T.GetSpecializationInfoByID(spec)
+			if icon then
 				self.specIcon:SetTexture(icon)
 			end
 		end
+	end
 end
 
 local function styleInspect()
-	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.inspect ~= true or E.private.KlixUI.skins.blizzard.inspect ~= true then return end
-	
-	_G.InspectModelFrame:DisableDrawLayer("OVERLAY")
-
-	if _G.InspectFrame.backdrop then
-		_G.InspectFrame.backdrop:Styling()
+	if E.private.skins.blizzard.enable ~= true
+		or E.private.skins.blizzard.inspect ~= true
+		or E.private.KlixUI.skins.blizzard.inspect ~= true
+	then
+		return
 	end
 
-	_G.InspectTalentFrame:GetRegions():Hide()
-	T.select(2, _G.InspectTalentFrame:GetRegions()):Hide()
-	_G.InspectGuildFrameBG:Hide()
+	local InspectFrame = _G.InspectFrame
+	local InspectModelFrame = _G.InspectModelFrame
+	local InspectTalentFrame = _G.InspectTalentFrame
+	local InspectGuildFrameBG = _G.InspectGuildFrameBG
+	local InspectPaperDollFrame = _G.InspectPaperDollFrame
 
-	if _G.InspectModelFrame.backdrop then
-		_G.InspectModelFrame.backdrop:Hide()
+	if not InspectFrame then return end
+
+	if InspectModelFrame and InspectModelFrame.DisableDrawLayer then
+		InspectModelFrame:DisableDrawLayer("OVERLAY")
 	end
 
-	for i = 1, 5 do
-		T.select(i, _G.InspectModelFrame:GetRegions()):Hide()
+	if InspectFrame.backdrop then
+		InspectFrame.backdrop:Styling()
 	end
 
-	_G.InspectPaperDollFrame.ViewButton:ClearAllPoints()
-	_G.InspectPaperDollFrame.ViewButton:SetPoint("TOP", _G.InspectFrame, 0, -45)
+	if InspectTalentFrame then
+		local regions = { InspectTalentFrame:GetRegions() }
+		if regions[1] then regions[1]:Hide() end
+		if regions[2] then regions[2]:Hide() end
+	end
+
+	if InspectGuildFrameBG then
+		InspectGuildFrameBG:Hide()
+	end
+
+	if InspectModelFrame and InspectModelFrame.backdrop then
+		InspectModelFrame.backdrop:Hide()
+	end
+
+	if InspectModelFrame then
+		local regions = { InspectModelFrame:GetRegions() }
+		for i = 1, 5 do
+			if regions[i] then
+				regions[i]:Hide()
+			end
+		end
+	end
+
+	-- MoP Classic safety: ViewButton may not exist
+	local viewButton = InspectPaperDollFrame and InspectPaperDollFrame.ViewButton
+	if viewButton then
+		viewButton:ClearAllPoints()
+		viewButton:SetPoint("TOP", InspectFrame, 0, -45)
+	end
 
 	-- Character
-	T.select(11, _G.InspectMainHandSlot:GetRegions()):Hide()
+	if _G.InspectMainHandSlot then
+		local mhRegions = { _G.InspectMainHandSlot:GetRegions() }
+		if mhRegions[11] then
+			mhRegions[11]:Hide()
+		end
+	end
 
 	local slots = {
 		"Head", "Neck", "Shoulder", "Shirt", "Chest", "Waist", "Legs", "Feet", "Wrist",
@@ -65,65 +103,117 @@ local function styleInspect()
 	}
 
 	for i = 1, #slots do
-		local slot = _G["Inspect"..slots[i].."Slot"]
-		local border = slot.IconBorder
+		local slot = _G["Inspect" .. slots[i] .. "Slot"]
+		local slotFrame = _G["Inspect" .. slots[i] .. "SlotFrame"]
 
-		_G["Inspect"..slots[i].."SlotFrame"]:Hide()
+		if slotFrame then
+			slotFrame:Hide()
+		end
 
-		slot:SetNormalTexture("")
-		slot:SetPushedTexture("")
+		if slot then
+			if slot.SetNormalTexture then
+				slot:SetNormalTexture("")
+			end
 
-		slot.icon:SetTexCoord(T.unpack(E.TexCoords))
+			if slot.SetPushedTexture then
+				slot:SetPushedTexture("")
+			end
 
-		border:SetDrawLayer("BACKGROUND")
+			if slot.icon then
+				slot.icon:SetTexCoord(T.unpack(E.TexCoords))
+			end
+
+			if slot.IconBorder then
+				slot.IconBorder:SetDrawLayer("BACKGROUND")
+			end
+		end
 	end
 
-	hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
-		button.IconBorder:SetTexture(E["media"].normTex)
-		button.icon:SetShown(button.hasItem)
-	end)
+	if _G.InspectPaperDollItemSlotButton_Update then
+		hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
+			if not button then return end
+
+			if button.IconBorder then
+				button.IconBorder:SetTexture(E.media.normTex)
+			end
+
+			if button.icon then
+				button.icon:SetShown(button.hasItem)
+			end
+		end)
+	end
 
 	-- Talents
-	local inspectSpec = _G.InspectTalentFrame.InspectSpec
-	inspectSpec.ring:Hide()
+	if InspectTalentFrame and InspectTalentFrame.InspectSpec then
+		local inspectSpec = InspectTalentFrame.InspectSpec
 
-	for i = 1, 7 do
-		local row = _G.InspectTalentFrame.InspectTalents["tier"..i]
-		for j = 1, 3 do
-			local bu = row["talent"..j]
+		if inspectSpec.ring then
+			inspectSpec.ring:Hide()
+		end
 
-			bu.Slot:Hide()
-			bu.border:SetTexture("")
+		if InspectTalentFrame.InspectTalents then
+			for i = 1, 7 do
+				local row = InspectTalentFrame.InspectTalents["tier" .. i]
+				if row then
+					for j = 1, 3 do
+						local bu = row["talent" .. j]
+						if bu then
+							if bu.Slot then
+								bu.Slot:Hide()
+							end
 
-			bu.icon:SetDrawLayer("ARTWORK")
-			bu.icon:SetTexCoord(T.unpack(E.TexCoords))
+							if bu.border then
+								bu.border:SetTexture("")
+							end
 
-			KS:CreateBG(bu.icon)
+							if bu.icon then
+								bu.icon:SetDrawLayer("ARTWORK")
+								bu.icon:SetTexCoord(T.unpack(E.TexCoords))
+								KS:CreateBG(bu.icon)
+							end
+						end
+					end
+				end
+			end
+		end
+
+		if inspectSpec.specIcon then
+			inspectSpec.specIcon:SetTexCoord(T.unpack(E.TexCoords))
+			KS:CreateBG(inspectSpec.specIcon)
+		end
+
+		inspectSpec:HookScript("OnShow", updateIcon)
+
+		InspectTalentFrame:HookScript("OnEvent", function(self, event, unit)
+			if not InspectFrame:IsShown() then return end
+			if event == "INSPECT_READY" and InspectFrame.unit and T.UnitGUID(InspectFrame.unit) == unit then
+				if self.InspectSpec then
+					updateIcon(self.InspectSpec)
+				end
+			end
+		end)
+
+		local roleIcon = inspectSpec.roleIcon
+		if roleIcon then
+			roleIcon:SetTexture(E.media.roleIcons)
+			local bg = KS:CreateBDFrame(roleIcon, 1)
+			if bg then
+				bg:SetPoint("TOPLEFT", roleIcon, 2, -1)
+				bg:SetPoint("BOTTOMRIGHT", roleIcon, -1, 2)
+			end
 		end
 	end
 
-	inspectSpec.specIcon:SetTexCoord(T.unpack(E.TexCoords))
-	KS:CreateBG(inspectSpec.specIcon)
-
-	inspectSpec:HookScript("OnShow", updateIcon)
-	_G.InspectTalentFrame:HookScript("OnEvent", function(self, event, unit)
-		if not _G.InspectFrame:IsShown() then return end
-		if event == "INSPECT_READY" and _G.InspectFrame.unit and T.UnitGUID(_G.InspectFrame.unit) == unit then
-			updateIcon(self.InspectSpec)
-		end
-	end)
-
-	local roleIcon = inspectSpec.roleIcon
-	roleIcon:SetTexture(E["media"].roleIcons)
-	local bg = KS:CreateBDFrame(roleIcon, 1)
-	bg:SetPoint("TOPLEFT", roleIcon, 2, -1)
-	bg:SetPoint("BOTTOMRIGHT", roleIcon, -1, 2)
-
 	for i = 1, 4 do
-		local tab = _G["InspectFrameTab"..i]
-		KS:ReskinTab(tab)
-		if i ~= 1 then
-			tab:SetPoint("LEFT", _G["InspectFrameTab"..i-1], "RIGHT", -15, 0)
+		local tab = _G["InspectFrameTab" .. i]
+		if tab then
+			KS:ReskinTab(tab)
+			if i ~= 1 then
+				local prevTab = _G["InspectFrameTab" .. (i - 1)]
+				if prevTab then
+					tab:SetPoint("LEFT", prevTab, "RIGHT", -15, 0)
+				end
+			end
 		end
 	end
 end
