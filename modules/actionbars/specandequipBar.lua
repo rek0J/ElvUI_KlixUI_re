@@ -393,25 +393,94 @@ function SEB:CreateEquipBar()
 	end
 end
 
-function SEB:PLAYER_REGEN_DISABLED()
-	if SEB.db.hideInCombat then
+function SEB:UpdateVisibility()
+	if not SEB.db or not SEB.db.enable then
 		if _G.SpecializationBar then
 			_G.SpecializationBar:Hide()
 		end
 		if _G.EquipmentSets then
 			_G.EquipmentSets:Hide()
 		end
+		return
+	end
+
+	-- Manuell versteckt hat immer Vorrang
+	if SEB.db.hidden then
+		if _G.SpecializationBar then
+			_G.SpecializationBar:Hide()
+		end
+		if _G.EquipmentSets then
+			_G.EquipmentSets:Hide()
+		end
+		return
+	end
+
+	-- Im Kampf verstecken
+	if SEB.db.hideInCombat and T.InCombatLockdown() then
+		if _G.SpecializationBar then
+			_G.SpecializationBar:Hide()
+		end
+		if _G.EquipmentSets then
+			_G.EquipmentSets:Hide()
+		end
+		return
+	end
+
+	-- Order Hall / Garrison verstecken
+	if SEB.db.hideInOrderHall and HasOrderHallSupport() and T.C_Garrison_IsPlayerInGarrison(_G.LE_GARRISON_TYPE_7_0) then
+		if _G.SpecializationBar then
+			_G.SpecializationBar:Hide()
+		end
+		if _G.EquipmentSets then
+			_G.EquipmentSets:Hide()
+		end
+		return
+	end
+
+	if _G.SpecializationBar then
+		_G.SpecializationBar:Show()
+	end
+	if _G.EquipmentSets then
+		_G.EquipmentSets:Show()
+	end
+end
+function SEB:IsManuallyHidden()
+	return SEB.db and SEB.db.hidden == true
+end
+function SEB:PLAYER_REGEN_ENABLED()
+	SEB:UpdateVisibility()
+end
+
+function SEB:PLAYER_REGEN_DISABLED()
+	SEB:UpdateVisibility()
+end
+
+function SEB:UNIT_AURA(event, unit)
+	if unit ~= "player" then return end
+	SEB:UpdateVisibility()
+end
+--[[
+function SEB:PLAYER_REGEN_DISABLED()
+	if not SEB.db.enable then return end
+	if not SEB.db.hideInCombat then return end
+
+	if _G.SpecializationBar then
+		_G.SpecializationBar:Hide()
+	end
+	if _G.EquipmentSets then
+		_G.EquipmentSets:Hide()
 	end
 end
 
 function SEB:PLAYER_REGEN_ENABLED()
-	if SEB.db.enable then
-		if _G.SpecializationBar then
-			_G.SpecializationBar:Show()
-		end
-		if _G.EquipmentSets then
-			_G.EquipmentSets:Show()
-		end
+	if not SEB.db.enable then return end
+	if SEB.db.hidden == true then return end
+
+	if _G.SpecializationBar then
+		_G.SpecializationBar:Show()
+	end
+	if _G.EquipmentSets then
+		_G.EquipmentSets:Show()
 	end
 end
 
@@ -427,10 +496,15 @@ function SEB:UNIT_AURA(event, unit)
 		end
 	end
 end
+]]--
 
 function SEB:Initialize()
 	SEB.db = E.db.KlixUI.actionbars.SEBar
 	if SEB.db.enable ~= true then return end
+
+	if SEB.db.hidden == nil then
+		SEB.db.hidden = false
+	end
 
 	SEB:CreateSpecBar()
 	SEB:CreateEquipBar()
@@ -438,6 +512,8 @@ function SEB:Initialize()
 	SEB:RegisterEvent("PLAYER_REGEN_DISABLED")
 	SEB:RegisterEvent("PLAYER_REGEN_ENABLED")
 	SEB:RegisterEvent("UNIT_AURA")
+
+	SEB:UpdateVisibility()
 end
 
 KUI:RegisterModule(SEB:GetName())

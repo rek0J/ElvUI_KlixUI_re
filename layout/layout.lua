@@ -263,13 +263,22 @@ end
 function KUIL:SpecandEquipBar_OnClick()
 	GameTooltip:Hide()
 
-	if SpecializationBar:IsShown() and EquipmentSets:IsShown() then
-		SpecializationBar:Hide()
-		EquipmentSets:Hide()
-	else
-		SpecializationBar:Show()
-		EquipmentSets:Show()
+	local SEB = KUI:GetModule("SpecEquipBar", true)
+	if not SEB or not E.db.KlixUI or not E.db.KlixUI.actionbars or not E.db.KlixUI.actionbars.SEBar then
+		if SpecializationBar and EquipmentSets then
+			if SpecializationBar:IsShown() and EquipmentSets:IsShown() then
+				SpecializationBar:Hide()
+				EquipmentSets:Hide()
+			else
+				SpecializationBar:Show()
+				EquipmentSets:Show()
+			end
+		end
+		return
 	end
+
+	SEB.db.hidden = not SEB.db.hidden
+	SEB:UpdateVisibility()
 end
 
 -- ChatButton thx Merathilis
