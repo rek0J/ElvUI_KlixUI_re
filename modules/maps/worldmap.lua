@@ -3,32 +3,177 @@
 -------------------------------------------------------------------------------
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local KWM = KUI:NewModule('KuiWorldMap', 'AceHook-3.0');
+
 local C_Map = _G.C_Map
 local C_MapExplorationInfo = _G.C_MapExplorationInfo
-local C_Map_GetMapArtID = T.C_Map_GetMapArtID or (C_Map and C_Map.GetMapArtID)
-local C_Map_GetMapArtLayers = T.C_Map_GetMapArtLayers or (C_Map and C_Map.GetMapArtLayers)
-local C_MapExplorationInfo_GetExploredMapTextures = T.C_MapExplorationInfo_GetExploredMapTextures or (C_MapExplorationInfo and C_MapExplorationInfo.GetExploredMapTextures)
+local C_Timer = _G.C_Timer
+local CreateFrame = _G.CreateFrame
+local InCombatLockdown = _G.InCombatLockdown
+local MapCanvasScrollControllerMixin = _G.MapCanvasScrollControllerMixin
+local UIParent = _G.UIParent
+
+local ceil = math.ceil
+local floor = math.floor
+local max = math.max
+local tonumber = tonumber
+local pairs = pairs
+local ipairs = ipairs
+local strsplit = _G.strsplit
+local tinsert = table.insert
+local wipe = T.wipe or _G.wipe
+local fmod = math.fmod or _G.mod
+
+local WORLDMAP_SEARCH_BOTTOM_OFFSET = 3
+local WORLDMAP_SEARCH_SCALE = 0.8
+local WORLDMAP_ADDON_BUTTON_SIZE = 24
+local WORLDMAP_ADDON_BUTTON_X = -64
+local WORLDMAP_ADDON_BUTTON_Y = -44
+local WORLDMAP_ADDON_BUTTON_SPACING = 6
+local WORLDMAP_TEXTURE_SCALE = 0.1
+
+local C_Map_GetMapArtID = C_Map and C_Map.GetMapArtID
+local C_Map_GetMapArtLayers = C_Map and C_Map.GetMapArtLayers
+local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo and C_MapExplorationInfo.GetExploredMapTextures
+local TexturePool_ResetVertexColor
+
+function KWM:ApplyWorldMapBackdropStyle()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	local textureScale = (self.db and self.db.textureScale) or WORLDMAP_TEXTURE_SCALE
+
+	local function ApplyBackdropTextureScale(backdrop)
+		if not backdrop then return end
+		local squares = backdrop.squares
+		if squares and squares.SetTexCoord then
+			squares:SetTexCoord(0, textureScale, 0, textureScale)
+		end
+	end
+
+	local frameBackdrop = worldMap.backdrop
+	if frameBackdrop and frameBackdrop.Styling and not frameBackdrop.IsStyled then
+		frameBackdrop:Styling()
+		frameBackdrop.IsStyled = true
+	end
+	ApplyBackdropTextureScale(frameBackdrop)
+
+	local borderBackdrop = worldMap.BorderFrame and worldMap.BorderFrame.backdrop
+	if borderBackdrop and borderBackdrop.Styling and not borderBackdrop.IsStyled then
+		borderBackdrop:Styling()
+		borderBackdrop.IsStyled = true
+	end
+	ApplyBackdropTextureScale(borderBackdrop)
+
+	local miniBackdrop = worldMap.MiniBorderFrame and worldMap.MiniBorderFrame.backdrop
+	if miniBackdrop and miniBackdrop.Styling and not miniBackdrop.IsStyled then
+		miniBackdrop:Styling()
+		miniBackdrop.IsStyled = true
+	end
+	ApplyBackdropTextureScale(miniBackdrop)
+end
 
 function KWM:SetMapScale()
 	local worldMap = _G.WorldMapFrame
-	if not worldMap then return end
+	if not worldMap or not worldMap.ScrollContainer then return end
 
 	local scale = KWM.db.scale or 1
 	worldMap:SetScale(scale)
 
-	local scrollContainer = worldMap.ScrollContainer
-	if scrollContainer and scrollContainer.GetCursorPosition then
-		if not scrollContainer.KUIOrigGetCursorPosition then
-			scrollContainer.KUIOrigGetCursorPosition = scrollContainer.GetCursorPosition
+	if MapCanvasScrollControllerMixin and MapCanvasScrollControllerMixin.GetCursorPosition then
+		worldMap.ScrollContainer.GetCursorPosition = function(f)
+			local x, y = MapCanvasScrollControllerMixin.GetCursorPosition(f)
+			local s = worldMap:GetScale()
+			if not s or s == 0 then
+				return x, y
+			end
+
+			return x / s, y / s
+		end
+	end
+end
+
+function KWM:UpdateMapPosition()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	worldMap:SetClampedToScreen(true)
+	worldMap:ClearAllPoints()
+
+	if KWM.db.mapPos and KWM.db.mapPos.point and KWM.db.mapPos.relativePoint then
+		worldMap:SetPoint(
+			KWM.db.mapPos.point,
+			UIParent,
+			KWM.db.mapPos.relativePoint,
+			KWM.db.mapPos.x or 0,
+			KWM.db.mapPos.y or 0
+		)
+	else
+		worldMap:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	end
+end
+
+function KWM:EnableMapDragging()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	worldMap:SetMovable(true)
+	--worldMap:SetUserPlaced(true)
+	worldMap:SetUserPlaced(false)
+	worldMap:SetClampedToScreen(true)
+
+	if not worldMap.KlixUIDragFrame then
+		local dragFrame = CreateFrame("Frame", nil, worldMap)
+		dragFrame:SetFrameStrata(worldMap:GetFrameStrata())
+		dragFrame:SetFrameLevel(worldMap:GetFrameLevel() + 20)
+
+		-- Eigener Drag-Bereich oben, aber mit Abstand zu Buttons rechts
+		dragFrame:SetPoint("TOPLEFT", worldMap, "TOPLEFT", 40, -4)
+		dragFrame:SetPoint("TOPRIGHT", worldMap, "TOPRIGHT", -140, -4)
+		dragFrame:SetHeight(26)
+
+		dragFrame:EnableMouse(true)
+		dragFrame:RegisterForDrag("LeftButton")
+
+		dragFrame:SetScript("OnDragStart", function()
+			if InCombatLockdown and InCombatLockdown() then return end
+			worldMap:StartMoving()
+		end)
+
+		dragFrame:SetScript("OnDragStop", function()
+			worldMap:StopMovingOrSizing()
+			worldMap:SetClampedToScreen(true)
+
+			--local point, relativeTo, relativePoint, xOfs, yOfs = worldMap:GetPoint()
+			local point, _, relativePoint, xOfs, yOfs = worldMap:GetPoint()
+			KWM.db.mapPos = {
+				point = point,
+				relativePoint = relativePoint,
+				x = xOfs,
+				y = yOfs,
+			}
+		end)
+
+		worldMap.KlixUIDragFrame = dragFrame
+	end
+end
+
+function KWM:InitializeReveal()
+	if not KWM.db.reveal.enable then return end
+	if T.IsAddOnLoaded("ElvUI_FogRemover") or T.IsAddOnLoaded("ElvUI_FogofWar") then return end
+
+	local worldMap = _G.WorldMapFrame
+	if not worldMap or not worldMap.EnumeratePinsByTemplate then return end
+
+	for pin in worldMap:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+		if not pin.KlixUIRevealHooked and pin.RefreshOverlays then
+			hooksecurefunc(pin, "RefreshOverlays", function(p, fullUpdate)
+				KWM:RefMap(p, fullUpdate)
+			end)
+			pin.KlixUIRevealHooked = true
 		end
 
-		if scale ~= 1 then
-			scrollContainer.GetCursorPosition = function(frame)
-				local x, y = frame.KUIOrigGetCursorPosition(frame)
-				return x / scale, y / scale
-			end
-		elseif scrollContainer.KUIOrigGetCursorPosition then
-			scrollContainer.GetCursorPosition = scrollContainer.KUIOrigGetCursorPosition
+		if pin.overlayTexturePool then
+			pin.overlayTexturePool.resetterFunc = TexturePool_ResetVertexColor
 		end
 	end
 end
@@ -45,9 +190,9 @@ local LeaMapsData = {
 	--[[Badlands]] [16] = {["252:353:0:66"] = "270529, 442225", ["274:448:407:220"] = "270540, 270527, 442226, 442227", ["328:313:175:178"] = "442232, 442233, 442234, 442235", ["266:210:336:0"] = "442238, 442239", ["214:285:144:99"] = "270525, 270521", ["469:613:533:55"] = "270534, 270551, 270546, 270535, 442236, 442237", ["209:196:411:116"] = "270532", ["236:260:504:19"] = "270530, 442231", ["339:347:0:281"] = "270520, 442228, 442229, 442230", ["285:223:230:68"] = "270543, 442224", ["342:353:230:315"] = "270522, 270550, 270528, 270536",},
 	--[[Blasted Lands]] [18] = {["272:206:258:0"] = "391435, 438231", ["295:205:530:6"] = "391432, 438232", ["218:183:459:97"] = "391430", ["238:195:225:110"] = "391425", ["235:188:327:182"] = "391434", ["308:226:144:175"] = "391429, 391428", ["348:357:132:311"] = "438247, 438248, 438249, 438250", ["268:354:533:268"] = "438243, 438244, 438245, 438246", ["370:298:368:179"] = "438239, 438240, 438241, 438242", ["199:191:333:474"] = "438238", ["233:266:386:374"] = "438236, 438237", ["240:270:578:91"] = "438234, 438235", ["195:199:436:0"] = "438233", ["168:170:375:102"] = "391431",},
 	--[[Blasted Lands]] [628] = {["233:266:386:374"] = "1085242, 1085243", ["199:191:333:474"] = "1085244", ["238:195:225:110"] = "1085231", ["272:206:258:0"] = "1085232, 1085233", ["235:188:327:182"] = "1085234", ["268:354:533:268"] = "1085249, 1085250, 1085251, 1085252", ["295:205:530:6"] = "1085235, 1085236", ["195:199:436:0"] = "1085237", ["218:183:459:97"] = "1085239", ["240:270:578:91"] = "1085240, 1085241", ["370:298:368:179"] = "1085245, 1085246, 1085247, 1085248", ["348:357:132:311"] = "1085253, 1085254, 1085255, 1085256", ["308:226:144:175"] = "1085257, 1085258", ["168:170:375:102"] = "1085238",},
-	--[[Burning Steppes]] [37] = {["281:388:79:0"] = "270919, 270911, 455907, 455908", ["182:360:0:0"] = "270938, 455906", ["298:410:419:258"] = "270920, 270914, 270908, 270929", ["320:385:235:0"] = "270912, 270909, 455909, 455910", ["362:431:0:237"] = "270941, 270925, 270926, 270917", ["274:263:568:151"] = "270927, 455911, 455912, 455913", ["383:413:615:255"] = "270906, 270918, 270936, 270942", ["274:413:253:255"] = "270933, 270943, 270921, 270928", ["324:354:421:0"] = "270922, 270934, 270923, 270937", ["274:413:253:255"] = "270933, 270943, 270921, 270928", ["350:341:646:7"] = "270944, 270910, 270935, 270945",},
+	--[[Burning Steppes]] [37] = {["281:388:79:0"] = "270919, 270911, 455907, 455908", ["182:360:0:0"] = "270938, 455906", ["298:410:419:258"] = "270920, 270914, 270908, 270929", ["320:385:235:0"] = "270912, 270909, 455909, 455910", ["362:431:0:237"] = "270941, 270925, 270926, 270917", ["274:263:568:151"] = "270927, 455911, 455912, 455913", ["383:413:615:255"] = "270906, 270918, 270936, 270942", ["274:413:253:255"] = "270933, 270943, 270921, 270928", ["324:354:421:0"] = "270922, 270934, 270923, 270937",  ["350:341:646:7"] = "270944, 270910, 270935, 270945",},
 	--[[Duskwood]] [52] = {["189:307:0:152"] = "271453, 271454", ["299:296:32:348"] = "271444, 271483, 438377, 438378", ["323:309:91:132"] = "271473, 271463, 271467, 271464", ["268:282:228:355"] = "271448, 271456, 438391, 438392", ["233:248:401:396"] = "271449", ["279:399:497:112"] = "271470, 271477, 438379, 438380", ["291:263:539:368"] = "271455, 438382, 438383, 438384", ["329:314:640:128"] = "271471, 271461, 271450, 271451", ["219:182:661:122"] = "271466", ["931:235:71:26"] = "271481, 271460, 271474, 271468", ["205:157:96:292"] = "438381", ["291:244:627:344"] = "438385, 438386", ["320:388:314:101"] = "438387, 438388, 438389, 438390",},
-	--[[Dun Morogh]] [28] = {["437:249:50:227"] = "271398, 438347", ["198:251:663:288"] = "271408", ["398:302:100:366"] = "438341, 438342, 438343, 438344", ["376:347:398:0"] = "271410, 271396, 438352, 438353", ["226:335:469:256"] = "438345, 438346", ["409:318:0:27"] = "438348, 438349, 438350, 438351", ["308:335:630:0"] = "438354, 438355, 438356, 438357", ["171:234:397:132"] = "445524", ["171:234:397:132"] = "445524", ["236:358:263:0"] = "271392, 442671", ["174:249:579:306"] = "271401", ["237:366:765:43"] = "442672, 442673", ["184:188:449:220"] = "271417", ["211:160:374:287"] = "271400", ["225:276:360:340"] = "271406, 438340", ["218:234:760:268"] = "271409", ["249:183:595:225"] = "271389",},
+	--[[Dun Morogh]] [28] = {["437:249:50:227"] = "271398, 438347", ["198:251:663:288"] = "271408", ["398:302:100:366"] = "438341, 438342, 438343, 438344", ["376:347:398:0"] = "271410, 271396, 438352, 438353", ["226:335:469:256"] = "438345, 438346", ["409:318:0:27"] = "438348, 438349, 438350, 438351", ["308:335:630:0"] = "438354, 438355, 438356, 438357", ["171:234:397:132"] = "445524", ["236:358:263:0"] = "271392, 442671", ["174:249:579:306"] = "271401", ["237:366:765:43"] = "442672, 442673", ["184:188:449:220"] = "271417", ["211:160:374:287"] = "271400", ["225:276:360:340"] = "271406, 438340", ["218:234:760:268"] = "271409", ["249:183:595:225"] = "271389",},
 	--[[Eastern Plaguelands]] [24] = {["177:266:595:263"] = "271543, 271530", ["280:211:56:457"] = "271512, 442694", ["262:526:0:100"] = "271538, 271513, 442695, 442696, 442697, 442698", ["214:254:651:414"] = "271553", ["286:176:528:0"] = "271554, 442699", ["297:299:650:55"] = "271537, 442689, 442690, 442691", ["202:202:133:335"] = "271551", ["182:320:383:348"] = "442692, 442693", ["274:216:183:211"] = "271536, 442688", ["258:320:0:10"] = "271522, 442685, 442686, 442687", ["310:178:118:0"] = "271529, 442684", ["264:373:738:295"] = "442680, 442681, 442682, 442683", ["277:175:351:0"] = "271535, 442679", ["328:253:144:40"] = "271518, 271527", ["250:192:401:69"] = "271521", ["265:232:570:61"] = "271520, 442678", ["243:162:391:271"] = "442677", ["196:220:687:271"] = "271533", ["228:273:774:102"] = "442674, 442675", ["238:231:382:151"] = "271523", ["186:213:493:289"] = "271544", ["202:191:258:351"] = "271548", ["248:206:211:462"] = "271514", ["181:176:541:184"] = "271542", ["266:241:462:427"] = "271532, 442676",},
 	--[[Elwynn Forest]] [41] = {["294:243:703:292"] = "271578, 438413", ["340:272:552:186"] = "271584, 271565, 438419, 438420", ["220:207:417:327"] = "271560", ["285:194:708:442"] = "271557, 271583", ["269:313:116:355"] = "438426, 438427, 438428, 438429", ["512:422:0:0"] = "438421, 438422, 438423, 438424", ["276:231:247:294"] = "271567, 438415", ["269:248:240:420"] = "271576, 438414", ["295:296:355:138"] = "271572, 438416, 438417, 438418", ["230:206:396:430"] = "271582", ["270:241:529:287"] = "271573, 438425", ["287:216:532:424"] = "271559, 438412", },
 	--[[Eversong Woods]] [99] = {["128:193:554:475"] = "271603", ["256:256:215:298"] = "271601", ["256:128:539:305"] = "271628", ["128:253:183:415"] = "271625", ["256:256:386:386"] = "271612", ["256:256:605:253"] = "271604", ["256:256:474:314"] = "271610", ["256:128:524:359"] = "271591", ["256:256:460:373"] = "271588", ["256:256:361:298"] = "271637", ["256:128:231:404"] = "271627", ["256:256:324:384"] = "271599", ["256:174:464:494"] = "271615", ["256:172:378:496"] = "271614", ["128:256:292:319"] = "271633", ["256:256:307:136"] = "271608", ["512:512:195:5"] = "271619, 271602, 271589, 271638", ["256:256:669:228"] = "271586", ["128:256:580:399"] = "271630", ["256:128:243:469"] = "271635", ["128:197:584:471"] = "271598", ["512:512:440:87"] = "271632, 271600, 271617, 271618", ["128:248:511:420"] = "271592", ["256:353:648:315"] = "271587, 271590", ["256:128:255:507"] = "271596",},
@@ -84,14 +229,14 @@ local LeaMapsData = {
 	--[[Bloodmyst Isle]] [111] = {["256:512:44:62"] = "270690, 270729", ["256:256:297:136"] = "270733", ["512:242:177:426"] = "270674, 270731", ["256:256:367:209"] = "270679", ["239:256:763:256"] = "270710", ["256:256:437:258"] = "270698", ["256:256:546:410"] = "270699", ["485:141:517:527"] = "270711, 270723", ["256:256:414:406"] = "270700", ["256:185:309:483"] = "270718", ["256:256:250:404"] = "270739", ["256:256:613:82"] = "270709", ["256:256:598:338"] = "270677", ["256:256:481:117"] = "270720", ["256:256:556:216"] = "270740", ["256:256:657:78"] = "270712", ["128:128:180:216"] = "270671", ["256:256:232:242"] = "270703", ["256:256:637:0"] = "270714", ["256:256:451:29"] = "270734", ["512:430:43:238"] = "270692, 270673, 270702, 270672", ["256:198:503:470"] = "270687", ["256:256:205:39"] = "270701", ["256:256:221:136"] = "270676", ["256:256:293:285"] = "270728", ["256:256:555:87"] = "270741", ["256:256:302:27"] = "270727", ["256:256:729:54"] = "270682",},
 	--[[Darkshore]] [67] = {["328:250:305:118"] = "438266, 438267", ["314:193:280:378"] = "438264, 438265", ["245:147:565:0"] = "438262", ["250:241:596:16"] = "438261", ["203:194:280:182"] = "438259", ["244:201:207:467"] = "438258", ["277:281:391:54"] = "438254, 438255, 438256, 438257", ["330:192:300:239"] = "438252, 438253", ["200:263:517:28"] = "271043, 438260", ["326:145:294:330"] = "271045, 438251", ["303:185:277:483"] = "271044, 438263",},
 	--[[Desolace]] [71] = {["292:266:637:402"] = "271105, 438324, 438325, 438326", ["326:311:381:357"] = "271108, 271112, 271113, 271109", ["274:196:207:472"] = "271122, 438317", ["222:299:142:369"] = "271125, 438327", ["250:215:360:273"] = "271127", ["321:275:170:196"] = "271106, 271129, 438338, 438339", ["220:205:440:49"] = "271111", ["317:293:655:0"] = "271104, 271124, 438322, 438323", ["231:257:573:0"] = "271114, 438320", ["274:145:399:0"] = "271126, 438336", ["212:186:275:376"] = "438337", ["338:342:208:24"] = "438332, 438333, 438334, 438335", ["309:349:589:319"] = "438328, 438329, 438330, 438331", ["161:141:210:0"] = "438321", ["289:244:613:170"] = "438318, 438319", ["312:285:415:156"] = "438313, 438314, 438315, 438316",},
-	--[[Durotar]] [2] = {["259:165:309:0"] = "271435, 271442", ["259:165:309:0"] = "271435, 271442", ["162:157:399:440"] = "440583", ["244:222:282:174"] = "440584", ["208:157:438:0"] = "271427", ["236:196:415:60"] = "271428", ["220:218:295:48"] = "271439", ["248:158:302:264"] = "271422", ["224:227:431:157"] = "271421", ["210:200:462:298"] = "271440", ["330:255:429:413"] = "271437, 440582", ["192:184:457:406"] = "271426", ["254:258:304:312"] = "271443, 440585",},
+	--[[Durotar]] [2] = {["259:165:309:0"] = "271435, 271442", ["162:157:399:440"] = "440583", ["244:222:282:174"] = "440584", ["208:157:438:0"] = "271427", ["236:196:415:60"] = "271428", ["220:218:295:48"] = "271439", ["248:158:302:264"] = "271422", ["224:227:431:157"] = "271421", ["210:200:462:298"] = "271440", ["330:255:429:413"] = "271437, 440582", ["192:184:457:406"] = "271426", ["254:258:304:312"] = "271443, 440585",},
 	--[[Dustwallow Marsh]] [498] = {["206:200:656:21"] = "656197", ["344:183:199:0"] = "656198, 656199", ["270:353:428:0"] = "656230, 656231, 656232, 656233", ["436:299:359:369"] = "656226, 656227, 656228, 656229", ["384:249:133:59"] = "656200, 656201", ["279:301:358:169"] = "656202, 656203, 656204, 656205", ["433:351:109:313"] = "656218, 656219, 656220, 656221", ["305:247:542:223"] = "656224, 656225", ["317:230:137:188"] = "656222, 656223",},
 	--[[Dustwallow Marsh]] [75] = {["433:351:109:313"] = "438401, 438402, 438403, 438404", ["279:301:358:169"] = "438397, 438398, 438399, 438400", ["317:230:137:188"] = "438405, 438406", ["344:183:199:0"] = "438393, 438394", ["305:247:542:223"] = "271500, 438407", ["270:353:428:0"] = "271507, 271504, 438410, 438411", ["384:249:133:59"] = "438395, 438396", ["436:299:359:369"] = "271503, 271509, 438408, 438409", ["206:200:656:21"] = "271494",},
 	--[[Felwood]] [82] = {["307:161:471:0"] = "271660, 438432", ["209:226:531:57"] = "271653", ["261:273:406:55"] = "271673, 438433, 438434, 438435", ["263:199:303:9"] = "271652, 438436", ["343:250:243:107"] = "271665, 438439", ["345:192:220:231"] = "271666, 438430", ["319:176:234:317"] = "271669, 438437", ["268:214:278:359"] = "271664, 438438", ["229:210:288:458"] = "271663", ["274:212:394:382"] = "271659, 438431", ["173:163:410:505"] = "271658", ["187:176:476:484"] = "271657", },
 	--[[Feralas]] [74] = {["159:218:607:170"] = "440592", ["207:209:756:191"] = "271680", ["192:157:663:116"] = "271696", ["174:220:671:181"] = "271675", ["206:237:467:354"] = "271699", ["265:284:485:101"] = "271687, 440587, 440588, 440589", ["194:304:375:343"] = "271700, 271682", ["350:334:271:0"] = "271705, 271686, 440594, 440595", ["208:204:186:229"] = "440593", ["232:206:652:298"] = "440596", ["172:198:568:287"] = "440586", ["217:192:362:237"] = "440590", ["191:179:457:281"] = "440591",},
 	--[[Moonglade]] [85] = {["346:244:370:135"] = "440650, 440651", ["271:296:209:91"] = "440652, 440653, 440654, 440655", ["275:346:542:210"] = "440656, 440657, 440658, 440659", ["431:319:219:273"] = "252844, 252845, 252846, 252847",},
-	--[[Mount Hyjal]] [203] = {["291:321:116:17"] = "438670, 438671, 438672, 438673", ["441:319:52:253"] = "438674, 438675, 438676, 438677", ["270:300:320:5"] = "438632, 438633, 438634, 438635", ["365:264:411:216"] = "438678, 438679, 438680, 438681", ["419:290:318:378"] = "438682, 438683, 438684, 438685", ["270:300:320:5"] = "438632, 438633, 438634, 438635", ["270:300:320:5"] = "438632, 438633, 438634, 438635", ["270:173:303:197"] = "438644, 438645", ["282:418:6:78"] = "438636, 438637, 438638, 438639", ["320:471:682:128"] = "438640, 438641, 438642, 438643", ["272:334:622:320"] = "438646, 438647, 438648, 438649", ["537:323:392:0"] = "438662, 438663, 438664, 438665, 438666, 438667", ["277:232:139:436"] = "438668, 438669",},
-	--[[Mount Hyjal]] [227] = {["270:173:303:197"] = "438698, 438699", ["441:319:52:253"] = "438728, 438729, 438730, 438731", ["270:300:320:5"] = "438686, 438687, 438688, 438689", ["270:300:320:5"] = "438686, 438687, 438688, 438689", ["270:300:320:5"] = "438686, 438687, 438688, 438689", ["419:290:318:378"] = "438736, 438737, 438738, 438739", ["365:264:411:216"] = "438732, 438733, 438734, 438735", ["441:319:52:253"] = "438728, 438729, 438730, 438731", ["291:321:116:17"] = "438724, 438725, 438726, 438727", ["277:232:139:436"] = "438722, 438723", ["537:323:392:0"] = "438716, 438717, 438718, 438719, 438720, 438721", ["272:334:622:320"] = "438700, 438701, 438702, 438703", ["320:471:682:128"] = "438694, 438695, 438696, 438697", ["282:418:6:78"] = "438690, 438691, 438692, 438693", },
+	--[[Mount Hyjal]] [203] = {["291:321:116:17"] = "438670, 438671, 438672, 438673", ["441:319:52:253"] = "438674, 438675, 438676, 438677", ["365:264:411:216"] = "438678, 438679, 438680, 438681", ["419:290:318:378"] = "438682, 438683, 438684, 438685", ["270:300:320:5"] = "438632, 438633, 438634, 438635", ["270:173:303:197"] = "438644, 438645", ["282:418:6:78"] = "438636, 438637, 438638, 438639", ["320:471:682:128"] = "438640, 438641, 438642, 438643", ["272:334:622:320"] = "438646, 438647, 438648, 438649", ["537:323:392:0"] = "438662, 438663, 438664, 438665, 438666, 438667", ["277:232:139:436"] = "438668, 438669",},
+	--[[Mount Hyjal]] [227] = {["270:173:303:197"] = "438698, 438699", ["270:300:320:5"] = "438686, 438687, 438688, 438689", ["419:290:318:378"] = "438736, 438737, 438738, 438739", ["365:264:411:216"] = "438732, 438733, 438734, 438735", ["441:319:52:253"] = "438728, 438729, 438730, 438731", ["291:321:116:17"] = "438724, 438725, 438726, 438727", ["277:232:139:436"] = "438722, 438723", ["537:323:392:0"] = "438716, 438717, 438718, 438719, 438720, 438721", ["272:334:622:320"] = "438700, 438701, 438702, 438703", ["320:471:682:128"] = "438694, 438695, 438696, 438697", ["282:418:6:78"] = "438690, 438691, 438692, 438693", },
 	--[[Mulgore]] [8] = {["174:185:449:340"] = "272180", ["222:202:400:0"] = "272179", ["190:172:331:0"] = "272172", ["201:167:333:202"] = "272178", ["373:259:208:62"] = "272187, 272171, 457476, 457477", ["208:300:530:138"] = "272186, 457475", ["260:243:527:291"] = "272170, 457474", ["186:216:448:101"] = "272177", ["237:184:201:0"] = "457473", ["186:185:514:43"] = "272169", ["446:264:286:401"] = "272168, 272165, 457471, 457472", ["187:165:435:224"] = "272185", ["172:205:248:321"] = "272176", ["302:223:319:273"] = "272173, 457470", ["218:192:226:220"] = "272181",},
 	--[[Northern Barrens]] [11] = {["278:209:511:7"] = "270553, 438214", ["257:249:403:6"] = "270564, 438223", ["261:216:258:6"] = "438216, 438217", ["377:325:152:318"] = "438227, 438228, 438229, 438230", ["241:195:290:104"] = "270554", ["283:270:116:57"] = "270572, 438218, 438219, 438220", ["446:256:100:208"] = "270560, 438221", ["243:217:448:127"] = "270584", ["207:332:555:129"] = "270569, 438215", ["239:231:481:254"] = "270574", ["233:193:362:275"] = "270559", ["336:289:344:379"] = "270565, 438224, 438225, 438226", ["219:175:547:379"] = "270585", ["315:212:556:456"] = "270573, 438222",},
 	--[[Silithus]] [86] = {["580:213:0:455"] = "272564, 272553, 440720", ["489:358:380:310"] = "272567, 272547, 272555, 272548", ["542:367:0:206"] = "272559, 272543, 272574, 272575, 440718, 440719", ["309:243:550:181"] = "272580, 272544", ["405:267:345:4"] = "272565, 272566, 272577, 272546", ["329:246:126:0"] = "272581, 272562", ["434:231:100:151"] = "272573, 272545", ["292:260:427:143"] = "440714, 440715, 440716, 440717", ["315:285:614:0"] = "440721, 440722, 440723, 440724", },
@@ -147,7 +292,7 @@ local LeaMapsData = {
 	--[[Dread Wastes]] [434] = {["325:270:214:311"] = "642666, 642667, 642668, 642669", ["209:318:341:125"] = "642670, 642671", ["322:211:437:313"] = "642672, 642673", ["262:293:191:122"] = "642674, 642675, 642676, 642677", ["323:194:441:224"] = "642678, 642679", ["236:206:458:110"] = "642680", ["325:190:485:0"] = "642681, 642682", ["218:186:236:32"] = "642683", ["268:241:450:406"] = "642684, 642685", ["209:234:593:92"] = "642686", ["290:283:162:385"] = "642687, 642688, 642689, 642690", ["250:218:351:0"] = "642665", },
 	--[[Isle of Thunder]] [521] = {["490:290:256:378"] = "800841, 804116, 804117, 804118", ["278:325:183:95"] = "800842, 800843, 800844, 800845",},
 	--[[Krasarang Wilds]] [430] = {["188:412:397:59"] = "614501,614502", ["190:282:513:3"] = "614482,614483", ["204:383:444:44"] = "614495,614496", ["211:395:125:88"] = "614497,614498", ["212:265:317:63"] = "614493,614494", ["214:393:218:77"] = "614484,614485", ["217:279:589:27"] = "614490,614491", ["219:259:300:215"] = "614499,614500", ["246:240:343:373"] = "614492",	["252:313:23:267"] = "614507,614508", ["257:300:0:79"] = "614503,614504,614505,614506", ["258:170:330:498"] = "614509,614510", ["265:194:545:205"] = "614478,614479", ["272:250:176:376"] = "614480,614481", ["286:268:701:19"] = "614486,614487,614488,614489",	["306:204:612:0"] = "614511,614512",},
-	--[[Krasarang Wilds]] [499] = {["306:204:612:0"] = "660529, 660530", ["258:170:330:498"] = "660527, 660528", ["295:293:701:19"] = "660490, 660491, 660492, 660493", ["275:329:0:267"] = "660523, 660524, 660525, 660526", ["275:329:0:267"] = "660523, 660524, 660525, 660526", ["217:279:589:27"] = "660506, 660507", ["257:300:0:79"] = "660519, 660520, 660521, 660522", ["188:412:397:59"] = "660517, 660518", ["219:259:300:215"] = "660515, 660516", ["347:199:545:200"] = "660482, 660483", ["272:250:176:376"] = "660484, 660485", ["212:265:317:63"] = "660509, 660510", ["190:282:513:3"] = "660486, 660487", ["214:393:218:77"] = "660488, 660489", ["211:395:125:88"] = "660513, 660514", ["204:383:444:44"] = "660511, 660512", ["246:240:343:373"] = "660508",},
+	--[[Krasarang Wilds]] [499] = {["306:204:612:0"] = "660529, 660530", ["258:170:330:498"] = "660527, 660528", ["295:293:701:19"] = "660490, 660491, 660492, 660493", ["275:329:0:267"] = "660523, 660524, 660525, 660526", ["217:279:589:27"] = "660506, 660507", ["257:300:0:79"] = "660519, 660520, 660521, 660522", ["188:412:397:59"] = "660517, 660518", ["219:259:300:215"] = "660515, 660516", ["347:199:545:200"] = "660482, 660483", ["272:250:176:376"] = "660484, 660485", ["212:265:317:63"] = "660509, 660510", ["190:282:513:3"] = "660486, 660487", ["214:393:218:77"] = "660488, 660489", ["211:395:125:88"] = "660513, 660514", ["204:383:444:44"] = "660511, 660512", ["246:240:343:373"] = "660508",},
 	--[[Kun-Lai Summit]] [391] = {["240:198:607:470"] = "614340", ["224:172:322:496"] = "614341", ["261:162:449:506"] = "614342, 614343", ["252:257:233:360"] = "614346, 614347", ["253:208:462:411"] = "614348", ["313:208:228:264"] = "614349, 614350", ["229:262:603:313"] = "614351, 614352", ["287:277:333:63"] = "614353, 614354, 614355, 614356", ["385:385:88:92"] = "614357, 614358, 614359, 614360", ["250:260:587:170"] = "614361, 614362", ["310:276:398:310"] = "614363, 614364, 614365, 614366", ["224:241:453:191"] = "614367", ["298:219:502:64"] = "614368, 614369", ["259:233:602:4"] = "614344, 614345",},
 	--[[The Jade Forest]] [383] = {["210:158:202:0"] = "614297", ["251:348:539:43"] = "614295, 614296", ["219:186:346:482"] = "614294", ["242:210:481:215"] = "614293", ["264:211:468:295"] = "614291, 614292", ["179:180:428:416"] = "614290", ["191:216:388:299"] = "614289", ["196:158:316:0"] = "614288", ["219:205:189:151"] = "614287", ["219:256:290:330"] = "614286", ["236:142:400:146"] = "614285", ["196:166:181:75"] = "614284", ["253:229:182:214"] = "614283", ["278:310:525:358"] = "614279, 614280, 614281, 614282", ["202:204:430:21"] = "614278", ["218:148:474:520"] = "614277", ["234:210:325:178"] = "614276", ["227:198:300:56"] = "614275", },
 	--[[Townlong Steppes]] [400] = {["353:200:546:468"] = "614370, 614371", ["255:269:420:209"] = "614372, 614373", ["247:221:417:447"] = "614374", ["296:359:213:241"] = "614375, 614376, 614377, 614378", ["238:296:560:185"] = "614379, 614380", ["282:306:692:362"] = "614381, 614382, 614383, 614384", ["213:170:413:385"] = "614385", ["300:246:125:0"] = "614386, 614387", ["261:235:306:433"] = "614388, 614389", ["294:283:92:192"] = "614390, 614391, 614392, 614393", ["271:205:545:369"] = "614394, 614395", },
@@ -321,134 +466,738 @@ local LeaMapsData = {
 
 -- Create table to store revealed overlays
 local overlayTextures = {}
--- Function to refresh overlays (Blizzard_SharedMapDataProviders\MapExplorationDataProvider)
-local function RefMap(self, fullUpdate)
-	overlayTextures = {}
-	local mapID = _G.WorldMapFrame.mapID; if not mapID then return end
-	local artID = C_Map_GetMapArtID and C_Map_GetMapArtID(mapID) or mapID
-	local LeaMapsZone = LeaMapsData[artID] or LeaMapsData[mapID]
-	if not LeaMapsZone then return end
 
-	-- Store already explored tiles in a table so they can be ignored
+-- Function to refresh overlays (Blizzard_SharedMapDataProviders\MapExplorationDataProvider)
+function KWM:RefMap(pin, fullUpdate)
+	if wipe then
+		wipe(overlayTextures)
+	else
+		for k in pairs(overlayTextures) do
+			overlayTextures[k] = nil
+		end
+	end
+
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	local mapID = (worldMap.GetMapID and worldMap:GetMapID()) or worldMap.mapID
+	if not mapID then return end
+
+	local artID = C_Map_GetMapArtID and C_Map_GetMapArtID(mapID)
+	if not artID or not LeaMapsData[artID] then return end
+	local LeaMapsZone = LeaMapsData[artID]
+
 	local TileExists = {}
 	local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures and C_MapExplorationInfo_GetExploredMapTextures(mapID)
 	if exploredMapTextures then
-		for i, exploredTextureInfo in T.ipairs(exploredMapTextures) do
+		for i, exploredTextureInfo in ipairs(exploredMapTextures) do
 			local key = exploredTextureInfo.textureWidth .. ":" .. exploredTextureInfo.textureHeight .. ":" .. exploredTextureInfo.offsetX .. ":" .. exploredTextureInfo.offsetY
 			TileExists[key] = true
 		end
 	end
 
-	-- Get the sizes
-	local map = self.GetMap and self:GetMap()
-	local canvas = map and map.GetCanvasContainer and map:GetCanvasContainer()
-	self.layerIndex = canvas and canvas.GetCurrentLayerIndex and canvas:GetCurrentLayerIndex() or 1
+	local map = pin.GetMap and pin:GetMap()
+	if not map then return end
+
+	local canvas = map.GetCanvasContainer and map:GetCanvasContainer()
+	if not canvas or not canvas.GetCurrentLayerIndex then return end
+
+	pin.layerIndex = canvas:GetCurrentLayerIndex()
+
 	local layers = C_Map_GetMapArtLayers and C_Map_GetMapArtLayers(mapID)
-	local layerInfo = layers and layers[self.layerIndex]
-	if not layerInfo then return end
+	if not layers or not layers[pin.layerIndex] then return end
+
+	local layerInfo = layers[pin.layerIndex]
 	local TILE_SIZE_WIDTH = layerInfo.tileWidth
 	local TILE_SIZE_HEIGHT = layerInfo.tileHeight
+	if not TILE_SIZE_WIDTH or not TILE_SIZE_HEIGHT then return end
 
-	-- Show textures if they are in database and have not been explored
-	for key, files in T.pairs(LeaMapsZone) do
+	for key, files in pairs(LeaMapsZone) do
 		if not TileExists[key] then
-			local width, height, offsetX, offsetY = T.string_split(":", key)
-			local fileDataIDs = { T.string_split(",", files) }
-			local numTexturesWide = T.math_ceil(width/TILE_SIZE_WIDTH)
-			local numTexturesTall = T.math_ceil(height/TILE_SIZE_HEIGHT)
-			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
-			for j = 1, numTexturesTall do
-				if ( j < numTexturesTall ) then
-					texturePixelHeight = TILE_SIZE_HEIGHT
-					textureFileHeight = TILE_SIZE_HEIGHT
-				else
-					texturePixelHeight = T.mod(height, TILE_SIZE_HEIGHT)
-					if ( texturePixelHeight == 0 ) then
+			local width, height, offsetX, offsetY = strsplit(":", key)
+			width = tonumber(width)
+			height = tonumber(height)
+			offsetX = tonumber(offsetX)
+			offsetY = tonumber(offsetY)
+
+			if width and height and offsetX and offsetY then
+				local fileDataIDs = { strsplit(",", files) }
+				local numTexturesWide = ceil(width / TILE_SIZE_WIDTH)
+				local numTexturesTall = ceil(height / TILE_SIZE_HEIGHT)
+
+				local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
+
+				for j = 1, numTexturesTall do
+					if j < numTexturesTall then
 						texturePixelHeight = TILE_SIZE_HEIGHT
-					end
-					textureFileHeight = 16
-					while(textureFileHeight < texturePixelHeight) do
-						textureFileHeight = textureFileHeight * 2
-					end
-				end
-				for k = 1, numTexturesWide do
-					local texture = self.overlayTexturePool:Acquire()
-					if ( k < numTexturesWide ) then
-						texturePixelWidth = TILE_SIZE_WIDTH
-						textureFileWidth = TILE_SIZE_WIDTH
+						textureFileHeight = TILE_SIZE_HEIGHT
 					else
-						texturePixelWidth = T.mod(width, TILE_SIZE_WIDTH)
-						if ( texturePixelWidth == 0 ) then
+						texturePixelHeight = fmod(height, TILE_SIZE_HEIGHT)
+						if texturePixelHeight == 0 then
+							texturePixelHeight = TILE_SIZE_HEIGHT
+						end
+
+						textureFileHeight = 16
+						while textureFileHeight < texturePixelHeight do
+							textureFileHeight = textureFileHeight * 2
+						end
+					end
+
+					for k = 1, numTexturesWide do
+						if not pin.overlayTexturePool then return end
+						local texture = pin.overlayTexturePool:Acquire()
+
+						if k < numTexturesWide then
 							texturePixelWidth = TILE_SIZE_WIDTH
+							textureFileWidth = TILE_SIZE_WIDTH
+						else
+							texturePixelWidth = fmod(width, TILE_SIZE_WIDTH)
+							if texturePixelWidth == 0 then
+								texturePixelWidth = TILE_SIZE_WIDTH
+							end
+
+							textureFileWidth = 16
+							while textureFileWidth < texturePixelWidth do
+								textureFileWidth = textureFileWidth * 2
+							end
 						end
-						textureFileWidth = 16
-						while(textureFileWidth < texturePixelWidth) do
-							textureFileWidth = textureFileWidth * 2
+
+						texture:SetSize(texturePixelWidth, texturePixelHeight)
+						texture:SetTexCoord(0, texturePixelWidth / textureFileWidth, 0, texturePixelHeight / textureFileHeight)
+						texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k - 1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
+
+						local fileIndex = ((j - 1) * numTexturesWide) + k
+						local fileID = tonumber(fileDataIDs[fileIndex])
+						if fileID then
+							texture:SetTexture(fileID, nil, nil, "TRILINEAR")
+						else
+							texture:SetTexture(nil)
 						end
-					end
-					texture:SetSize(texturePixelWidth, texturePixelHeight)
-					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight)
-					texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k-1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
-					texture:SetTexture(T.tonumber(fileDataIDs[((j - 1) * numTexturesWide) + k]), nil, nil, "TRILINEAR")
-					texture:SetDrawLayer("ARTWORK", -1)
-					if KWM.db.reveal.enable then
-						texture:Show()
-						if fullUpdate then
-							self.textureLoadGroup:AddTexture(texture)
+
+						texture:SetDrawLayer("ARTWORK", -1)
+
+						if KWM.db.reveal.enable then
+							texture:Show()
+							if fullUpdate and pin.textureLoadGroup then
+								pin.textureLoadGroup:AddTexture(texture)
+							end
+						else
+							texture:Hide()
 						end
-					else
-						texture:Hide()
+
+						if KWM.db.reveal.overlay then
+							local color = KWM.db.reveal.overlayColor
+							texture:SetVertexColor(color.r, color.g, color.b, color.a)
+						else
+							texture:SetVertexColor(1, 1, 1, 1)
+						end
+
+						tinsert(overlayTextures, texture)
 					end
-					if KWM.db.reveal.overlay then
-						local color = KWM.db.reveal.overlayColor
-						texture:SetVertexColor(color.r, color.g, color.b, color.a)
-					end
-					T.table_insert(overlayTextures, texture)
 				end
 			end
 		end
 	end
 end
+function KWM:HookRevealPins()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap or not worldMap.EnumeratePinsByTemplate then return end
 
+	for pin in worldMap:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+		if pin.overlayTexturePool then
+			pin.overlayTexturePool.resetterFunc = TexturePool_ResetVertexColor
+		end
+
+		pin.KlixUIRevealHooked = true
+	end
+end
 -- Reset texture color and alpha
-local function TexturePool_ResetVertexColor(pool, texture)
-	texture:SetVertexColor(1, 1, 1)
+TexturePool_ResetVertexColor = function(pool, texture)
+	texture:SetVertexColor(1, 1, 1, 1)
 	texture:SetAlpha(1)
-	return TexturePool_HideAndClearAnchors(pool, texture)
+
+	if TexturePool_HideAndClearAnchors then
+		return TexturePool_HideAndClearAnchors(pool, texture)
+	end
+
+	texture:Hide()
+	texture:ClearAllPoints()
+	texture:SetTexture(nil)
 end
 
 function KWM:Refresh()
-	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
-		pin:RefreshOverlays(true)
+	local worldMap = _G.WorldMapFrame
+	if not worldMap or not worldMap.EnumeratePinsByTemplate then return end
+
+	self:InitializeReveal()
+
+	for pin in worldMap:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+		if pin.RefreshOverlays then
+			pin:RefreshOverlays(true)
+		end
 	end
+end
+
+function KWM:QueueRevealRefresh()
+	if not self.db or not self.db.reveal.enable then return end
+	if not C_Timer or not C_Timer.After or self.RevealRefreshQueued then
+		self:Refresh()
+		return
+	end
+
+	self.RevealRefreshQueued = true
+
+	local function RefreshReveal()
+		local worldMap = _G.WorldMapFrame
+		if worldMap and worldMap:IsShown() then
+			KWM:Refresh()
+		end
+	end
+
+	C_Timer.After(0, RefreshReveal)
+	C_Timer.After(0.2, RefreshReveal)
+	C_Timer.After(0.6, function()
+		RefreshReveal()
+	end)
+	C_Timer.After(1.0, function()
+		KWM.RevealRefreshQueued = nil
+		RefreshReveal()
+	end)
+end
+
+local function AddUniqueFrame(frames, seen, frame)
+	if not frame or seen[frame] then return end
+	seen[frame] = true
+	frames[#frames + 1] = frame
+end
+
+local function IsWorldMapAddonButton(frame, worldMap)
+	if not frame or frame == worldMap then return false end
+	if frame.IsForbidden and frame:IsForbidden() then return false end
+	if frame.IsProtected and frame:IsProtected() then return false end
+	if not frame.IsShown or not frame:IsShown() then return false end
+	if not frame.GetObjectType then return false end
+
+	local objectType = frame:GetObjectType()
+	if objectType ~= "Button" and objectType ~= "Frame" then
+		return false
+	end
+
+	local width = frame.GetWidth and frame:GetWidth() or 0
+	local height = frame.GetHeight and frame:GetHeight() or 0
+	local size = max(width, height)
+	if size < 16 or size > 84 then
+		return false
+	end
+
+	local name = frame.GetName and frame:GetName() or ""
+	if name ~= "" then
+		local skip = name:find("Close")
+			or name:find("Maximize")
+			or name:find("Minimize")
+			or name:find("Border")
+			or name:find("NavBar")
+			or name:find("Scroll")
+			or name:find("QuestScroll")
+			or name:find("QuestMap")
+			or name:find("Dropdown")
+			or name:find("Options")
+			or name:find("Tracking")
+
+		if skip then
+			return false
+		end
+	end
+
+	local left = frame.GetLeft and frame:GetLeft()
+	local top = frame.GetTop and frame:GetTop()
+	local mapLeft = worldMap.GetLeft and worldMap:GetLeft()
+	local mapTop = worldMap.GetTop and worldMap:GetTop()
+	local mapWidth = worldMap.GetWidth and worldMap:GetWidth() or 0
+	if not left or not top or not mapLeft or not mapTop or mapWidth == 0 then
+		return false
+	end
+
+	local relX = left - mapLeft
+	local relY = mapTop - top
+
+	return relX >= (mapWidth - 260) and relY <= 220
+end
+
+local function CollectWorldMapSearchFrames(parent, frames, seen)
+	if not parent or not parent.GetChildren then return end
+
+	for _, child in ipairs({ parent:GetChildren() }) do
+		if child and child.GetName and child.GetObjectType then
+			local name = child:GetName()
+			local objectType = child:GetObjectType()
+			if name and (name:find("Search") or name:find("EditBox")) and (objectType == "EditBox" or objectType == "Frame") then
+				AddUniqueFrame(frames, seen, child)
+			end
+		end
+	end
+end
+function KWM:LegacyFixWorldMapSearchBox()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	local editBox = worldMap.EditBox
+	if not editBox then return end
+
+	local function Apply()
+		editBox:ClearAllPoints()
+		editBox:SetPoint("TOP", worldMap, "TOP", 0, -400)
+		editBox:SetScale(0.75)
+		editBox:SetFrameStrata("HIGH")
+		editBox:SetFrameLevel(10)
+	end
+
+	Apply()
+
+	-- RareScanner überschreibt → wir setzen es danach nochmal
+	if C_Timer and C_Timer.After then
+		C_Timer.After(0, Apply)
+		C_Timer.After(0.1, Apply)
+		C_Timer.After(0.3, Apply)
+	end
+end
+local function AddUniqueWorldMapFrame(frames, seen, frame)
+	if not frame or seen[frame] then return end
+	seen[frame] = true
+	frames[#frames + 1] = frame
+end
+
+local function GetWorldMapLayoutAnchor(worldMap)
+	if not worldMap then return end
+	if worldMap.GetCanvasContainer then
+		local canvasContainer = worldMap:GetCanvasContainer()
+		if canvasContainer then
+			return canvasContainer
+		end
+	end
+
+	return worldMap.ScrollContainer or worldMap.BorderFrame or worldMap
+end
+
+local function GetWorldMapOptionsAnchor(worldMap)
+	if not worldMap then return end
+
+	return worldMap.WorldMapOptionsDropDown
+		or (worldMap.BorderFrame and worldMap.BorderFrame.WorldMapOptionsDropDown)
+		or worldMap.BorderFrame
+		or GetWorldMapLayoutAnchor(worldMap)
+end
+
+local function GetWorldMapSearchAnchor(worldMap)
+	if not worldMap then return end
+
+	return worldMap.BorderFrame
+		or worldMap.MiniBorderFrame
+		or worldMap
+end
+
+local function GetWorldMapButtonHolder(worldMap)
+	if not worldMap then return end
+
+	if not worldMap.KlixUIAddonButtonHolder then
+		local parent = worldMap.BorderFrame or worldMap
+		local holder = CreateFrame("Frame", nil, parent)
+		holder:SetFrameStrata(worldMap:GetFrameStrata())
+		holder:SetFrameLevel(worldMap:GetFrameLevel() + 40)
+		holder:SetSize(1, 1)
+		worldMap.KlixUIAddonButtonHolder = holder
+	end
+
+	local holder = worldMap.KlixUIAddonButtonHolder
+	holder:ClearAllPoints()
+	holder:SetPoint("TOPRIGHT", worldMap.BorderFrame or worldMap, "TOPRIGHT", WORLDMAP_ADDON_BUTTON_X, WORLDMAP_ADDON_BUTTON_Y)
+	holder:SetFrameStrata(worldMap:GetFrameStrata())
+	holder:SetFrameLevel(worldMap:GetFrameLevel() + 40)
+
+	return holder
+end
+
+local function SkinWorldMapSearchFrame(frame)
+	return frame
+end
+
+local function IsWorldMapSearchFrame(frame, worldMap)
+	if not frame or frame == worldMap then return false end
+	if frame.IsForbidden and frame:IsForbidden() then return false end
+	if not frame.GetObjectType then return false end
+
+	local objectType = frame:GetObjectType()
+	local name = frame.GetName and frame:GetName() or ""
+	local canvasContainer = worldMap.GetCanvasContainer and worldMap:GetCanvasContainer()
+	local parent = frame.GetParent and frame:GetParent()
+
+	if objectType == "Frame" and frame.EditBox and frame.EditBox.GetObjectType and frame.EditBox:GetObjectType() == "EditBox" then
+		local width = frame.GetWidth and frame:GetWidth() or 0
+		local height = frame.GetHeight and frame:GetHeight() or 0
+		if width >= 140 and width <= 260 and height >= 24 and height <= 60 then
+			return frame.relativeFrame == canvasContainer or parent == worldMap or parent == worldMap.BorderFrame or parent == canvasContainer
+		end
+	end
+
+	if objectType == "EditBox" then
+		return name ~= "" and (name:find("Search") or name:find("EditBox"))
+	end
+
+	return name ~= "" and (name:find("Search") or name:find("EditBox")) and objectType == "Frame"
+end
+
+local function IsWorldMapRelatedFrame(frame, worldMap)
+	if not frame or not worldMap then return false end
+
+	local canvasContainer = worldMap.GetCanvasContainer and worldMap:GetCanvasContainer()
+	local borderFrame = worldMap.BorderFrame
+	local scrollContainer = worldMap.ScrollContainer
+	local relativeFrame = frame.relativeFrame
+
+	if relativeFrame == worldMap or relativeFrame == borderFrame or relativeFrame == scrollContainer or relativeFrame == canvasContainer then
+		return true
+	end
+
+	local parent = frame.GetParent and frame:GetParent()
+	local depth = 0
+	while parent and depth < 5 do
+		if parent == worldMap or parent == borderFrame or parent == scrollContainer or parent == canvasContainer then
+			return true
+		end
+
+		if parent == UIParent then
+			break
+		end
+
+		parent = parent.GetParent and parent:GetParent()
+		depth = depth + 1
+	end
+
+	return false
+end
+
+local function IsManagedWorldMapAddonButton(frame, worldMap)
+	if not frame or frame == worldMap then return false end
+	if frame.IsForbidden and frame:IsForbidden() then return false end
+	if frame.IsProtected and frame:IsProtected() then return false end
+	if not frame.IsShown or not frame:IsShown() then return false end
+	if not frame.GetObjectType then return false end
+
+	local objectType = frame:GetObjectType()
+	if objectType ~= "Button" and objectType ~= "Frame" then
+		return false
+	end
+
+	if frame.EditBox then
+		return false
+	end
+
+	local width = frame.GetWidth and frame:GetWidth() or 0
+	local height = frame.GetHeight and frame:GetHeight() or 0
+	local size = max(width, height)
+	if size < 16 or size > 96 then
+		return false
+	end
+
+	local name = frame.GetName and frame:GetName() or ""
+	if name ~= "" then
+		local skip = name:find("Close")
+			or name:find("Maximize")
+			or name:find("Minimize")
+			or name:find("Border")
+			or name:find("NavBar")
+			or name:find("Scroll")
+			or name:find("QuestScroll")
+			or name:find("QuestMap")
+			or name:find("Dropdown")
+			or name:find("Options")
+			or name:find("Search")
+			or name:find("EditBox")
+
+		if skip then
+			return false
+		end
+	end
+
+	local hasIcon = frame.Icon or frame.icon or frame.IconTexture or (frame.GetNormalTexture and frame:GetNormalTexture())
+	local krowiIndex = frame.KrowiWorldMapButtonsIndex or (name ~= "" and tonumber(name:match("^Krowi_WorldMapButtons(%d+)$")))
+	local isRareScannerButton = name == "RSWorldMapButton"
+	local usesRelativeFrame = frame.relativeFrame ~= nil
+	local isWorldMapRelated = IsWorldMapRelatedFrame(frame, worldMap)
+
+	if not hasIcon and not krowiIndex and not isRareScannerButton and not usesRelativeFrame then
+		return false
+	end
+
+	if not isWorldMapRelated and not krowiIndex and not isRareScannerButton then
+		return false
+	end
+
+	local left = frame.GetLeft and frame:GetLeft()
+	local top = frame.GetTop and frame:GetTop()
+	local mapLeft = worldMap.GetLeft and worldMap:GetLeft()
+	local mapTop = worldMap.GetTop and worldMap:GetTop()
+	local mapWidth = worldMap.GetWidth and worldMap:GetWidth() or 0
+	if not left or not top or not mapLeft or not mapTop or mapWidth == 0 then
+		return false
+	end
+
+	local relX = left - mapLeft
+	local relY = mapTop - top
+
+	if krowiIndex or isRareScannerButton or usesRelativeFrame then
+		return relX >= (mapWidth - 520) and relY <= 240
+	end
+
+	return relX >= (mapWidth - 420) and relY <= 180
+end
+
+local function CollectSearchFrames(parent, frames, seen)
+	if not parent or not parent.GetChildren then return end
+
+	for _, child in ipairs({ parent:GetChildren() }) do
+		if child and IsWorldMapSearchFrame(child, _G.WorldMapFrame) then
+			AddUniqueWorldMapFrame(frames, seen, child)
+		end
+	end
+end
+
+local function CollectManagedWorldMapButtons(parent, worldMap, frames, seen, depth)
+	if not parent or not parent.GetChildren then return end
+	depth = depth or 0
+
+	for _, child in ipairs({ parent:GetChildren() }) do
+		if IsManagedWorldMapAddonButton(child, worldMap) then
+			AddUniqueWorldMapFrame(frames, seen, child)
+		elseif depth < 1 and child and child.GetChildren and not (child.IsForbidden and child:IsForbidden()) then
+			CollectManagedWorldMapButtons(child, worldMap, frames, seen, depth + 1)
+		end
+	end
+end
+
+function KWM:FixWorldMapSearchBox()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+
+	local frames, seen = {}, {}
+	local applied = {}
+	local searchAnchor = GetWorldMapSearchAnchor(worldMap) or worldMap
+
+	AddUniqueWorldMapFrame(frames, seen, worldMap.EditBox)
+	AddUniqueWorldMapFrame(frames, seen, worldMap.SearchBox)
+	AddUniqueWorldMapFrame(frames, seen, worldMap.BorderFrame and worldMap.BorderFrame.SearchBox)
+	AddUniqueWorldMapFrame(frames, seen, _G.QuestScrollFrame and _G.QuestScrollFrame.SearchBox)
+
+	CollectSearchFrames(worldMap, frames, seen)
+	CollectSearchFrames(worldMap.BorderFrame, frames, seen)
+
+	for _, frame in ipairs(frames) do
+		local target = frame
+		if frame and frame:GetObjectType() == "EditBox" and frame.GetParent then
+			local parent = frame:GetParent()
+			if parent and parent.EditBox == frame and IsWorldMapSearchFrame(parent, worldMap) then
+				target = parent
+			end
+		end
+
+		if target and not applied[target] and not (target.IsForbidden and target:IsForbidden()) then
+			applied[target] = true
+			target:ClearAllPoints()
+			target:SetPoint("BOTTOM", searchAnchor, "BOTTOM", 0, WORLDMAP_SEARCH_BOTTOM_OFFSET)
+			target:SetScale(WORLDMAP_SEARCH_SCALE)
+			if target.SetFrameStrata then
+				target:SetFrameStrata("HIGH")
+			end
+			if target.SetFrameLevel then
+				target:SetFrameLevel(worldMap:GetFrameLevel() + 30)
+			end
+			if not target.KlixUIWorldMapSearchHook and target.HookScript then
+				target:HookScript("OnShow", function()
+					KWM:QueueWorldMapLayout()
+				end)
+				target.KlixUIWorldMapSearchHook = true
+			end
+		end
+	end
+end
+
+function KWM:FixWorldMapAddonButtons()
+	local worldMap = _G.WorldMapFrame
+	if not worldMap then return end
+	local anchorFrame = GetWorldMapButtonHolder(worldMap)
+	if not anchorFrame then return end
+	local buttonSize = (self.db and self.db.buttonSize) or WORLDMAP_ADDON_BUTTON_SIZE
+
+	local candidates, seen = {}, {}
+
+	for _, explicitFrame in pairs({
+		_G.RSWorldMapButton,
+		_G.RareScannerWorldMapFrame,
+	}) do
+		if IsManagedWorldMapAddonButton(explicitFrame, worldMap) then
+			AddUniqueWorldMapFrame(candidates, seen, explicitFrame)
+		end
+	end
+
+	for _, overlayFrame in ipairs(worldMap.overlayFrames or {}) do
+		if IsManagedWorldMapAddonButton(overlayFrame, worldMap) then
+			AddUniqueWorldMapFrame(candidates, seen, overlayFrame)
+		end
+	end
+
+	for _, parent in pairs({
+		worldMap,
+		worldMap.BorderFrame,
+		worldMap.ScrollContainer,
+		UIParent,
+	}) do
+		CollectManagedWorldMapButtons(parent, worldMap, candidates, seen)
+	end
+
+	table.sort(candidates, function(a, b)
+		local aName = a.GetName and a:GetName() or ""
+		local bName = b.GetName and b:GetName() or ""
+		local aIndex = a.KrowiWorldMapButtonsIndex or tonumber(aName:match("^Krowi_WorldMapButtons(%d+)$"))
+		local bIndex = b.KrowiWorldMapButtonsIndex or tonumber(bName:match("^Krowi_WorldMapButtons(%d+)$"))
+
+		if aIndex and bIndex and aIndex ~= bIndex then
+			return aIndex < bIndex
+		elseif aIndex or bIndex then
+			return aIndex ~= nil
+		elseif aName ~= bName then
+			return aName < bName
+		end
+
+		local aRight = a.GetRight and a:GetRight() or 0
+		local bRight = b.GetRight and b:GetRight() or 0
+		if aRight ~= bRight then
+			return aRight > bRight
+		end
+
+		local aTop = a.GetTop and a:GetTop() or 0
+		local bTop = b.GetTop and b:GetTop() or 0
+		return aTop > bTop
+	end)
+
+	for index, frame in ipairs(candidates) do
+		local currentScale = frame.GetScale and frame:GetScale() or 1
+		if currentScale == 0 then
+			currentScale = 1
+		end
+
+		local currentSize = max(frame:GetWidth() or 0, frame:GetHeight() or 0) * currentScale
+		local targetScale = currentScale
+		if currentSize > 0 then
+			targetScale = currentScale * (buttonSize / currentSize)
+		end
+
+		frame:ClearAllPoints()
+		frame:SetPoint(
+			"RIGHT",
+			anchorFrame,
+			"RIGHT",
+			-((index - 1) * (buttonSize + WORLDMAP_ADDON_BUTTON_SPACING)),
+			0
+		)
+		frame:SetScale(targetScale)
+		if frame.relativeFrame ~= nil then
+			frame.relativeFrame = anchorFrame
+		end
+		if frame.SetFrameStrata then
+			frame:SetFrameStrata(worldMap:GetFrameStrata())
+		end
+		if frame.SetFrameLevel then
+			frame:SetFrameLevel(worldMap:GetFrameLevel() + 20 + index)
+		end
+	end
+end
+
+function KWM:ApplyWorldMapLayout()
+	self:FixWorldMapSearchBox()
+	self:FixWorldMapAddonButtons()
+end
+
+function KWM:QueueWorldMapLayout()
+	self:ApplyWorldMapLayout()
+
+	if not C_Timer or not C_Timer.After or self.LayoutRefreshQueued then return end
+	self.LayoutRefreshQueued = true
+
+	C_Timer.After(0, function()
+		if _G.WorldMapFrame and _G.WorldMapFrame:IsShown() then
+			KWM:ApplyWorldMapLayout()
+		end
+	end)
+
+	C_Timer.After(0.2, function()
+		if _G.WorldMapFrame and _G.WorldMapFrame:IsShown() then
+			KWM:ApplyWorldMapLayout()
+		end
+	end)
+
+	C_Timer.After(0.6, function()
+		if _G.WorldMapFrame and _G.WorldMapFrame:IsShown() then
+			KWM:ApplyWorldMapLayout()
+		end
+	end)
+
+	C_Timer.After(1.0, function()
+		KWM.LayoutRefreshQueued = nil
+		if _G.WorldMapFrame and _G.WorldMapFrame:IsShown() then
+			KWM:ApplyWorldMapLayout()
+		end
+	end)
 end
 
 function KWM:Update()
-	if KWM.db.reveal.enable then 
-		for i = 1, #overlayTextures  do
-			overlayTextures[i]:Show()
-		end
-	else
-		for i = 1, #overlayTextures  do
-			overlayTextures[i]:Hide()
-		end	
+	self:SetMapScale()
+	self:UpdateMapPosition()
+	self:EnableMapDragging()
+	self:ApplyWorldMapBackdropStyle()
+	self:InitializeReveal()
+
+	if self.db.reveal.enable then
+		self:QueueRevealRefresh()
 	end
+
+	self:QueueWorldMapLayout()
 end
 
 function KWM:Initialize()
-	local worldMap = _G.WorldMapFrame
-	if not worldMap or not worldMap.ScrollContainer then return end
-
+	KUI:DisableModule("KuiWorldMap")
 	KWM.db = E.db.KlixUI.maps.worldmap
-	if not KWM.db then return end
 
-	self:SetMapScale()
-	
-	if KWM.db.reveal and KWM.db.reveal.enable and not T.IsAddOnLoaded("ElvUI_FogRemover") and not T.IsAddOnLoaded("ElvUI_FogofWar") and worldMap.EnumeratePinsByTemplate then
-		for pin in worldMap:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
-			hooksecurefunc(pin, "RefreshOverlays", RefMap)
-			pin.overlayTexturePool.resetterFunc = TexturePool_ResetVertexColor
+	self:Update()
+
+	local worldMap = _G.WorldMapFrame
+	if worldMap and not worldMap.KlixUIWorldMapHooks then
+		worldMap:HookScript("OnShow", function()
+			KWM:Update()
+		end)
+
+		worldMap:HookScript("OnSizeChanged", function()
+			if worldMap:IsShown() then
+				KWM:QueueWorldMapLayout()
+			end
+		end)
+
+		if worldMap.OnMapChanged then
+			hooksecurefunc(worldMap, "OnMapChanged", function()
+				if KWM.db and KWM.db.reveal.enable then
+					KWM:QueueRevealRefresh()
+				end
+				KWM:QueueWorldMapLayout()
+			end)
+		elseif worldMap.RefreshOverlayFrames then
+			hooksecurefunc(worldMap, "RefreshOverlayFrames", function()
+				if KWM.db and KWM.db.reveal.enable then
+					KWM:QueueRevealRefresh()
+				end
+				KWM:QueueWorldMapLayout()
+			end)
 		end
+
+		worldMap.KlixUIWorldMapHooks = true
 	end
 end
 

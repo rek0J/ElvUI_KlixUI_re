@@ -732,7 +732,7 @@ local function Maps()
 					},
 				},
 			},
-			worldmap = {
+			--[[worldmap = {
 				type = "group",
 				name = L["Worldmap"],
 				order = 3,
@@ -754,8 +754,28 @@ local function Maps()
 								min = 0.5, max = 2, step = 0.1,
 								set = function(info, value) E.db.KlixUI.maps.worldmap.scale = value; KWM:SetMapScale() end
 							},
-							worldquests = {
+							buttonSize = {
 								order = 2,
+								type = "range",
+								name = L["Addon Button Size"],
+								min = 18, max = 36, step = 1,
+								set = function(info, value)
+									E.db.KlixUI.maps.worldmap.buttonSize = value
+									KWM:QueueWorldMapLayout()
+								end,
+							},
+							textureScale = {
+								order = 3,
+								type = "range",
+								name = "Background Texture Scale",
+								min = 1, max = 4, step = 0.25,
+								set = function(info, value)
+									E.db.KlixUI.maps.worldmap.textureScale = value
+									KWM:ApplyWorldMapBackdropStyle()
+								end,
+							},
+							worldquests = {
+								order = 4,
 								type = "toggle",
 								name = L["Enhanced World Quests"]..E.NewSign,
 								desc = L["Enhances the regular world quests pins on the world map."],
@@ -767,11 +787,11 @@ local function Maps()
 								end,
 								hidden = function() return E.Mists end,
 							},
-							--[[flightQ = {
+							--[ [flightQ = {
 								order = 3,
 								type = "toggle",
 								name = L["Flight Queue"],
-							},]]
+							},--] ]
 						},
 					},
 					reveal = {
@@ -817,7 +837,7 @@ local function Maps()
 						},
 					},
 				},
-			},
+			},]]
 		},
 	}
 end

@@ -129,6 +129,8 @@ function KUI:LoadCommands()
 	self:RegisterChatCommand("kuidebug", "DebugCommand")
 end
 
+
+
 function KUI:Init()
 	self.initialized = true
 	
@@ -152,6 +154,7 @@ function KUI:Init()
 	self:SetupProfileCallbacks()
 	self:RegisterKuiMedia()
 	self:LoadCommands()
+
 	if E.db.KlixUI.general.splashScreen then
 		self:SplashScreen()
 	end
@@ -185,5 +188,7 @@ function KUI:Init()
 	-- Insert our options table when ElvUI config is loaded
 	EP:RegisterPlugin(addon, self.AddOptions)
 end
+
+
 
 E.Libs.EP:HookInitialize(KUI, KUI.Init)

@@ -964,6 +964,8 @@ P['KlixUI'] = {
 
 		['worldmap'] = {
 			["scale"] = 1,
+			["buttonSize"] = 24,
+			["textureScale"] = 2.25,
 			["worldquests"] = true,
 			["reveal"] = {
 				["enable"] = true,
