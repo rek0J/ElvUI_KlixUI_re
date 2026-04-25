@@ -112,6 +112,8 @@ local function SkinVendorItems(i)
 end
 
 local function UpdateButtonsPositions(isBuyBack)
+	if not searchBox then return end
+
 	local btn
 	local vertSpacing, horizSpacing
 
