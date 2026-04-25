@@ -1,22 +1,45 @@
 local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local UF = E.UnitFrames
 
-local PlayerFrame = _G.PlayerFrame
+local PlayerUnitFrame = _G.ElvUF_Player
+local HookInstalled
+
+local function GetPlayerUnitFrame()
+	local frame = _G.ElvUF_Player or PlayerUnitFrame
+	if frame and frame.ClassPower and frame.Power then
+		PlayerUnitFrame = frame
+		return frame
+	end
+end
 
 local function Reposition(classbar)
 	if not E.db.unitframe.units.player.power.detachFromFrame then return end
 	if E.db.KlixUI.unitframes.powerBar ~= true or E.db.unitframe.units.player.enable ~= true or E.db.unitframe.units.player.power.enable ~= true then return end
-	
-	if not PlayerFrame.CLASSBAR_DETACHED then
+
+	local frame = GetPlayerUnitFrame()
+	if not frame or classbar ~= frame.ClassPower then
+		return
+	end
+
+	if not frame.CLASSBAR_DETACHED then
 		return --No need to reposition
 	end
-	
-	local height = (PlayerFrame.CLASSBAR_SHOWN and 19 or 30)
+
+	local height = (frame.CLASSBAR_SHOWN and 19 or 30)
 	if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
-		ElvUF_Player.Power:SetSize(244, height)
+		frame.Power:SetSize(244, height)
 	else
-		ElvUF_Player.Power:SetSize(245, height)
+		frame.Power:SetSize(245, height)
 	end
+end
+
+local function ForceResourceBarUpdate()
+	local frame = GetPlayerUnitFrame()
+	if not frame or not frame.ClassPower then
+		return
+	end
+
+	UF.ToggleResourceBar(frame.ClassPower)
 end
 
 local f = T.CreateFrame("Frame")
@@ -34,21 +57,12 @@ f:RegisterEvent("UNIT_MODEL_CHANGED")
 f:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent(event)
-		PlayerFrame = ElvUF_Player --Set reference now that ElvUF_Player has been created
-		hooksecurefunc(UF, "ToggleResourceBar", Reposition) --Add hook
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "ACTIVE_TALENT_GROUP_CHANGED" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "UPDATE_SHAPESHIFT_FORM" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "PLAYER_LOGIN" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "UNIT_ENTERED_VEHICLE" or "UNIT_ENTERING_VEHICLE" or "UNIT_EXITED_VEHICLE" or "UNIT_EXITING_VEHICLE" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "PLAYER_GAINS_VEHICLE_DATA" or "PLAYER_LOSES_VEHICLE_DATA" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
-	elseif event == "UNIT_MODEL_CHANGED" or "UNIT_PORTRAIT_CHANGED" then
-		UF.ToggleResourceBar(ElvUF_Player.ClassPower) --Force update
 	end
-end)
 
+	if not HookInstalled then
+		hooksecurefunc(UF, "ToggleResourceBar", Reposition)
+		HookInstalled = true
+	end
+
+	ForceResourceBarUpdate()
+end)

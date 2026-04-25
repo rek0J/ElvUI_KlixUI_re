@@ -11,7 +11,10 @@ local CHALLENGE_MODE = CHALLENGE_MODE
 local Enum = _G.Enum or {}
 local Enum_GarrisonType = Enum.GarrisonType or {}
 local C_Garrison = _G.C_Garrison or {}
+local C_ToyBox = _G.C_ToyBox or {}
 local C_Garrison_IsPlayerInGarrison = C_Garrison.IsPlayerInGarrison or KUI.dummy
+local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
+local C_ToyBox_IsToyUsable = C_ToyBox.IsToyUsable
 local GarrisonType_7_0 = Enum_GarrisonType.Type_7_0
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local GameTooltip, WorldMapFrame = _G.GameTooltip, _G.WorldMapFrame
@@ -60,11 +63,20 @@ local function GetDirection()
 	return anchor, point
 end
 
-LP.Hearthstones = {
+LP.HearthstoneData = {
+	-- MoP Ready
 	{6948}, -- Hearthstone
 	{54452, nil, true}, -- Ethereal Portal
-	{64488, nil, true}, -- The Innkeeper's Daughter
 	{93672, nil, true}, -- Dark Portal
+	{64488, nil, true}, -- The Innkeeper's Daughter
+}
+
+LP.HearthstonesWoD = {
+	-- WoD Ready
+	{6948}, -- Hearthstone
+	{54452, nil, true}, -- Ethereal Portal
+	{93672, nil, true}, -- Dark Portal
+	{64488, nil, true}, -- The Innkeeper's Daughter
 	{142542, nil, true}, -- Tome of Town Portal (Diablo Event)
 	{162973, nil, true}, -- Winter HS
 	{163045, nil, true}, -- Hallow HS
@@ -79,7 +91,7 @@ LP.Hearthstones = {
 }
 
 --{ItemID, ButtonText, isToy}
-LP.PortItems = {
+LP.PortItemData = {
 	{140192, DUNGEON_FLOOR_DALARAN1}, --Dalaran Hearthstone
 	{110560, GARRISON_LOCATION_TOOLTIP}, --Garrison Hearthstone
 	{128353}, --Admiral's Compass
@@ -100,7 +112,7 @@ LP.PortItems = {
 	{139590}, --Scroll of Teleport: Ravenholdt
 }
 
-LP.EngineerItems = {
+LP.EngineerItemData = {
 	{18984, nil, true}, --Dimensional Ripper - Everlook
 	{18986, nil, true}, --Ultrasafe Transporter: Gadgetzan
 	{30542, nil, true}, --Dimensional Ripper - Area 52
@@ -234,6 +246,64 @@ LP.Spells = {
 		[17] = {text = T.GetSpellInfo(159897),icon = KUI:GetIconFromID("spell", 159897),secure = {buttonType = "spell",ID = 159897}, UseTooltip = true},-- Vigilant
 	},
 }
+
+local function IsClientItemAvailable(itemID)
+	return itemID and T.GetItemInfoInstant(itemID) ~= nil
+end
+
+local function BuildAvailableItemEntries(source)
+	local items = {}
+
+	for _, data in T.ipairs(source) do
+		if IsClientItemAvailable(data[1]) then
+			T.table_insert(items, {data[1], data[2], data[3]})
+		end
+	end
+
+	return items
+end
+
+function LP:SyncAvailableItems()
+	LP.Hearthstones = BuildAvailableItemEntries(LP.HearthstoneData)
+	LP.PortItems = BuildAvailableItemEntries(LP.PortItemData)
+	LP.EngineerItems = BuildAvailableItemEntries(LP.EngineerItemData)
+end
+
+function LP:SanitizeHearthstonePriority()
+	if not LP.db or not LP.db.portals then return end
+
+	local availableToys = {}
+	local availableToySet = {}
+	local orderedToys = {}
+	local seen = {}
+	local current = LP.db.portals.hsPrio or ""
+
+	for _, data in T.ipairs(LP.HearthstoneData) do
+		local itemID, _, isToy = data[1], data[2], data[3]
+		local itemKey = T.tostring(itemID)
+
+		if isToy and IsClientItemAvailable(itemID) then
+			availableToySet[itemKey] = true
+			T.table_insert(availableToys, itemKey)
+		end
+	end
+
+	for _, itemKey in T.ipairs({T.string_split(",", current)}) do
+		itemKey = T.tostring(itemKey or "")
+		if itemKey ~= "" and availableToySet[itemKey] and not seen[itemKey] then
+			seen[itemKey] = true
+			T.table_insert(orderedToys, itemKey)
+		end
+	end
+
+	for _, itemKey in T.ipairs(availableToys) do
+		if not seen[itemKey] then
+			T.table_insert(orderedToys, itemKey)
+		end
+	end
+
+	LP.db.portals.hsPrio = T.table_concat(orderedToys, ",")
+end
 
 local function CreateCoords()
 	local x, y = 0, 0
@@ -545,14 +615,59 @@ function LP:Toggle()
 	LP:UNIT_AURA(nil, "player")
 end
 
+local function GetToyDisplayInfo(itemID)
+	if not C_ToyBox_GetToyInfo then return end
+
+	local toyItemID, toyName, toyIcon = C_ToyBox_GetToyInfo(itemID)
+	if toyItemID then
+		return toyItemID, toyName, toyIcon
+	end
+end
+
+local function GetRelocationItemInfo(itemID, isToy, customName)
+	local itemName, itemLink, _, _, _, _, _, _, _, itemIcon = T.GetItemInfo(itemID)
+	if isToy then
+		local _, toyName, toyIcon = GetToyDisplayInfo(itemID)
+		itemName = customName or toyName or itemName
+		itemIcon = toyIcon or itemIcon
+	else
+		itemName = customName or itemName
+	end
+
+	return itemName, itemLink, itemIcon
+end
+
+local function PlayerOwnsToy(itemID)
+	if T.PlayerHasToy and T.PlayerHasToy(itemID) then
+		return true
+	end
+
+	if T.GetItemCount then
+		local itemCount = T.GetItemCount(itemID, true)
+		if itemCount and itemCount > 0 then
+			return true
+		end
+	end
+
+	return false
+end
+
 function LP:PopulateItems()
 	local noItem = false
 
+	LP:SyncAvailableItems()
+
 	for index, data in T.pairs(LP.Hearthstones) do
-		if T.select(2, T.GetItemInfo(data[1])) == nil then noItem = true end
+		local itemName, itemLink = GetRelocationItemInfo(data[1], data[3], data[2])
+		if itemName == nil and itemLink == nil then noItem = true end
 	end
 	for index, data in pairs(LP.PortItems) do
-		if T.select(2, T.GetItemInfo(data[1])) == nil then noItem = true end
+		local itemName, itemLink = GetRelocationItemInfo(data[1], data[3], data[2])
+		if itemName == nil and itemLink == nil then noItem = true end
+	end
+	for index, data in T.pairs(LP.EngineerItems) do
+		local itemName, itemLink = GetRelocationItemInfo(data[1], data[3], data[2])
+		if itemName == nil and itemLink == nil then noItem = true end
 	end
 
 	if noItem then
@@ -562,17 +677,109 @@ function LP:PopulateItems()
 		LP.ListBuilding = false
 		for index, data in T.pairs(LP.Hearthstones) do
 			local id, name, toy = data[1], data[2], data[3]
-			LP.Hearthstones[index] = {text = name or T.GetItemInfo(id), icon = KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
+			local itemName, _, itemIcon = GetRelocationItemInfo(id, toy, name)
+			LP.Hearthstones[index] = {text = itemName, icon = itemIcon or KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
 		end
 		for index, data in T.pairs(LP.PortItems) do
 			local id, name, toy = data[1], data[2], data[3]
-			LP.PortItems[index] = {text = name or T.GetItemInfo(id), icon = KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
+			local itemName, _, itemIcon = GetRelocationItemInfo(id, toy, name)
+			LP.PortItems[index] = {text = itemName, icon = itemIcon or KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
 		end
 		for index, data in T.pairs(LP.EngineerItems) do
 			local id, name, toy = data[1], data[2], data[3]
-			LP.EngineerItems[index] = {text = name or T.GetItemInfo(id), icon = KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
+			local itemName, _, itemIcon = GetRelocationItemInfo(id, toy, name)
+			LP.EngineerItems[index] = {text = itemName, icon = itemIcon or KUI:GetIconFromID("item", id),secure = {buttonType = "item",ID = id, isToy = toy}, UseTooltip = true,}
 		end
 	end
+end
+
+local function HasToyItemInfoPending(itemID)
+	if not PlayerOwnsToy(itemID) then
+		return false
+	end
+
+	local _, toyName, toyIcon = GetToyDisplayInfo(itemID)
+	if toyName and toyIcon then
+		return false
+	end
+
+	local itemName, itemLink = T.GetItemInfo(itemID)
+	return itemName == nil and itemLink == nil
+end
+
+local function IsToyUsableForClient(itemID)
+	if not PlayerOwnsToy(itemID) then
+		return false
+	end
+
+	if C_ToyBox_IsToyUsable then
+		local usable = C_ToyBox_IsToyUsable(itemID)
+		if usable == true then
+			return true
+		end
+	end
+
+	-- Classic-era toy usability APIs can report false negatives. For owned
+	-- hearthstone toys, showing the entry is the safer behaviour.
+	return true
+end
+
+local function IsRelocationItemAvailable(itemID, isToy)
+	if isToy then
+		if PlayerOwnsToy(itemID) then
+			return IsToyUsableForClient(itemID)
+		end
+
+		return KUI:BagSearch(itemID) and T.IsUsableItem(itemID)
+	end
+
+	return KUI:BagSearch(itemID) and T.IsUsableItem(itemID)
+end
+
+local function GetHearthstonePriorityMap()
+	local hsPrio = {T.string_split(",", E.db.KlixUI.locPanel.portals.hsPrio)}
+	local hsRealPrio = {}
+
+	for key = 1, #hsPrio do
+		hsRealPrio[hsPrio[key]] = key
+	end
+
+	return hsRealPrio
+end
+
+function LP:GetAvailableHearthstones()
+	local hearthstones = {}
+	local hsRealPrio = GetHearthstonePriorityMap()
+
+	for index, data in T.ipairs(LP.Hearthstones) do
+		local itemID, isToy = data.secure.ID, data.secure.isToy
+		isToy = LP.db.portals.showToys and isToy
+
+		if not LP.db.portals.ignoreMissingInfo and HasToyItemInfoPending(itemID) then
+			return nil
+		end
+
+		if IsRelocationItemAvailable(itemID, isToy) and data.text then
+			T.table_insert(hearthstones, {
+				data = data,
+				sortIndex = index,
+				isToy = isToy and true or false,
+				priority = hsRealPrio[T.tostring(itemID)] or 9999,
+			})
+		end
+	end
+
+	T.table_sort(hearthstones, function(a, b)
+		if a.isToy ~= b.isToy then
+			return not a.isToy
+		end
+		if a.priority ~= b.priority then
+			return a.priority < b.priority
+		end
+		return a.sortIndex < b.sortIndex
+	end)
+
+	return hearthstones
 end
 
 function LP:ItemList(check)
@@ -580,40 +787,13 @@ function LP:ItemList(check)
 	T.table_insert(LP.MainMenu, {text = ITEMS..":", title = true, nohighlight = true})
 
 	if LP.db.portals.showHearthstones then
-		local priority = 100
-		local ShownHearthstone
-		local tmp = {}
-		local hsPrio = {T.string_split(",", E.db.KlixUI.locPanel.portals.hsPrio)}
-		local hsRealPrio = {}
-		for key = 1, #hsPrio do 
-                          hsRealPrio[hsPrio[key]] = key 
-                end
+		local availableHearthstones = LP:GetAvailableHearthstones()
+		if not availableHearthstones then return false end
 
-		for i = 1, #LP.Hearthstones do
-			local data = LP.Hearthstones[i]
-			local ID, isToy = data.secure.ID, data.secure.isToy
-			isToy = (LP.db.portals.showToys and isToy)
-			if not LP.db.portals.ignoreMissingInfo and ((isToy and T.PlayerHasToy(ID)) and T.C_ToyBox_IsToyUsable(ID) == nil) then return false end
-			if (not isToy and (KUI:BagSearch(ID) and T.IsUsableItem(ID))) or (isToy and (T.PlayerHasToy(ID) and T.C_ToyBox_IsToyUsable(ID))) then
-				if data.text then
-					if not isToy then
-						ShownHearthstone = data
-						break
-					else
-						local curPriorirty = hsRealPrio[T.tostring(ID)]
-						if curPriorirty < priority then
-							priority = curPriorirty
-							ShownHearthstone = data
-						end
-						if priority == 1 then break end
-					end
-				end
-			end
-		end
-
-		if ShownHearthstone then
-			local data = ShownHearthstone
-			local ID, isToy = data.secure.ID, data.secure.isToy
+		for i = 1, #availableHearthstones do
+			local tmp = {}
+			local data = availableHearthstones[i].data
+			local ID = data.secure.ID
 			local cd = DD:GetCooldown("Item", ID)
 			E:CopyTable(tmp, data)
 			if cd or (T.tonumber(cd) and T.tonumber(cd) > 1.5) then
@@ -630,8 +810,8 @@ function LP:ItemList(check)
 		local data = LP.PortItems[i]
 		local ID, isToy = data.secure.ID, data.secure.isToy
 		isToy = (LP.db.portals.showToys and isToy)
-		if not LP.db.portals.ignoreMissingInfo and ((isToy and T.PlayerHasToy(ID)) and T.C_ToyBox_IsToyUsable(ID) == nil) then return false end
-		if ((not isToy and (KUI:BagSearch(ID) and T.IsUsableItem(ID))) or (isToy and (T.PlayerHasToy(ID) and T.C_ToyBox_IsToyUsable(ID)))) then
+		if not LP.db.portals.ignoreMissingInfo and HasToyItemInfoPending(ID) then return false end
+		if IsRelocationItemAvailable(ID, isToy) then
 			if data.text then
 				local cd = DD:GetCooldown("Item", ID)
 				E:CopyTable(tmp, data)
@@ -651,8 +831,8 @@ function LP:ItemList(check)
 			local tmp = {}
 			local data = LP.EngineerItems[i]
 			local ID, isToy = data.secure.ID, data.secure.isToy
-			if not LP.db.portals.ignoreMissingInfo and ((isToy and T.PlayerHasToy(ID)) and T.C_ToyBox_IsToyUsable(ID) == nil) then return false end
-			if (not isToy and (KUI:BagSearch(ID) and T.IsUsableItem(ID))) or (isToy and (T.PlayerHasToy(ID) and T.C_ToyBox_IsToyUsable(ID))) then
+			if not LP.db.portals.ignoreMissingInfo and HasToyItemInfoPending(ID) then return false end
+			if IsRelocationItemAvailable(ID, isToy) then
 				if data.text then
 					local cd = DD:GetCooldown("Item", ID)
 					E:CopyTable(tmp, data)
@@ -822,6 +1002,7 @@ function LP:Initialize()
 	KUI:RegisterDB(self, "locPanel")
 	
 	faction = T.UnitFactionGroup('player')
+	LP:SanitizeHearthstonePriority()
 	LP:PopulateItems()
 	LP:GetProf()
 	

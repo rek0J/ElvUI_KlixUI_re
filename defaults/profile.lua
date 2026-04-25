@@ -898,6 +898,8 @@ P['KlixUI'] = {
 
 			['buttons'] = {
 				["enable"] = true,
+				["buttonStyle"] = "SQUARE",
+				["hideGoldBorder"] = false,
 				["barMouseOver"] = false,
 				["backdrop"] = true,
 				["hideInCombat"] = false,

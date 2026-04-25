@@ -58,10 +58,12 @@ function MI:GMOTD()
 			end
 			
 			if (msg and msg ~= "") and not T.InCombatLockdown() then
+				local guildHeader = guild and T.string_format("|cff00c0fa%s|r", guild) or GUILD
+
 				T.PlaySound(12867) --[[Sound\Interface\alarmclockwarning2.ogg]]
 				gmotd.msg = msg
 				gmotd.text:SetText(msg)
-				gmotd.header:SetText(icon..(T.string_format("|cff00c0fa%s|r", guild))..": ".._G.GUILD_MOTD_LABEL2)
+				gmotd.header:SetText(icon..guildHeader..": ".._G.GUILD_MOTD_LABEL2)
 				local numLines = gmotd.text:GetNumLines()
 				gmotd:SetHeight(20 + (12.2  *numLines))
 				gmotd:Show()

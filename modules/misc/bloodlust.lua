@@ -82,51 +82,39 @@ function KBL:PLAYER_REGEN_ENABLED()
 	KBL:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
-function KBL:PlayCustomSound()
-	local channelVar;
-	if KBL.db.SoundOverride then
-		channelVar = "Master"
-	else
-		channelVar = "SFX"
+local function GetSelectedSoundPath()
+	if KBL.db.faction == "HORDE" then
+		return "Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\bloodlust.mp3"
+	elseif KBL.db.faction == "ALLIANCE" then
+		return "Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\heroism.mp3"
+	elseif KBL.db.faction == "ILLIDAN" then
+		return "Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\illidan.mp3"
+	elseif KBL.db.faction == "CUSTOM" and KBL.db.customSound then
+		return KBL.db.customSound
 	end
-	if KBL.db.UseCustomVolume then
-		if KBL.db.CustomVolume then
-			local cvar = "Sound_"..channelVar.."Volume"
-			local origVolume = T.GetCVar(cvar);
-			T.SetCVar(cvar, KBL.db.CustomVolume/100)
-			if KBL.db.faction == "HORDE" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\bloodlust.mp3", channelVar)
-			elseif KBL.db.faction == "ALLIANCE" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\heroism.mp3", channelVar)
-			elseif KBL.db.faction == "ILLIDAN" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\illidan.mp3", channelVar)
-			elseif KBL.db.faction == "CUSTOM" and KBL.db.customSound then
-				T.PlaySoundFile(KBL.db.customSound, channelVar)
+end
+
+function KBL:PlayCustomSound()
+	local channelVar = KBL.db.SoundOverride and "Master" or "SFX"
+	local soundPath = GetSelectedSoundPath()
+	if not soundPath then return end
+
+	local canOverrideVolume = KBL.db.UseCustomVolume and KBL.db.CustomVolume and not T.InCombatLockdown()
+	if canOverrideVolume then
+		local cvar = "Sound_"..channelVar.."Volume"
+		local origVolume = T.GetCVar(cvar)
+
+		T.SetCVar(cvar, KBL.db.CustomVolume / 100)
+		T.PlaySoundFile(soundPath, channelVar)
+
+		-- There is no reliable sound-finished callback here, so restore after a short delay.
+		T.C_Timer_After(3.5, function()
+			if not T.InCombatLockdown() then
+				T.SetCVar(cvar, origVolume)
 			end
-			-- A bit of a hack. There doesn't appear to be an event indicating the end of a sound, so
-			-- this might not work well for all sounds.
-			T.C_Timer_After(3.5, function() T.SetCVar(cvar,origVolume) end)
-		else
-			if KBL.db.faction == "HORDE" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\bloodlust.mp3", channelVar)
-			elseif KBL.db.faction == "ALLIANCE" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\heroism.mp3", channelVar)
-			elseif KBL.db.faction == "ILLIDAN" then
-				T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\illidan.mp3", channelVar)
-			elseif KBL.db.faction == "CUSTOM" and KBL.db.customSound then
-				T.PlaySoundFile(KBL.db.customSound, channelVar)
-			end
-		end
+		end)
 	else
-		if KBL.db.faction == "HORDE" then
-			T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\bloodlust.mp3", channelVar)
-		elseif KBL.db.faction == "ALLIANCE" then
-			T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\heroism.mp3", channelVar)
-		elseif KBL.db.faction == "ILLIDAN" then
-			T.PlaySoundFile("Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\illidan.mp3", channelVar)
-		elseif KBL.db.faction == "CUSTOM" and KBL.db.customSound then
-			T.PlaySoundFile(KBL.db.customSound, channelVar)
-		end
+		T.PlaySoundFile(soundPath, channelVar)
 	end
 end
 

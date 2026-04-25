@@ -171,22 +171,35 @@ end
 
 local function listInstances()
 	local instanceSelect = _G.EncounterJournal.instanceSelect
+	if not instanceSelect then return end
 
-		local index = 1
-		while true do
-			local bu = instanceSelect.scroll.child.InstanceButtons[index]
-			if not bu then return end
+	local instanceButtons =
+		(instanceSelect.scroll and instanceSelect.scroll.child and instanceSelect.scroll.child.InstanceButtons) or
+		(instanceSelect.scrollChild and instanceSelect.scrollChild.InstanceButtons) or
+		(instanceSelect.ScrollChild and instanceSelect.ScrollChild.InstanceButtons) or
+		(instanceSelect.ScrollContainer and instanceSelect.ScrollContainer.Child and instanceSelect.ScrollContainer.Child.InstanceButtons) or
+		instanceSelect.InstanceButtons or
+		instanceSelect.buttons
+	if not instanceButtons then return end
 
-			bu:SetNormalTexture("")
-			bu:SetHighlightTexture("")
-			bu:SetPushedTexture("")
+	local index = 1
+	while true do
+		local bu = instanceButtons[index]
+		if not bu then return end
+
+		bu:SetNormalTexture("")
+		bu:SetHighlightTexture("")
+		bu:SetPushedTexture("")
+
+		if bu.bgImage then
 			bu.bgImage:SetDrawLayer("BACKGROUND", 1)
-
 			local bg = KS:CreateBG(bu.bgImage)
-		bg:SetPoint("TOPLEFT", 3, -3)
-		bg:SetPoint("BOTTOMRIGHT", -4, 2)
-			index = index + 1
+			bg:SetPoint("TOPLEFT", 3, -3)
+			bg:SetPoint("BOTTOMRIGHT", -4, 2)
 		end
+
+		index = index + 1
+	end
 end
 
 local function SkinEJButton(button)

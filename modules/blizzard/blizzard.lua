@@ -124,9 +124,28 @@ B.SpecialDefaults = {
 
 B.OriginalDefaults = {}
 B.SessionPoints = {}
+B.PendingPositions = {}
 
 local function IsBlizzMoveSupported()
 	return E.Retail or E.TBC or E.Mists
+end
+
+local ProtectedBlizzardFrames = {
+	MultiCastActionBarFrame = true,
+	MultiCastActionBar = true,
+	TotemFrame = true,
+	ShapeshiftBarFrame = true,
+	PossessBarFrame = true,
+}
+
+local function ShouldSkipBlizzMoveFrame(Name)
+	return (E.Mists and Name == "GameMenuFrame") or ProtectedBlizzardFrames[Name]
+end
+
+local function IsFrameProtectedOrForbidden(frame)
+	if not frame then return true end
+	if frame.IsForbidden and frame:IsForbidden() then return true end
+	if frame.IsProtected and frame:IsProtected() then return true end
 end
 
 local function ResolveAnchorParent(parent)
@@ -152,6 +171,16 @@ local function GetAnchorData(frame)
 	return point, parentName or "UIParent", relativePoint, xOfs, yOfs
 end
 
+local function QueuePositionUpdate(frame)
+	if not frame or not frame.GetName then return end
+
+	local Name = frame:GetName()
+	if Name then
+		B.PendingPositions[Name] = true
+		B:RegisterEvent("PLAYER_REGEN_ENABLED", "ApplyPendingPositions")
+	end
+end
+
 local function OnDragStart(self)
 	if T.UnitAffectingCombat("player") then return end -- Not allowed to move in combat, cause reasons.
 	local Name = self:GetName()
@@ -164,7 +193,21 @@ end
 
 --When stop moving (or hiding), remember frame's positions.
 local function OnDragStop(self)
-	self:StopMovingOrSizing()
+	local wasMoving = self.IsMoving
+	if T.InCombatLockdown() then
+		self.IsMoving = false
+		QueuePositionUpdate(self)
+		return
+	end
+
+	if wasMoving and not T.InCombatLockdown() then
+		self:StopMovingOrSizing()
+	end
+
+	if not wasMoving then
+		return
+	end
+
 	local Name = self:GetName()
 	local a, b, c, d, e = GetAnchorData(self)
 
@@ -189,6 +232,11 @@ end
 -- On show set saved position
 local function LoadPosition(self)
 	if self.IsMoving == true then return end
+	if T.InCombatLockdown() then
+		QueuePositionUpdate(self)
+		return
+	end
+
 	local Name = self:GetName()
 	if not self:GetPoint() then -- Some frames don't have set positions when show script runs (e.g. CharacterFrame). For those set default position and save that.
 		if B.SpecialDefaults[Name] then
@@ -226,6 +274,10 @@ end
 --Blizz love to move some frames when stuff happens, so if SetPoint is not passing an additional arg we call SetPoint again with saved position.
 function B:RewritePoint(anchor, parent, point, x, y, KUIcalled)
 	if KUIcalled or self.IsMoving then return end
+	if T.InCombatLockdown() then
+		QueuePositionUpdate(self)
+		return
+	end
 
 	local name = self:GetName()
 	if not E.private.KlixUI.module.blizzmove.remember and B.SessionPoints[name] then
@@ -238,8 +290,14 @@ function B:RewritePoint(anchor, parent, point, x, y, KUIcalled)
 end
 
 function B:MakeMovable(Name)
+	if ShouldSkipBlizzMoveFrame(Name) then return end
+
 	local frame = _G[Name]
 	if not frame then -- Some Blizzard frames are expansion/client specific and simply do not exist on MoP Classic.
+		return
+	end
+
+	if IsFrameProtectedOrForbidden(frame) then
 		return
 	end
 
@@ -255,6 +313,21 @@ function B:MakeMovable(Name)
 	frame:HookScript("OnDragStop", OnDragStop)
 	frame:HookScript("OnHide", OnDragStop)
 	hooksecurefunc(frame, "SetPoint", B.RewritePoint)
+end
+
+function B:ApplyPendingPositions()
+	if T.InCombatLockdown() then return end
+
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+
+	for Name in T.pairs(B.PendingPositions) do
+		B.PendingPositions[Name] = nil
+
+		local frame = _G[Name]
+		if frame and frame:IsShown() then
+			LoadPosition(frame)
+		end
+	end
 end
 
 function B:Addons(event, addon)
@@ -318,16 +391,6 @@ function B:Initialize()
 				end
 			end
 		end
-	end
-
-	if IsBlizzMoveSupported() then
-		--Removing stuff from auto positioning
-		self:Hook('UIParent_ManageFramePosition', function()
-			for i = 1, #B.Frames do
-				local frame = _G[B.Frames[i]]
-				if frame and frame:IsShown() then LoadPosition(frame) end
-			end
-		end, true)
 	end
 
 	B:ErrorFrameSize()

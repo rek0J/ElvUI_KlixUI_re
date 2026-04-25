@@ -669,6 +669,15 @@ function ValidateNumeric(info,val)
     return true
 end
 
+local function GetBonusFilterForDifficulty(difficultyID)
+	local bonusFilter = E.db and E.db.KlixUI and E.db.KlixUI.loot and E.db.KlixUI.loot.bonusFilter
+	if not bonusFilter or not difficultyID then
+		return nil
+	end
+
+	return bonusFilter[difficultyID]
+end
+
 function KBF:LoadingScreen_Enabled()
     if KBF_RollFrame ~= nil then
         KBF_RollFrameDifficultyIdBackup = KBF_RollFrame.difficultyID
@@ -698,8 +707,20 @@ function KBF:BonusRollFrame_OnShow(frame)
         KBF_RollFrame = frame
     end
 
-    if (KBF_RollFrame.difficultyID == 8) then
-        if (E.db.KlixUI.loot.bonusFilter[KBF_RollFrame.difficultyID] == true and KBF_ShowBonusRoll == false) then
+	if KBF_RollFrame.difficultyID == nil and KBF_RollFrameDifficultyIdBackup ~= nil and KBF_RollFrameEndTimeBackup ~= nil and T.time() <= KBF_RollFrameEndTimeBackup then
+		KBF_RollFrame.difficultyID = KBF_RollFrameDifficultyIdBackup
+	end
+	if KBF_RollFrame.encounterID == nil and KBF_RollFrameEncounterIdBackup ~= nil and KBF_RollFrameEndTimeBackup ~= nil and T.time() <= KBF_RollFrameEndTimeBackup then
+		KBF_RollFrame.encounterID = KBF_RollFrameEncounterIdBackup
+	end
+
+	local difficultyID = KBF_RollFrame.difficultyID
+	local encounterID = KBF_RollFrame.encounterID
+	local spellID = KBF_RollFrame.spellID
+	local difficultyFilter = GetBonusFilterForDifficulty(difficultyID)
+
+    if (difficultyID == 8) then
+        if (E.db.KlixUI.loot.bonusFilter[difficultyID] == true and KBF_ShowBonusRoll == false) then
             KBF:HideRoll()
         elseif (E.db.KlixUI.loot.bonusFilter.disableKeystoneLevelToggle == true and KBF_ShowBonusRoll == false) then
             local level = nil
@@ -711,19 +732,19 @@ function KBF:BonusRollFrame_OnShow(frame)
                 KBF:HideRoll()
             end
         end
-     elseif (KBF_RollFrame.difficultyID == 23) then -- Normal mythics
-        if (E.db.KlixUI.loot.bonusFilter[KBF_RollFrame.difficultyID] == true and KBF_ShowBonusRoll == false) then
+     elseif (difficultyID == 23) then -- Normal mythics
+        if (E.db.KlixUI.loot.bonusFilter[difficultyID] == true and KBF_ShowBonusRoll == false) then
             KBF:HideRoll()
         end
-    elseif (KBF_RollFrame.difficultyID == 3) or (KBF_RollFrame.difficultyID == 4) then -- 10 or 25 man normal for MoP raids
-        if (E.db.KlixUI.loot.bonusFilter[14][KBF_RollFrame.spellID] == true and KBF_ShowBonusRoll == false) then
+    elseif (difficultyID == 3) or (difficultyID == 4) then -- 10 or 25 man normal for MoP raids
+        if (spellID and E.db.KlixUI.loot.bonusFilter[14][spellID] == true and KBF_ShowBonusRoll == false) then
             KBF:HideRoll()
         end
-    elseif (KBF_RollFrame.difficultyID == 5) or (KBF_RollFrame.difficultyID == 6) then -- 10 or 25 man heroic for MoP raids
-        if (E.db.KlixUI.loot.bonusFilter[15][KBF_RollFrame.spellID] == true and KBF_ShowBonusRoll == false) then
+    elseif (difficultyID == 5) or (difficultyID == 6) then -- 10 or 25 man heroic for MoP raids
+        if (spellID and E.db.KlixUI.loot.bonusFilter[15][spellID] == true and KBF_ShowBonusRoll == false) then
             KBF:HideRoll()
         end
-    elseif (E.db.KlixUI.loot.bonusFilter[KBF_RollFrame.difficultyID][KBF_RollFrame.encounterID] == true and KBF_ShowBonusRoll == false) or (E.db.KlixUI.loot.bonusFilter[KBF_RollFrame.difficultyID][KBF_RollFrame.spellID] == true and KBF_ShowBonusRoll == false) then -- Raids
+    elseif difficultyFilter and (((encounterID and difficultyFilter[encounterID]) == true and KBF_ShowBonusRoll == false) or ((spellID and difficultyFilter[spellID]) == true and KBF_ShowBonusRoll == false)) then -- Raids
         KBF:HideRoll()
     end
 

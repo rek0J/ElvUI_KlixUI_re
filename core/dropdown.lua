@@ -114,7 +114,7 @@ function KUI:DropDown(list, frame, MenuAnchor, FramePoint, xOffset, yOffset, par
 				btn:SetAttribute("type", btn.secure.buttonType)
 				if btn.secure.buttonType == "item" then
 					local name = T.GetItemInfo(btn.secure.ID)
-					btn:SetAttribute("item", name)
+					btn:SetAttribute("item", name or ("item:" .. btn.secure.ID))
 				elseif btn.secure.buttonType == "spell" then
 					local name = T.GetSpellInfo(btn.secure.ID)
 					btn:SetAttribute("spell", name)
@@ -159,7 +159,16 @@ end
 
 function DD:GetCooldown(CDtype, id)
 	local cd, formatID
-	local start, duration = _G["Get"..CDtype.."Cooldown"](id)
+	local start, duration
+
+	if CDtype == "Item" then
+		start, duration = T.GetItemCooldown(id)
+	elseif CDtype == "Spell" and T.GetSpellCooldown then
+		start, duration = T.GetSpellCooldown(id)
+	end
+
+	start = start or 0
+	duration = duration or 0
 	if start > 0 then
 		cd = duration - (T.GetTime() - start)
 		cd, formatID = E:GetTimeInfo(cd, 0)

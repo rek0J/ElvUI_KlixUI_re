@@ -23,7 +23,61 @@ local function GetElvUILocationTextArgs()
 	return locationTextGroup and locationTextGroup.args
 end
 
+local function GetKnownMinimapButtonTokens()
+	if SMB and SMB.GetKnownButtonTokens then
+		return SMB:GetKnownButtonTokens()
+	end
+
+	return {}
+end
+
+local function GetKnownMinimapButtonValues()
+	local values = {}
+
+	for index, token in T.ipairs(GetKnownMinimapButtonTokens()) do
+		values[index] = token
+	end
+
+	return values
+end
+
+local function CreateMinimapButtonSelector(order, name, listKey, desc, disabled)
+	return {
+		order = order,
+		type = "multiselect",
+		width = "full",
+		name = name,
+		desc = function()
+			local tooltipText = SMB and SMB.GetButtonTokensTooltipText and SMB:GetButtonTokensTooltipText("Detected buttons and tokens.") or ""
+			if desc and desc ~= "" and tooltipText ~= "" then
+				return desc .. "\n\n" .. tooltipText
+			end
+
+			return desc or tooltipText
+		end,
+		values = GetKnownMinimapButtonValues,
+		get = function(info, key)
+			local token = GetKnownMinimapButtonTokens()[key]
+			return SMB and SMB.IsButtonTokenInList and token and SMB:IsButtonTokenInList(listKey, token) or false
+		end,
+		set = function(info, key, value)
+			local token = GetKnownMinimapButtonTokens()[key]
+			if SMB and SMB.SetButtonTokenInList then
+				SMB:SetButtonTokenInList(listKey, token, value)
+			end
+		end,
+		disabled = disabled,
+	}
+end
+
 local function Maps()
+	local minimapButtonsDB = E.db.KlixUI.maps.minimap.buttons
+	local whitelistPriority = KUI:CreateMovableButtons(2, "Button Priority", true, minimapButtonsDB, "whitelist")
+	local collapsedPriority = KUI:CreateMovableButtons(3, "Collapsed Priority", true, minimapButtonsDB, "collapsedButtons")
+
+	whitelistPriority.disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end
+	collapsedPriority.disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable or not E.db.KlixUI.maps.minimap.buttons.enableCollapse end
+
 	E.Options.args.KlixUI.args.modules.args.maps = {
 		order = 17,
 		type = "group",
@@ -168,57 +222,77 @@ local function Maps()
 								name = L["Enable"],
 								set = function(info, value) E.db.KlixUI.maps.minimap.buttons.enable = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 							},
-							space1 = {
+							buttonStyle = {
 								order = 2,
+								type = "select",
+								name = "Button Style",
+								values = {
+									SQUARE = "Square Skinning",
+									ORIGINAL = "Original Style",
+								},
+								desc = "Square keeps the current KlixUI skin. Original keeps the native button art.",
+								set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
+							},
+							hideGoldBorder = {
+								order = 3,
+								type = "toggle",
+								name = "Hide Gold Border",
+								desc = "Hide the original gold ring/border on native minimap buttons.",
+								set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; if SMB.RefreshSettings then SMB:RefreshSettings() else SMB:Update() end end,
+								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable or E.db.KlixUI.maps.minimap.buttons.buttonStyle ~= "ORIGINAL" end,
+							},
+							space1 = {
+								order = 4,
 								type = "description",
 								name = "",
 							},
 							space2 = {
-								order = 3,
+								order = 5,
 								type = "description",
 								name = "",
 							},
 							barMouseOver = {
-								order = 4,
+								order = 6,
 								type = "toggle",
 								name = L["Mouseover"],
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							backdrop = {
-								order = 5,
+								order = 7,
 								type = "toggle",
 								name = L["Bar Backdrop"],
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							hideInCombat = {
-								order = 6,
+								order = 8,
 								type = "toggle",
 								name = L["Hide In Combat"],
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							iconSize = {
-								order = 7,
+								order = 9,
 								type = "range",
 								name = L["Icon Size"],
 								min = 12, max = 48, step = 0.5,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							buttonSpacing = {
-								order = 8,
+								order = 10,
 								type = "range",
 								name = L["Button Spacing"],
 								min = -1, max = 10, step = 1,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							buttonsPerRow = {
-								order = 9,
+								order = 11,
 								type = "range",
 								name = L["Buttons Per Row"],
 								min = 1, max = 12, step = 1,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							sortBy = {
-								order = 10,
+								order = 12,
 								type = "select",
 								name = "Sort By",
 								values = {
@@ -231,7 +305,7 @@ local function Maps()
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							buttonSource = {
-								order = 11,
+								order = 13,
 								type = "select",
 								name = "Button Source",
 								values = {
@@ -243,7 +317,7 @@ local function Maps()
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							growthDirection = {
-								order = 12,
+								order = 14,
 								type = "select",
 								name = "Growth Direction",
 								values = {
@@ -273,26 +347,15 @@ local function Maps()
 								guiInline = true,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 								args = {
-									whitelist = {
+									help = {
 										order = 1,
-										type = "input",
+										type = "description",
 										width = "full",
-										name = "Whitelist",
-										desc = function()
-											return SMB:GetButtonTokensTooltipText("Comma or newline separated button names. Blizzard tokens: TRACKING, MAIL, QUEUE, GARRISON.")
-										end,
-										multiline = 4,
+										name = "Drag entries to change the `By Filtering` order. Click an entry in the priority list to remove it, and use the selector below to add it back.",
 									},
-									blacklist = {
-										order = 2,
-										type = "input",
-										width = "full",
-										name = "Blacklist",
-										desc = function()
-											return SMB:GetButtonTokensTooltipText("Comma or newline separated button names. Blizzard tokens: TRACKING, MAIL, QUEUE, GARRISON.")
-										end,
-										multiline = 4,
-									},
+									whitelistPriority = whitelistPriority,
+									whitelistSelector = CreateMinimapButtonSelector(3, "Enabled Buttons", "whitelist", "Choose which detected buttons are managed by the bar and included in the filter order.", function() return not E.db.KlixUI.maps.minimap.buttons.enable end),
+									blacklistSelector = CreateMinimapButtonSelector(4, "Hidden Buttons", "blacklist", "Buttons selected here stay hidden even when they are otherwise discovered.", function() return not E.db.KlixUI.maps.minimap.buttons.enable end),
 								},
 							},
 							collapse = {
@@ -313,17 +376,15 @@ local function Maps()
 										name = "Start Collapsed",
 										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enableCollapse end,
 									},
-									collapsedButtons = {
+									collapseHelp = {
 										order = 3,
-										type = "input",
+										type = "description",
 										width = "full",
-										name = "Collapsed Buttons",
-										desc = function()
-											return SMB:GetButtonTokensTooltipText("Only these buttons stay visible while collapsed. Use names or TRACKING, MAIL, QUEUE, GARRISON.")
-										end,
-										multiline = 4,
+										name = "Only the buttons in this list stay visible while the bar is collapsed. Drag to change order, click to remove, and use the selector below to add buttons back.",
 										disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enableCollapse end,
 									},
+									collapsedPriority = collapsedPriority,
+									collapsedSelector = CreateMinimapButtonSelector(4, "Visible While Collapsed", "collapsedButtons", "Choose which detected buttons remain visible while collapsed.", function() return not E.db.KlixUI.maps.minimap.buttons.enable or not E.db.KlixUI.maps.minimap.buttons.enableCollapse end),
 								},
 							},
 							positioning = {

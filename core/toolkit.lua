@@ -22,6 +22,7 @@ local function SafeNamespace(name)
 end
 
 local AuraUtil = SafeNamespace("AuraUtil")
+local C_Container = rawget(_G, "C_Container")
 local C_Map = rawget(_G, "C_Map")
 local C_Timer = rawget(_G, "C_Timer")
 local C_Heirloom = rawget(_G, "C_Heirloom")
@@ -70,6 +71,98 @@ local C_Heirloom = rawget(_G, "C_Heirloom")
 -- local C_TransmogCollection = SafeNamespace("C_TransmogCollection")
 -- local C_VignetteInfo = SafeNamespace("C_VignetteInfo")
 -- local C_WowTokenPublic = SafeNamespace("C_WowTokenPublic")
+
+local function Compat_GetContainerNumSlots(bagID)
+	if GetContainerNumSlots then
+		return GetContainerNumSlots(bagID)
+	end
+
+	if C_Container and C_Container.GetContainerNumSlots then
+		return C_Container.GetContainerNumSlots(bagID)
+	end
+
+	return 0
+end
+
+local function Compat_GetContainerItemInfo(bagID, slotID)
+	if GetContainerItemInfo then
+		return GetContainerItemInfo(bagID, slotID)
+	end
+
+	if C_Container and C_Container.GetContainerItemInfo then
+		local itemInfo, stackCount, isLocked, quality, isReadable, hasLoot, hyperlink, isFiltered, hasNoValue, itemID, isBound = C_Container.GetContainerItemInfo(bagID, slotID)
+		if not itemInfo then return end
+		if type(itemInfo) ~= "table" then
+			return itemInfo, stackCount, isLocked, quality, isReadable, hasLoot, hyperlink, isFiltered, hasNoValue, itemID, isBound
+		end
+
+		return itemInfo.iconFileID or itemInfo.icon,
+			itemInfo.stackCount or itemInfo.stackSize or itemInfo.count,
+			itemInfo.isLocked,
+			itemInfo.quality,
+			itemInfo.isReadable,
+			itemInfo.hasLoot,
+			itemInfo.hyperlink,
+			itemInfo.isFiltered,
+			itemInfo.hasNoValue,
+			itemInfo.itemID,
+			itemInfo.isBound
+	end
+end
+
+local function Compat_GetContainerItemID(bagID, slotID)
+	if GetContainerItemID then
+		return GetContainerItemID(bagID, slotID)
+	end
+
+	if C_Container and C_Container.GetContainerItemID then
+		return C_Container.GetContainerItemID(bagID, slotID)
+	end
+
+	local _, _, _, _, _, _, _, _, _, itemID = Compat_GetContainerItemInfo(bagID, slotID)
+	return itemID
+end
+
+local function Compat_GetContainerItemLink(bagID, slotID)
+	if GetContainerItemLink then
+		return GetContainerItemLink(bagID, slotID)
+	end
+
+	if C_Container and C_Container.GetContainerItemLink then
+		return C_Container.GetContainerItemLink(bagID, slotID)
+	end
+
+	local _, _, _, _, _, _, itemLink = Compat_GetContainerItemInfo(bagID, slotID)
+	return itemLink
+end
+
+local function Compat_GetContainerItemQuestInfo(bagID, slotID)
+	if GetContainerItemQuestInfo then
+		return GetContainerItemQuestInfo(bagID, slotID)
+	end
+
+	if C_Container and C_Container.GetContainerItemQuestInfo then
+		local questInfo, questID, isActive = C_Container.GetContainerItemQuestInfo(bagID, slotID)
+		if type(questInfo) == "table" then
+			return questInfo.isQuestItem, questInfo.questID or questInfo.questId, questInfo.isActive
+		end
+		return questInfo, questID, isActive
+	end
+end
+
+local function Compat_GetContainerItemEquipmentSetInfo(bagID, slotID)
+	if GetContainerItemEquipmentSetInfo then
+		return GetContainerItemEquipmentSetInfo(bagID, slotID)
+	end
+
+	if C_Container and C_Container.GetContainerItemEquipmentSetInfo then
+		local inSet, setList = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
+		if type(inSet) == "table" then
+			return inSet.isInSet, inSet.setList
+		end
+		return inSet, setList
+	end
+end
 
 T.AbbreviateNumbers = AbbreviateNumbers
 T.abs = abs
@@ -228,12 +321,12 @@ T.GetCombatRatingBonus = GetCombatRatingBonus
 T.GetCombatRatingBonusForCombatRatingValue = GetCombatRatingBonusForCombatRatingValue
 T.GetComparisonAchievementPoints = GetComparisonAchievementPoints
 T.GetComparisonStatistic = GetComparisonStatistic
-T.GetContainerItemEquipmentSetInfo = GetContainerItemEquipmentSetInfo
-T.GetContainerItemID = GetContainerItemID
-T.GetContainerItemInfo = GetContainerItemInfo
-T.GetContainerItemLink = GetContainerItemLink
-T.GetContainerItemQuestInfo = GetContainerItemQuestInfo
-T.GetContainerNumSlots = GetContainerNumSlots
+T.GetContainerItemEquipmentSetInfo = Compat_GetContainerItemEquipmentSetInfo
+T.GetContainerItemID = Compat_GetContainerItemID
+T.GetContainerItemInfo = Compat_GetContainerItemInfo
+T.GetContainerItemLink = Compat_GetContainerItemLink
+T.GetContainerItemQuestInfo = Compat_GetContainerItemQuestInfo
+T.GetContainerNumSlots = Compat_GetContainerNumSlots
 T.GetCritChance = GetCritChance
 T.GetCritChanceProvidesParryEffect = GetCritChanceProvidesParryEffect
 T.GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
@@ -590,7 +683,7 @@ T.PanelTemplates_TabResize = PanelTemplates_TabResize
 T.PaperDollFrame_SetItemLevel = PaperDollFrame_SetItemLevel
 T.PaperDollFrame_SetLabelAndText = PaperDollFrame_SetLabelAndText
 T.pcall = pcall
-T.PickupContainerItem = PickupContainerItem
+T.PickupContainerItem = PickupContainerItem or (C_Container and C_Container.PickupContainerItem) or KUI.dummy
 T.PickupMacro = PickupMacro
 T.PlaceAuctionBid = PlaceAuctionBid
 T.PlayerHasToy = PlayerHasToy
@@ -782,7 +875,7 @@ T.unpack = unpack
 T.UnregisterStateDriver = UnregisterStateDriver
 T.UpdateAddOnCPUUsage = UpdateAddOnCPUUsage
 T.UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
-T.UseContainerItem = UseContainerItem
+T.UseContainerItem = UseContainerItem or (C_Container and C_Container.UseContainerItem) or KUI.dummy
 T.UseItemByName = UseItemByName
 T.VehicleSeatIndicator_SetUpVehicle = VehicleSeatIndicator_SetUpVehicle
 T.WardrobeCollectionFrame_OpenTransmogLink = WardrobeCollectionFrame_OpenTransmogLink
@@ -1147,8 +1240,15 @@ function KUI:CreateMovableButtons(Order, Name, CanRemove, db, key)
 			moveItemFrom, moveItemTo = nil, nil
 		end,
 		dragGetTitle = function(info, TEXT)
-			local text = T.GetItemInfo(T.tonumber(TEXT))
-			return text or TEXT
+			local itemID = T.tonumber(TEXT)
+			if itemID then
+				local text = T.GetItemInfo(itemID)
+				if text then
+					return text
+				end
+			end
+
+			return TEXT
 		end,
 		values = function()
 			local str = db[key]
