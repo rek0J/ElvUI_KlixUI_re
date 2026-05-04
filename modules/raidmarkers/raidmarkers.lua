@@ -71,6 +71,13 @@ function RMA:CreateButtons()
 end
 
 function RMA:UpdateWorldMarkersAndTooltips()
+	if T.InCombatLockdown() then
+		KUI:RunOutOfCombat("RaidMarkers:UpdateWorldMarkersAndTooltips", function()
+			RMA:UpdateWorldMarkersAndTooltips()
+		end)
+		return
+	end
+
 	for i = 1, 9 do
 		local target, worldmarker = layouts[i].RT, layouts[i].WM
 		local button = self.frame.buttons[i]
@@ -113,6 +120,13 @@ function RMA:UpdateWorldMarkersAndTooltips()
 end
 
 function RMA:UpdateBar(update)
+	if T.InCombatLockdown() then
+		KUI:RunOutOfCombat("RaidMarkers:UpdateBar", function()
+			RMA:UpdateBar(update)
+		end)
+		return
+	end
+
 	local height, width
 
 	if RMA.db.orientation == "VERTICAL" then
@@ -157,14 +171,17 @@ function RMA:UpdateBar(update)
 end
 
 function RMA:Visibility()
-	if RMA.db.enable then
-		T.RegisterStateDriver(self.frame, "visibility", RMA.db.visibility == 'CUSTOM' and RMA.db.customVisibility or RMA.VisibilityStates[RMA.db.visibility])
-		E:EnableMover(self.frame.mover:GetName())
-	else
-		T.UnregisterStateDriver(self.frame, "visibility")
-		self.frame:Hide()
-		E:DisableMover(self.frame.mover:GetName())
-	end
+	KUI:RunOutOfCombat("RaidMarkers:Visibility", function()
+		if not KUI:IsFrameSafe(self.frame) then return end
+		if RMA.db.enable then
+			T.RegisterStateDriver(self.frame, "visibility", RMA.db.visibility == 'CUSTOM' and RMA.db.customVisibility or RMA.VisibilityStates[RMA.db.visibility])
+			E:EnableMover(self.frame.mover:GetName())
+		else
+			T.UnregisterStateDriver(self.frame, "visibility")
+			self.frame:Hide()
+			E:DisableMover(self.frame.mover:GetName())
+		end
+	end)
 end
 
 function RMA:UpdateMouseover()
@@ -181,6 +198,13 @@ function RMA:Backdrop()
 end
 
 function RMA:AutoMark()
+	if T.InCombatLockdown() then
+		KUI:RunOutOfCombat("RaidMarkers:AutoMark", function()
+			RMA:AutoMark()
+		end)
+		return
+	end
+
 	if T.IsAddOnLoaded("DejaAutoMark") or not E.db.KlixUI.raidmarkers.automark.enable then return end
 	if T.IsInRaid() then 
 		return

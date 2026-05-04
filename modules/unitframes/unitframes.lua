@@ -41,6 +41,13 @@ function KUF:StyleUFs()
 end
 
 function KUF:UpdateUF()
+	if T.InCombatLockdown() then
+		KUI:RunOutOfCombat("KuiUnits:UpdateUF", function()
+			KUF:UpdateUF()
+		end)
+		return
+	end
+
 	if E.db.unitframe.units.player.enable then
 		KUF:ArrangePlayer()
 	end
@@ -92,6 +99,19 @@ function KUF:Configure_RaidIcon(frame)
     tex.SetTexture = E.noop
 end
 
+function KUF:StyleTransparentHealth(frame, key)
+	if not frame or not frame.Health or frame.isStyled then return end
+
+	local frameName = frame.GetName and frame:GetName()
+	KUI:RunOutOfCombat("KuiUnits:StyleTransparentHealth:"..(key or "UnitFrame")..":"..(frameName or tostring(frame)), function()
+		if not KUI:IsFrameSafe(frame) or not frame.Health or frame.isStyled then return end
+		if E.db.unitframe.colors.transparentHealth and E.db.KlixUI.unitframes.style then
+			frame.Health:Styling(false, false, true)
+			frame.isStyled = true
+		end
+	end)
+end
+
 function KUF:AddShouldIAttackIcon(frame)
 	if not frame then return end
 	
@@ -114,13 +134,16 @@ function KUF:AddShouldIAttackIcon(frame)
 	tag:RegisterEvent("UNIT_COMBAT")
 	
 	tag:SetScript("OnEvent", function()
-		if tag.db.enable and not T.UnitIsDeadOrGhost("target") and T.UnitCanAttack("player", "target") and T.UnitIsTapDenied("target") then
-			tag:ClearAllPoints()
-			tag:Point(tag.db.point or "TOPLEFT", frame, tag.db.relativePoint or "CENTER", tag.db.xOffset or 1, tag.db.yOffset or 0)
-			tag:Show()
-		else
-			tag:Hide()
-		end	
+		KUI:RunOutOfCombat("KuiUnits:AddShouldIAttackIcon", function()
+			if not KUI:IsFrameSafe(frame) then return end
+			if tag.db.enable and not T.UnitIsDeadOrGhost("target") and T.UnitCanAttack("player", "target") and T.UnitIsTapDenied("target") then
+				tag:ClearAllPoints()
+				tag:Point(tag.db.point or "TOPLEFT", frame, tag.db.relativePoint or "CENTER", tag.db.xOffset or 1, tag.db.yOffset or 0)
+				tag:Show()
+			else
+				tag:Hide()
+			end
+		end)
 	end)
 end
 

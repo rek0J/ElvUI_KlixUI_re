@@ -8,6 +8,7 @@ local LO = E:GetModule('Layout')
 -- Lua functions
 local _G = _G
 local pairs, unpack = pairs, unpack
+local max, type = math.max, type
 local format = format
 local time = time
 local BetterDate = BetterDate
@@ -51,7 +52,12 @@ end
 local CreatedFrames = 0;
 
 local function Style(self, frame)
-	CreatedFrames = frame:GetID()
+	if not frame then return end
+
+	local id = frame:GetID()
+	if type(id) == "number" then
+		CreatedFrames = max(CreatedFrames, id)
+	end
 end
 
 
@@ -68,6 +74,81 @@ end
 
 --Replacement of chat tab position and size function
 local PixelOff = E.PixelMode and 33 or 27
+local MIN_CHAT_WIDTH, MIN_CHAT_HEIGHT = 100, 50
+
+local function IsNumber(value)
+	return type(value) == "number"
+end
+
+local function HasValidChatGeometry(chat)
+	if not chat or not chat.GetLeft or not chat.GetTop or not chat.GetWidth or not chat.GetHeight then return false end
+
+	return IsNumber(chat:GetLeft()) and IsNumber(chat:GetTop()) and IsNumber(chat:GetWidth()) and IsNumber(chat:GetHeight())
+end
+
+local function IsChatBeingMoved(chat, tab)
+	return (chat and (chat.isMoving or chat.isMovingOrSizing)) or (tab and (tab.isMoving or tab.isMovingOrSizing))
+end
+
+local RightChatAnchors = {
+	RightChatPanel = true,
+	RightChatDataPanel = true,
+	RightChatTab = true,
+	RightChatToggleButton = true,
+	RightChatMover = true,
+}
+
+local LeftChatAnchors = {
+	LeftChatPanel = true,
+	LeftChatDataPanel = true,
+	LeftChatTab = true,
+	LeftChatToggleButton = true,
+	LeftChatMover = true,
+}
+
+local function IsAnchoredTo(chat, anchors)
+	if not chat or not chat.GetNumPoints then return false end
+
+	for i = 1, chat:GetNumPoints() do
+		local _, relativeTo = chat:GetPoint(i)
+		local name = relativeTo and relativeTo.GetName and relativeTo:GetName()
+		if name and anchors[name] then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function IsOnRightSide(chat)
+	if not chat or not chat.GetRight then return false end
+
+	local right = chat:GetRight()
+	local screenWidth = UIParent and UIParent.GetWidth and UIParent:GetWidth()
+	return IsNumber(right) and IsNumber(screenWidth) and right > (screenWidth * 0.5)
+end
+
+local function IsRightChatFrame(chat, id)
+	return id ~= 1 and (id == CH.RightChatWindowID or IsAnchoredTo(chat, RightChatAnchors) or IsOnRightSide(chat))
+end
+
+local function IsLeftChatFrame(chat, id)
+	return id == 1 or IsAnchoredTo(chat, LeftChatAnchors)
+end
+
+local function SetChatFrameLayout(chat, point, anchor, relativePoint, x, y, width, height)
+	if not chat or not anchor then return end
+
+	chat:ClearAllPoints()
+	chat:Point(point, anchor, relativePoint, x, y)
+	chat:Size(max(width or MIN_CHAT_WIDTH, MIN_CHAT_WIDTH), max(height or MIN_CHAT_HEIGHT, MIN_CHAT_HEIGHT))
+
+	if not HasValidChatGeometry(chat) then
+		chat:ClearAllPoints()
+		chat:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 4)
+		chat:SetSize(max(width or MIN_CHAT_WIDTH, MIN_CHAT_WIDTH), max(height or MIN_CHAT_HEIGHT, MIN_CHAT_HEIGHT))
+	end
+end
 
 local function PositionChat(self, override)
 	if ((InCombatLockdown() and not override and self.initialMove) or (IsMouseButtonDown("LeftButton") and not override)) then return end
@@ -82,28 +163,30 @@ local function PositionChat(self, override)
 	local chat, id, tab, isDocked
 	for i=1, CreatedFrames do
 		chat = _G[format("ChatFrame%d", i)]
-		id = chat:GetID()
-		tab = _G[format("ChatFrame%sTab", i)]
-		isDocked = chat.isDocked
+		if chat then
+			id = chat:GetID()
+			tab = _G[format("ChatFrame%sTab", i)]
+			isDocked = chat.isDocked
 
-		if chat:IsShown() and not (id > NUM_CHAT_WINDOWS) and id == CH.RightChatWindowID then
-			chat:ClearAllPoints()
-			if E.db.datatexts.rightChatPanel then
-				chat:Point("BOTTOMRIGHT", RightChatDataPanel, "TOPRIGHT", 10, 3)
-			else
-				BASE_OFFSET = BASE_OFFSET - 24
-				chat:Point("BOTTOMLEFT", RightChatPanel, "BOTTOMLEFT", 4, 4)
-			end
-			if id ~= 2 then
-				chat:Size((E.db.chat.separateSizes and E.db.chat.panelWidthRight or E.db.chat.panelWidth) - 10, ((E.db.chat.separateSizes and E.db.chat.panelHeightRight or E.db.chat.panelHeight) - PixelOff))
-			end
-		elseif not isDocked and chat:IsShown() then
-			chat:SetAlpha(1)
-		else
-			if id ~= 2 and not (id > NUM_CHAT_WINDOWS) then
-				BASE_OFFSET = BASE_OFFSET - 24
-				chat:Point("BOTTOMLEFT", LeftChatPanel, "BOTTOMLEFT", 4, 4)
-				chat:Size(E.db.chat.panelWidth - 10, E.db.chat.panelHeight - PixelOff)
+			if IsNumber(id) and not (id > NUM_CHAT_WINDOWS) then
+				if IsChatBeingMoved(chat, tab) and not override then return end
+
+				if chat:IsShown() and isDocked and IsRightChatFrame(chat, id) then
+					if E.db.datatexts.rightChatPanel then
+						SetChatFrameLayout(chat, "BOTTOMRIGHT", RightChatDataPanel, "TOPRIGHT", 10, 3, (E.db.chat.separateSizes and E.db.chat.panelWidthRight or E.db.chat.panelWidth) - 10, (E.db.chat.separateSizes and E.db.chat.panelHeightRight or E.db.chat.panelHeight) - PixelOff)
+					else
+						BASE_OFFSET = BASE_OFFSET - 24
+						SetChatFrameLayout(chat, "BOTTOMLEFT", RightChatPanel, "BOTTOMLEFT", 4, 4, (E.db.chat.separateSizes and E.db.chat.panelWidthRight or E.db.chat.panelWidth) - 10, (E.db.chat.separateSizes and E.db.chat.panelHeightRight or E.db.chat.panelHeight) - PixelOff)
+					end
+				elseif not isDocked and chat:IsShown() then
+					chat:SetAlpha(1)
+					if not HasValidChatGeometry(chat) then
+						SetChatFrameLayout(chat, "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 4, E.db.chat.panelWidth - 10, E.db.chat.panelHeight - PixelOff)
+					end
+				elseif chat:IsShown() and isDocked and id ~= 2 and IsLeftChatFrame(chat, id) then
+					BASE_OFFSET = BASE_OFFSET - 24
+					SetChatFrameLayout(chat, "BOTTOMLEFT", LeftChatPanel, "BOTTOMLEFT", 4, 4, E.db.chat.panelWidth - 10, E.db.chat.panelHeight - PixelOff)
+				end
 			end
 		end
 	end

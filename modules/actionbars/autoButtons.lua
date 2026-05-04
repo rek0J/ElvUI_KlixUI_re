@@ -170,6 +170,13 @@ local function AutoButtonHide(AutoButton)
 end
 
 local function HideAllButton(event)
+    if T.InCombatLockdown() then
+        KUI:RunOutOfCombat("AutoButtons:HideAllButton", function()
+            HideAllButton(event)
+        end)
+        return
+    end
+
     local i, k = 1, 1
 
     for i = k, 12 do
@@ -292,6 +299,13 @@ local function CreateButton(name, size)
 end
 
 function ABS:ScanItem(event)
+    if T.InCombatLockdown() then
+        KUI:RunOutOfCombat("AutoButtons:ScanItem", function()
+            ABS:ScanItem(event)
+        end)
+        return
+    end
+
     local db = E.db.KlixUI.actionbars.autoButtons
 
     HideAllButton(event)
@@ -559,6 +573,13 @@ end
 
 local buttonTypes = { "quest", "slot" }
 function ABS:UpdateAutoButton()
+    if T.InCombatLockdown() then
+        KUI:RunOutOfCombat("AutoButtons:UpdateAutoButton", function()
+            ABS:UpdateAutoButton()
+        end)
+        return
+    end
+
     local i = 0
     local lastButton, lastColumnButton, buttonsPerRow
     if ABS.db.questAutoButtons.enable == true then

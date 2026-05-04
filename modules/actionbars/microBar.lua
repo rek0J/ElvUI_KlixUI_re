@@ -18,6 +18,23 @@ local function ToggleElvUIOptions()
 	end
 end
 
+local function OpenStoreSafely()
+	if T.InCombatLockdown() then return end
+
+	if E.Mists then
+		KUI:Print("The in-game shop cannot be opened safely by KlixUI on MoP Classic. Please use the Blizzard UI.")
+		return
+	end
+
+	if _G.ToggleStoreUI then
+		_G.ToggleStoreUI()
+	elseif _G.StoreFrame_Show then
+		_G.StoreFrame_Show()
+	else
+		KUI:Print("The in-game shop is not available on this client.")
+	end
+end
+
 local function OnHover(button)
 if not MB.db.highlight.enable then return end
 	local buttonHighlight = "Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\highlight"
@@ -402,7 +419,16 @@ function MB:CreateMicroBar()
 
 	encounterButton:SetScript("OnEnter", function(self) OnHover(self) end)
 	encounterButton:SetScript("OnLeave", function(self) OnLeave(self) end)
-	encounterButton:SetScript("OnClick", function(self) if T.InCombatLockdown() then return end _G["ToggleEncounterJournal"]() end)
+	encounterButton:SetScript("OnClick", function(self)
+		if T.InCombatLockdown() then return end
+		local LoadAddOn = T.LoadAddOn or _G.LoadAddOn
+		if not _G.ToggleEncounterJournal and LoadAddOn then
+			LoadAddOn("Blizzard_EncounterJournal")
+		end
+		if _G.ToggleEncounterJournal then
+			_G.ToggleEncounterJournal()
+		end
+	end)
 
 	--QuestLog
 	local questButton = T.CreateFrame("Button", nil, microBar)
@@ -650,9 +676,17 @@ function MB:CreateMicroBar()
 	shopButton.text:SetTextColor(KUI:unpackColor(E.db.general.valuecolor))
 	end
 
-	shopButton:SetScript("OnEnter", function(self) OnHover(self) end)
+	shopButton:SetScript("OnEnter", function(self)
+		OnHover(self)
+		if E.Mists then
+			_G.GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+			_G.GameTooltip:AddLine(BLIZZARD_STORE)
+			_G.GameTooltip:AddLine("Use the Blizzard UI to open the shop on MoP Classic.", 1, 1, 1, true)
+			_G.GameTooltip:Show()
+		end
+	end)
 	shopButton:SetScript("OnLeave", function(self) OnLeave(self) end)
-	shopButton:SetScript("OnClick", function(self) if T.InCombatLockdown() then return end StoreMicroButton:Click() end)
+	shopButton:SetScript("OnClick", OpenStoreSafely)
 
 	--Bug
 	local bugButton = T.CreateFrame("Button", nil, microBar)

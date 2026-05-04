@@ -4,6 +4,53 @@ local S = E:GetModule('Skins')
 
 local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 
+local function SafeHide(frame)
+	if frame and frame.Hide then
+		frame:Hide()
+	end
+end
+
+local function SafeKill(frame)
+	if frame and frame.Kill then
+		frame:Kill()
+	elseif frame and frame.Hide then
+		frame:Hide()
+	end
+end
+
+local function SafeSetAlpha(frame, alpha)
+	if frame and frame.SetAlpha then
+		frame:SetAlpha(alpha)
+	end
+end
+
+local function SafeSetTextColor(fontString, ...)
+	if not fontString or not fontString.SetTextColor then return end
+	if fontString.IsObjectType and not fontString:IsObjectType("FontString") then
+		return
+	end
+
+	pcall(fontString.SetTextColor, fontString, ...)
+end
+
+local function SafeSetFontObject(fontString, fontObject)
+	if fontString and fontString.SetFontObject then
+		fontString:SetFontObject(fontObject)
+	end
+end
+
+local function SafeDisableDrawLayer(frame, layer)
+	if frame and frame.DisableDrawLayer then
+		frame:DisableDrawLayer(layer)
+	end
+end
+
+local function SafeReskin(button)
+	if button and KS and KS.Reskin then
+		KS:Reskin(button)
+	end
+end
+
 local function SafeHook(target, method, func)
 	if type(target) == "string" then
 		if type(_G[target]) == "function" and type(method) == "function" then
@@ -36,34 +83,37 @@ local function SkinBosses()
 end
 
 local function SkinOverviewInfo(self, _, index)
-	local header = self.overviews[index]
+	local header = self and self.overviews and self.overviews[index]
 	if not header or not header.button or header.isSkinned then return end
 	if not header.isSkinned then
 
-		header.descriptionBG:SetAlpha(0)
-		header.descriptionBGBottom:SetAlpha(0)
+		SafeSetAlpha(header.descriptionBG, 0)
+		SafeSetAlpha(header.descriptionBGBottom, 0)
 		for i = 4, 18 do
-			T.select(i, header.button:GetRegions()):SetTexture()
+			local region = T.select(i, header.button:GetRegions())
+			if region and region.SetTexture then
+				region:SetTexture()
+			end
 		end
 
 		S:HandleButton(header.button)
 
-		header.button.title:SetTextColor(T.unpack(E["media"].rgbvaluecolor))
-		header.button.title.SetTextColor = E.noop
-		header.button.expandedIcon:SetTextColor(1, 1, 1)
-		header.button.expandedIcon.SetTextColor = E.noop
+		SafeSetTextColor(header.button.title, T.unpack(E["media"].rgbvaluecolor))
+		if header.button.title then header.button.title.SetTextColor = E.noop end
+		SafeSetTextColor(header.button.expandedIcon, 1, 1, 1)
+		if header.button.expandedIcon then header.button.expandedIcon.SetTextColor = E.noop end
 
 		header.isSkinned = true
 	end
 end
 
 local function SkinOverviewInfoBullets(object)
-	local parent = object:GetParent()
+	local parent = object and object.GetParent and object:GetParent()
 
-	if parent.Bullets then
+	if parent and parent.Bullets then
 		for _, bullet in T.pairs(parent.Bullets) do
 			if not bullet.styled then
-				bullet.Text:SetTextColor(1, 1, 1)
+				SafeSetTextColor(bullet.Text, 1, 1, 1)
 				bullet.styled = true
 			end
 		end
@@ -75,19 +125,22 @@ local function SkinAbilitiesInfo()
 	local header = _G["EncounterJournalInfoHeader"..index]
 	while header do
 		if header.button and not header.isSkinned then
-			header.flashAnim.Play = E.noop
+			if header.flashAnim then header.flashAnim.Play = E.noop end
 
-			header.descriptionBG:SetAlpha(0)
-			header.descriptionBGBottom:SetAlpha(0)
+			SafeSetAlpha(header.descriptionBG, 0)
+			SafeSetAlpha(header.descriptionBGBottom, 0)
 			for i = 4, 18 do
-				T.select(i, header.button:GetRegions()):SetTexture()
+				local region = T.select(i, header.button:GetRegions())
+				if region and region.SetTexture then
+					region:SetTexture()
+				end
 			end
 
-			header.description:SetTextColor(1, 1, 1)
-			header.button.title:SetTextColor(T.unpack(E["media"].rgbvaluecolor))
-			header.button.title.SetTextColor = E.noop
-			header.button.expandedIcon:SetTextColor(1, 1, 1)
-			header.button.expandedIcon.SetTextColor = E.noop
+			SafeSetTextColor(header.description, 1, 1, 1)
+			SafeSetTextColor(header.button.title, T.unpack(E["media"].rgbvaluecolor))
+			if header.button.title then header.button.title.SetTextColor = E.noop end
+			SafeSetTextColor(header.button.expandedIcon, 1, 1, 1)
+			if header.button.expandedIcon then header.button.expandedIcon.SetTextColor = E.noop end
 
 			S:HandleButton(header.button)
 
@@ -124,13 +177,14 @@ end
 
 local function styleSearchButton(result, index)
 		if not result then return end
-	local searchBox = _G.EncounterJournal.searchBox
+	local searchBox = _G.EncounterJournal and _G.EncounterJournal.searchBox
 		if not searchBox then return end
 
 		if index == 1 then
 		result:SetPoint("TOPLEFT", searchBox, "BOTTOMLEFT", 0, 1)
 		result:SetPoint("TOPRIGHT", searchBox, "BOTTOMRIGHT", -5, 1)
 		else
+		if not searchBox.searchPreview or not searchBox.searchPreview[index-1] then return end
 		result:SetPoint("TOPLEFT", searchBox.searchPreview[index-1], "BOTTOMLEFT", 0, 1)
 		result:SetPoint("TOPRIGHT", searchBox.searchPreview[index-1], "BOTTOMRIGHT", 0, 1)
 		end
@@ -203,13 +257,15 @@ local function listInstances()
 end
 
 local function SkinEJButton(button)
-	button.UpLeft:SetAlpha(0)
-	button.UpRight:SetAlpha(0)
-	button.DownLeft:SetAlpha(0)
-	button.DownRight:SetAlpha(0)
-	select(5, button:GetRegions()):Hide()
-	select(6, button:GetRegions()):Hide()
-	KS:Reskin(button)
+	if not button then return end
+
+	SafeSetAlpha(button.UpLeft, 0)
+	SafeSetAlpha(button.UpRight, 0)
+	SafeSetAlpha(button.DownLeft, 0)
+	SafeSetAlpha(button.DownRight, 0)
+	SafeHide(select(5, button:GetRegions()))
+	SafeHide(select(6, button:GetRegions()))
+	SafeReskin(button)
 end
 
 function KS:StyleEncounterJournal()
@@ -284,8 +340,8 @@ function KS:StyleEncounterJournal()
 					result:SetPushedTexture("")
 					result:GetRegions():Hide()
 
-					result.resultType:SetTextColor(1, 1, 1)
-					result.path:SetTextColor(1, 1, 1)
+					SafeSetTextColor(result.resultType, 1, 1, 1)
+					SafeSetTextColor(result.path, 1, 1, 1)
 
 					KS:CreateBG(result.icon)
 
@@ -338,157 +394,184 @@ function KS:StyleEncounterJournal()
 	local encounter = EncounterJournal.encounter
 
 	--[[ InstanceFrame ]]
-	_G.EncounterJournalEncounterFrameInstanceFrameLoreScrollFrameScrollChildLore:SetTextColor(1, 1, 1)
+	local instance = encounter and encounter.instance
+	local lore =
+		_G.EncounterJournalEncounterFrameInstanceFrameLoreScrollFrameScrollChildLore or
+		(instance and instance.loreScroll and instance.loreScroll.child and instance.loreScroll.child.lore)
+	SafeSetTextColor(lore, 1, 1, 1)
 
 	--[[ Info ]]
-	local info = encounter.info
-	info:DisableDrawLayer("BACKGROUND")
+	local info = encounter and encounter.info
+	if info then
+		SafeDisableDrawLayer(info, "BACKGROUND")
 
-	info.encounterTitle:SetTextColor(1, 1, 1)
+		SafeSetTextColor(info.encounterTitle, 1, 1, 1)
 
-	SkinEJButton(info.difficulty)
+		SkinEJButton(info.difficulty)
 
-	KS:Reskin(info.reset)
+		SafeReskin(info.reset)
 
-	info.detailsScroll.child.description:SetTextColor(1, 1, 1)
+		SafeSetTextColor(info.detailsScroll and info.detailsScroll.child and info.detailsScroll.child.description, 1, 1, 1)
 
-	info.overviewScroll.child.loreDescription:SetTextColor(1, 1, 1)
-	info.overviewScroll.child.header:Hide()
-	_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetFontObject("GameFontNormalLarge")
-	_G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetTextColor(1, 1, 1)
-	info.overviewScroll.child.overviewDescription.Text:SetTextColor(1, 1, 1)
+		local overviewChild = info.overviewScroll and info.overviewScroll.child
+		SafeSetTextColor(overviewChild and overviewChild.loreDescription, 1, 1, 1)
+		SafeHide(overviewChild and overviewChild.header)
+		local overviewTitle = _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle or (overviewChild and overviewChild.title)
+		SafeSetFontObject(overviewTitle, "GameFontNormalLarge")
+		SafeSetTextColor(overviewTitle, 1, 1, 1)
+		SafeSetTextColor(overviewChild and overviewChild.overviewDescription and overviewChild.overviewDescription.Text, 1, 1, 1)
 
-	SkinEJButton(info.lootScroll.filter)
-	SkinEJButton(info.lootScroll.slotFilter)
+		if info.lootScroll then
+			SkinEJButton(info.lootScroll.filter)
+			SkinEJButton(info.lootScroll.slotFilter)
 
-	local encLoot = info.lootScroll.buttons
-	for i = 1, #encLoot do
-		local item = encLoot[i]
+			local encLoot = info.lootScroll.buttons
+			if encLoot then
+				for i = 1, #encLoot do
+					local item = encLoot[i]
 
-		item.boss:SetTextColor(1, 1, 1)
-		item.slot:SetTextColor(1, 1, 1)
-		item.armorType:SetTextColor(1, 1, 1)
+					SafeSetTextColor(item and item.boss, 1, 1, 1)
+					SafeSetTextColor(item and item.slot, 1, 1, 1)
+					SafeSetTextColor(item and item.armorType, 1, 1, 1)
 
-		item.bossTexture:SetAlpha(0)
-		item.bosslessTexture:SetAlpha(0)
+					SafeSetAlpha(item and item.bossTexture, 0)
+					SafeSetAlpha(item and item.bosslessTexture, 0)
 
-		item.icon:SetTexCoord(T.unpack(E.TexCoords))
-		item.icon:SetDrawLayer("OVERLAY")
-		KS:CreateBG(item.icon)
+					if item and item.icon then
+						item.icon:SetTexCoord(T.unpack(E.TexCoords))
+						item.icon:SetDrawLayer("OVERLAY")
+						KS:CreateBG(item.icon)
+					end
 
-		if item.backdrop then
-			item.backdrop:Hide()
+					SafeHide(item and item.backdrop)
+
+					if item and not item.KUIBG then
+						local bg = T.CreateFrame("Frame", nil, item)
+						bg:SetPoint("TOPLEFT")
+						bg:SetPoint("BOTTOMRIGHT", 0, 1)
+						bg:SetFrameLevel(item:GetFrameLevel() - 1)
+						KS:CreateBD(bg, .25)
+						KS:CreateGradient(bg)
+						item.KUIBG = bg
+					end
+				end
+			end
 		end
 
-		local bg = T.CreateFrame("Frame", nil, item)
-		bg:SetPoint("TOPLEFT")
-		bg:SetPoint("BOTTOMRIGHT", 0, 1)
-		bg:SetFrameLevel(item:GetFrameLevel() - 1)
-		KS:CreateBD(bg, .25)
+		if info.model then
+			SafeHide(info.model.dungeonBG)
+		end
+		SafeHide(_G.EncounterJournalEncounterFrameInfoModelFrameShadow)
+		if _G.EncounterJournalEncounterFrameInfoModelFrame then
+			KS:CreateBDFrame(_G.EncounterJournalEncounterFrameInfoModelFrame, .25)
+		end
 
-		KS:CreateGradient(bg)
-	end
+		-- [[ Encounter Info Frame ]]
+		local EncounterInfo = info
 
-	info.model.dungeonBG:Hide()
-	_G.EncounterJournalEncounterFrameInfoModelFrameShadow:Hide()
-	KS:CreateBDFrame(_G.EncounterJournalEncounterFrameInfoModelFrame, .25)
+		SafeKill(_G.EncounterJournalEncounterFrameInfoBG)
+		SafeHide(EncounterInfo.backdrop)
 
-	-- [[ Encounter Info Frame ]]
-	local EncounterInfo = EncounterJournal.encounter.info
+		 --Tabs
+		local tabs = {
+			EncounterInfo.overviewTab,
+			EncounterInfo.lootTab,
+			EncounterInfo.bossTab,
+			EncounterInfo.modelTab,
+		}
 
-	_G.EncounterJournalEncounterFrameInfoBG:Kill()
-	if EncounterInfo.backdrop then
-		EncounterInfo.backdrop:Hide()
-	end
-
-	 --Tabs
-	local tabs = {
-		EncounterInfo.overviewTab,
-		EncounterInfo.lootTab,
-		EncounterInfo.bossTab,
-		EncounterInfo.modelTab,
-	}
-
-	for _, tab in pairs(tabs) do
-		if tab.backdrop then
-			tab.backdrop:SetTemplate("Transparent")
-			tab.backdrop:Styling()
+		for _, tab in pairs(tabs) do
+			if tab and tab.backdrop then
+				tab.backdrop:SetTemplate("Transparent")
+				tab.backdrop:Styling()
+			end
 		end
 	end
 
 	--Encounter Instance Frame
-	local EncounterInstance = EncounterJournal.encounter.instance
-	EncounterInstance.loreScroll.child.lore:SetTextColor(1, 1, 1)
+	local EncounterInstance = instance
+	SafeSetTextColor(EncounterInstance and EncounterInstance.loreScroll and EncounterInstance.loreScroll.child and EncounterInstance.loreScroll.child.lore, 1, 1, 1)
 
-	_G.EncounterJournalEncounterFrameInstanceFrame.titleBG:SetAlpha(0)
+	SafeSetAlpha(_G.EncounterJournalEncounterFrameInstanceFrame and _G.EncounterJournalEncounterFrameInstanceFrame.titleBG, 0)
 
 	-- [[ Loot ]]
-	local LootJournal = _G["EncounterJournal"].LootJournal
-	LootJournal:DisableDrawLayer("BACKGROUND")
+	local LootJournal = EncounterJournal.LootJournal
+	SafeDisableDrawLayer(LootJournal, "BACKGROUND")
 
 	-- ToDo: Update me
 
 	-- [[ SuggestFrame ]]
 	local suggestFrame = EncounterJournal.suggestFrame
-	do
+	if suggestFrame then
 		-- Suggestion 1
 		local suggestion = suggestFrame.Suggestion1
 
-		suggestion.bg:Hide()
-
-		KS:CreateBD(suggestion, .25)
-		KS:CreateGradient(suggestion)
-
-		suggestion.icon:SetPoint("TOPLEFT", 135, -15)
-
-		local centerDisplay = suggestion.centerDisplay
-
-		centerDisplay.title.text:SetTextColor(1, 1, 1)
-		centerDisplay.description.text:SetTextColor(.9, .9, .9)
-
-		KS:Reskin(suggestion.button)
-
-		local reward = suggestion.reward
-
-		reward.text:SetTextColor(.9, .9, .9)
-		reward.iconRing:Hide()
-		reward.iconRingHighlight:SetTexture("")
-
-		-- Suggestion 2 and 3
-		for i = 2, 3 do
-			suggestion = suggestFrame["Suggestion"..i]
-
-			suggestion.bg:Hide()
+		if suggestion then
+			SafeHide(suggestion.bg)
 
 			KS:CreateBD(suggestion, .25)
 			KS:CreateGradient(suggestion)
 
-			suggestion.icon:SetPoint("TOPLEFT", 10, -10)
+			if suggestion.icon then
+				suggestion.icon:SetPoint("TOPLEFT", 135, -15)
+			end
 
-			centerDisplay = suggestion.centerDisplay
+			local centerDisplay = suggestion.centerDisplay
 
-			centerDisplay:ClearAllPoints()
-			centerDisplay:SetPoint("TOPLEFT", 85, -10)
-			centerDisplay.title.text:SetTextColor(1, 1, 1)
-			centerDisplay.description.text:SetTextColor(.9, .9, .9)
+			SafeSetTextColor(centerDisplay and centerDisplay.title and centerDisplay.title.text, 1, 1, 1)
+			SafeSetTextColor(centerDisplay and centerDisplay.description and centerDisplay.description.text, .9, .9, .9)
 
-			reward = suggestion.reward
+			SafeReskin(suggestion.button)
 
-			reward.iconRing:Hide()
-			reward.iconRingHighlight:SetTexture("")
+			local reward = suggestion.reward
+
+			SafeSetTextColor(reward and reward.text, .9, .9, .9)
+			SafeHide(reward and reward.iconRing)
+			if reward and reward.iconRingHighlight then reward.iconRingHighlight:SetTexture("") end
+		end
+
+		-- Suggestion 2 and 3
+		for i = 2, 3 do
+			suggestion = suggestFrame["Suggestion"..i]
+			if suggestion then
+
+				SafeHide(suggestion.bg)
+
+				KS:CreateBD(suggestion, .25)
+				KS:CreateGradient(suggestion)
+
+				if suggestion.icon then
+					suggestion.icon:SetPoint("TOPLEFT", 10, -10)
+				end
+
+				local centerDisplay = suggestion.centerDisplay
+
+				if centerDisplay then
+					centerDisplay:ClearAllPoints()
+					centerDisplay:SetPoint("TOPLEFT", 85, -10)
+				end
+				SafeSetTextColor(centerDisplay and centerDisplay.title and centerDisplay.title.text, 1, 1, 1)
+				SafeSetTextColor(centerDisplay and centerDisplay.description and centerDisplay.description.text, .9, .9, .9)
+
+				local reward = suggestion.reward
+
+				SafeHide(reward and reward.iconRing)
+				if reward and reward.iconRingHighlight then reward.iconRingHighlight:SetTexture("") end
+			end
 		end
 	end
 
 	SafeHook("EJSuggestFrame_RefreshDisplay", function()
 		local self = suggestFrame
+		if not self or not self.suggestions then return end
 
 		if #self.suggestions > 0 then
 			local suggestion = self.Suggestion1
 			local data = self.suggestions[1]
 
-			suggestion.iconRing:Hide()
+			SafeHide(suggestion and suggestion.iconRing)
 
-			if suggestion and data then
+			if suggestion and suggestion.icon and data then
 				suggestion.icon:SetMask("")
 				suggestion.icon:SetTexture(data.iconPath)
 				suggestion.icon:SetTexCoord(T.unpack(E.TexCoords))
@@ -502,9 +585,9 @@ function KS:StyleEncounterJournal()
 
 				local data = self.suggestions[i]
 
-				suggestion.iconRing:Hide()
+				SafeHide(suggestion.iconRing)
 
-				if data.iconPath then
+				if data.iconPath and suggestion.icon then
 					suggestion.icon:SetMask("")
 					suggestion.icon:SetTexture(data.iconPath)
 					suggestion.icon:SetTexCoord(T.unpack(E.TexCoords))
@@ -514,15 +597,18 @@ function KS:StyleEncounterJournal()
 	end)
 
 	SafeHook("EJSuggestFrame_UpdateRewards", function(suggestion)
-		local rewardData = suggestion.reward.data
+		local rewardData = suggestion and suggestion.reward and suggestion.reward.data
 		if rewardData then
 			local texture = rewardData.itemIcon or rewardData.currencyIcon or [[Interface\Icons\achievement_guildperk_mobilebanking]]
+			if not suggestion.reward.icon then return end
 			suggestion.reward.icon:SetMask("")
 			suggestion.reward.icon:SetTexture(texture)
 
-			if not suggestion.reward.icon.backdrop then
+			if not suggestion.reward.icon.backdrop and suggestion.reward.icon.CreateBackdrop then
 				suggestion.reward.icon:CreateBackdrop()
-				suggestion.reward.icon.backdrop:SetOutside(suggestion.reward.icon)
+				if suggestion.reward.icon.backdrop then
+					suggestion.reward.icon.backdrop:SetOutside(suggestion.reward.icon)
+				end
 			end
 
 			if rewardData.itemID then
@@ -531,7 +617,9 @@ function KS:StyleEncounterJournal()
 					r, g, b = T.GetItemQualityColor(quality)
 				end
 			end
-			suggestion.reward.icon.backdrop:SetBackdropBorderColor(r, g, b)
+			if suggestion.reward.icon.backdrop then
+				suggestion.reward.icon.backdrop:SetBackdropBorderColor(r, g, b)
+			end
 		end
 	end)
 

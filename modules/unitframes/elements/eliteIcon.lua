@@ -16,18 +16,20 @@ function KEI:SetEliteIcon()
 	end
 	
 	local targetFrame = _G["ElvUF_Target"]
-	if targetFrame then
-		local parent = targetFrame
-		local anchor = targetFrame.Health or targetFrame
+	KUI:RunOutOfCombat("KuiEliteIcon:SetEliteIcon", function()
+		if targetFrame and KUI:IsFrameSafe(targetFrame) then
+			local parent = targetFrame
+			local anchor = targetFrame.Health or targetFrame
 
-		self.frame:ClearAllPoints()
-		self.frame:Point(KEI.db.point or "CENTER", anchor, KEI.db.relativePoint or "TOPRIGHT", KEI.db.xOffset or -1, KEI.db.yOffset or 0)
-		self.frame:SetParent(parent)
-		self.frame:SetFrameStrata(T.string_sub(KEI.db.strata or "3-MEDIUM", 3))
-		self.frame:SetFrameLevel(KEI.db.level or 12)
-	else
-		self.frame:SetParent(E.UIParent)
-	end
+			self.frame:ClearAllPoints()
+			self.frame:Point(KEI.db.point or "CENTER", anchor, KEI.db.relativePoint or "TOPRIGHT", KEI.db.xOffset or -1, KEI.db.yOffset or 0)
+			self.frame:SetParent(parent)
+			self.frame:SetFrameStrata(T.string_sub(KEI.db.strata or "3-MEDIUM", 3))
+			self.frame:SetFrameLevel(KEI.db.level or 12)
+		else
+			self.frame:SetParent(E.UIParent)
+		end
+	end)
 end
 
 function KEI:Initialize()

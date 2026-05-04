@@ -16,7 +16,6 @@ local function styleWeakAuras()
 					end
 				end
 				frame.icon:SetTexCoord(T.unpack(E.TexCoords))
-				frame.icon.SetTexCoord = KUI.dummy
 			end
 
 			if E.private.KlixUI.skins.WAIconCooldown and frame.cooldown then
@@ -31,7 +30,6 @@ local function styleWeakAuras()
 					frame.bar:Styling()
 				end
 				frame.icon:SetTexCoord(T.unpack(E.TexCoords))
-				frame.icon.SetTexCoord = KUI.dummy
 			end
 		end
 	end

@@ -139,11 +139,16 @@ local ProtectedBlizzardFrames = {
 }
 
 local function ShouldSkipBlizzMoveFrame(Name)
-	return (E.Mists and Name == "GameMenuFrame") or ProtectedBlizzardFrames[Name]
+	if E.Mists and (Name == "GameMenuFrame" or Name == "WorldMapFrame") then return true end
+	if ProtectedBlizzardFrames[Name] then return true end
+	local frame = _G[Name]
+	if frame and KUI:IsUnsafeUnitFrame(frame) then return true end
+	return false
 end
 
 local function IsFrameProtectedOrForbidden(frame)
 	if not frame then return true end
+	if KUI:IsUnsafeUnitFrame(frame) then return true end
 	if frame.IsForbidden and frame:IsForbidden() then return true end
 	if frame.IsProtected and frame:IsProtected() then return true end
 end

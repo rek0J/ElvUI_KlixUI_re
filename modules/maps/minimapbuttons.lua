@@ -256,6 +256,53 @@ local function GetOriginalStyleFootprint(Button, targetSize)
 	return GetNativeVisualSize(Button) * GetOriginalStyleScale(Button, targetSize)
 end
 
+local function ApplyDarkBorder(frame)
+	if not frame then return end
+
+	if frame.SetBackdropBorderColor then
+		frame:SetBackdropBorderColor(0, 0, 0, 1)
+	end
+end
+
+local function ApplySquareButtonBorder(Button)
+	if not Button then return end
+
+	if not Button.backdrop and Button.CreateBackdrop then
+		Button:CreateBackdrop("Default", true)
+	end
+
+	if Button.backdrop then
+		if Button.backdrop.SetTemplate then
+			Button.backdrop:SetTemplate("Default", true)
+		end
+		Button.backdrop:SetFrameStrata(Button:GetFrameStrata())
+		Button.backdrop:SetFrameLevel(max(Button:GetFrameLevel() - 1, 0))
+		ApplyDarkBorder(Button.backdrop)
+		Button.backdrop:Show()
+	end
+end
+
+local function AnchorSquareIcon(Button, texture, isLibDBIcon, left, right, top, bottom)
+	if not Button or not texture or not texture.ClearAllPoints then return end
+
+	local anchor = Button.backdrop or Button
+	texture:SetParent(Button)
+	texture:ClearAllPoints()
+	texture:SetInside(anchor, 2, 2)
+
+	if isLibDBIcon and left ~= nil then
+		texture:SetTexCoord(left, right, top, bottom)
+	elseif isLibDBIcon then
+		texture:SetTexCoord(0, 1, 0, 1)
+	else
+		texture:SetTexCoord(T.unpack(SMB.TexCoords or E.TexCoords))
+	end
+
+	texture:SetDrawLayer(isLibDBIcon and "OVERLAY" or "ARTWORK", 7)
+	texture:SetAlpha(1)
+	texture:Show()
+end
+
 local function SyncTextureState(target, source, left, right, top, bottom)
 	if not target or not source then return end
 
@@ -1199,6 +1246,8 @@ function SMB:SkinMinimapButton(Button)
 		end
 	end
 
+	ApplySquareButtonBorder(Button)
+
 	for i = 1, Button:GetNumRegions() do
 		local Region = T.select(i, Button:GetRegions())
 		if Region.IsObjectType and Region:IsObjectType('Texture') then
@@ -1224,24 +1273,14 @@ function SMB:SkinMinimapButton(Button)
 					Region:SetTexture('Interface\\Icons\\INV_Misc_Rabbit_2')
 				end
 				if Region == IconTexture then
-					local anchor = Button.backdrop or Button
-					Region:ClearAllPoints()
-					Region:SetInside(anchor, 2, 2)
+					AnchorSquareIcon(Button, Region, IsLibDB, left, right, top, bottom)
 					if IsLibDB and left ~= nil then
-						Region:SetTexCoord(left, right, top, bottom)
 						Button:HookScript('OnLeave', function() Region:SetTexCoord(left, right, top, bottom) end)
-						Region:SetDrawLayer('OVERLAY', 7)
 					elseif IsLibDB then
-						Region:SetTexCoord(0, 1, 0, 1)
 						Button:HookScript('OnLeave', function() Region:SetTexCoord(0, 1, 0, 1) end)
-						Region:SetDrawLayer('OVERLAY', 7)
 					else
-						Region:SetTexCoord(T.unpack(self.TexCoords))
 						Button:HookScript('OnLeave', function() Region:SetTexCoord(T.unpack(self.TexCoords)) end)
-						Region:SetDrawLayer('ARTWORK')
 					end
-					Region:SetAlpha(1)
-					Region:Show()
 				end
 			end
 		end
@@ -1269,19 +1308,7 @@ function SMB:SkinMinimapButton(Button)
 	end
 
 	if IconTexture and IconTexture.ClearAllPoints then
-		local anchor = Button.backdrop or Button
-		IconTexture:ClearAllPoints()
-		IconTexture:SetInside(anchor, 2, 2)
-		if IsLibDB and left ~= nil then
-			IconTexture:SetTexCoord(left, right, top, bottom)
-			IconTexture:SetDrawLayer('OVERLAY', 7)
-		elseif IsLibDB then
-			IconTexture:SetTexCoord(0, 1, 0, 1)
-			IconTexture:SetDrawLayer('OVERLAY', 7)
-		else
-			IconTexture:SetTexCoord(T.unpack(self.TexCoords))
-			IconTexture:SetDrawLayer('ARTWORK')
-		end
+		AnchorSquareIcon(Button, IconTexture, IsLibDB, left, right, top, bottom)
 		if IconTexture.SetVertexColor and not IsLibDB then
 			IconTexture:SetVertexColor(1, 1, 1, 1)
 		end
@@ -1291,16 +1318,11 @@ function SMB:SkinMinimapButton(Button)
 		if IconTexture.SetBlendMode and not IsLibDB then
 			IconTexture:SetBlendMode("BLEND")
 		end
-		IconTexture:SetAlpha(1)
-		IconTexture:Show()
 	end
 
 	Button:SetFrameLevel(_G.Minimap:GetFrameLevel() + 5)
 	Button:SetSize(SMB.db.iconSize, SMB.db.iconSize)
-	Button:CreateBackdrop("Default")
-	if Button.backdrop and Button.backdrop.SetTemplate then
-		Button.backdrop:SetTemplate("Default")
-	end
+	ApplySquareButtonBorder(Button)
 	if Button.CreateIconShadow then
 		Button:CreateIconShadow()
 	end
@@ -1313,13 +1335,7 @@ function SMB:SkinMinimapButton(Button)
 	Button.SMBOriginalIcon = OriginalIconTexture
 
 	if Button.SMBOriginalIcon then
-		local anchor = Button.backdrop or Button
-		Button.SMBOriginalIcon:SetParent(Button)
-		Button.SMBOriginalIcon:ClearAllPoints()
-		Button.SMBOriginalIcon:SetInside(anchor, 2, 2)
-		Button.SMBOriginalIcon:SetDrawLayer(IsLibDB and "OVERLAY" or "ARTWORK", 7)
-		Button.SMBOriginalIcon:SetAlpha(1)
-		Button.SMBOriginalIcon:Show()
+		AnchorSquareIcon(Button, Button.SMBOriginalIcon, IsLibDB, left, right, top, bottom)
 	end
 
 	if IsLibDB and Button.SMBIcon then
@@ -1337,22 +1353,14 @@ function SMB:SkinMinimapButton(Button)
 	end)
 	Button:HookScript('OnLeave', function(self)
 		SMB.MouseOver = false
-		if self.backdrop and self.backdrop.SetTemplate then
-			self.backdrop:SetTemplate("Default")
-		end
+		ApplySquareButtonBorder(self)
 		if self.SMBIcon then
 			self.SMBIcon:SetTexture(nil)
 			self.SMBIcon:SetAlpha(0)
 			self.SMBIcon:Hide()
 		end
 		if self.SMBOriginalIcon then
-			local anchor = self.backdrop or self
-			self.SMBOriginalIcon:SetParent(self)
-			self.SMBOriginalIcon:ClearAllPoints()
-			self.SMBOriginalIcon:SetInside(anchor, 2, 2)
-			self.SMBOriginalIcon:SetDrawLayer((self.SMBData and self.SMBData.key and IsLibDBIconButton(self)) and "OVERLAY" or "ARTWORK", 7)
-			self.SMBOriginalIcon:SetAlpha(1)
-			self.SMBOriginalIcon:Show()
+			AnchorSquareIcon(self, self.SMBOriginalIcon, IsLibDBIconButton(self), left, right, top, bottom)
 		end
 		if self.ishadow then
 			self.ishadow:Show()
@@ -1451,8 +1459,14 @@ function SMB:PrepareButtonForLayout(Button, buttonSize)
 	end
 
 	Button:ClearAllPoints()
-	Button:SetSize(buttonSize, buttonSize)
-	Button:SetScale(1)
+	if UseOriginalButtonStyle() then
+		CaptureNativeButtonMetrics(Button)
+		Button:SetSize(Button.SMBNativeWidth or buttonSize, Button.SMBNativeHeight or buttonSize)
+		Button:SetScale(GetOriginalStyleScale(Button, buttonSize))
+	else
+		Button:SetSize(buttonSize, buttonSize)
+		Button:SetScale(1)
+	end
 	Button:SetFrameStrata("MEDIUM")
 	Button:SetFrameLevel(self.Bar:GetFrameLevel() + 1)
 end
@@ -1461,27 +1475,14 @@ function SMB:ApplyButtonStyle(Button)
 	if UseOriginalButtonStyle() then
 		self:ApplyOriginalButtonLook(Button)
 	else
-		Button:CreateBackdrop("Default")
-		if Button.backdrop then
-			if Button.backdrop.SetTemplate then
-				Button.backdrop:SetTemplate("Default")
-			end
-			Button.backdrop:SetFrameStrata(Button:GetFrameStrata())
-			Button.backdrop:SetFrameLevel(max(Button:GetFrameLevel() - 1, 0))
-		end
+		ApplySquareButtonBorder(Button)
 		if Button.SMBIcon then
 			Button.SMBIcon:SetTexture(nil)
 			Button.SMBIcon:SetAlpha(0)
 			Button.SMBIcon:Hide()
 		end
 		if Button.SMBOriginalIcon then
-			local anchor = Button.backdrop or Button
-			Button.SMBOriginalIcon:SetParent(Button)
-			Button.SMBOriginalIcon:ClearAllPoints()
-			Button.SMBOriginalIcon:SetInside(anchor, 2, 2)
-			Button.SMBOriginalIcon:SetDrawLayer(IsLibDBIconButton(Button) and "OVERLAY" or "ARTWORK", 7)
-			Button.SMBOriginalIcon:SetAlpha(1)
-			Button.SMBOriginalIcon:Show()
+			AnchorSquareIcon(Button, Button.SMBOriginalIcon, IsLibDBIconButton(Button), GetTextureTexCoords(Button.SMBOriginalIcon))
 		end
 		if Button.ishadow then
 			Button.ishadow:Show()
@@ -1495,19 +1496,43 @@ end
 function SMB:LayoutButtons(buttons)
 	local buttonSize = self:GetButtonSize()
 	local spacing = self:GetButtonSpacing()
-	local buttonsPerRow = max(self:GetButtonsPerRow(), 1)
+	local buttonsPerRow = max(floor(self:GetButtonsPerRow()), 1)
 	local visibleCount = #buttons
-	local columns = visibleCount > 0 and min(visibleCount, buttonsPerRow) or 0
-	local rows = visibleCount > 0 and ceil(visibleCount / buttonsPerRow) or 0
+	local horizontalFirst, growsRight, growsDown = GetGrowthSettings(self.db.growthDirection)
+	local columns, rows = 0, 0
+
+	if visibleCount > 0 then
+		if horizontalFirst then
+			columns = min(visibleCount, buttonsPerRow)
+			rows = ceil(visibleCount / buttonsPerRow)
+		else
+			rows = min(visibleCount, buttonsPerRow)
+			columns = ceil(visibleCount / buttonsPerRow)
+		end
+	end
+
+	local step = buttonSize + spacing
 
 	for index, Button in ipairs(buttons) do
 		self:PrepareButtonForLayout(Button, buttonSize)
 
 		local position = index - 1
-		local col = position % buttonsPerRow
-		local row = floor(position / buttonsPerRow)
+		local col, row
 
-		Button:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", col * (buttonSize + spacing), -row * (buttonSize + spacing))
+		if horizontalFirst then
+			col = position % buttonsPerRow
+			row = floor(position / buttonsPerRow)
+		else
+			row = position % buttonsPerRow
+			col = floor(position / buttonsPerRow)
+		end
+
+		local visualCol = growsRight and col or (columns - 1 - col)
+		local visualRow = growsDown and row or (rows - 1 - row)
+		local x = (visualCol * step) + (buttonSize / 2)
+		local y = -((visualRow * step) + (buttonSize / 2))
+
+		Button:SetPoint("CENTER", self.Bar, "TOPLEFT", x, y)
 		self:ApplyButtonStyle(Button)
 		Button:SetScript("OnDragStart", nil)
 		Button:SetScript("OnDragStop", nil)

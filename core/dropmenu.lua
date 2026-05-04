@@ -90,7 +90,17 @@ AddMenuItem(MAINMENU_BUTTON, function()
 	end
 end)
 AddMenuItem(HELP_BUTTON, function() ToggleHelpFrame() end)
-AddMenuItem(BLIZZARD_STORE, function() StoreMicroButton:Click() end)
+AddMenuItem(BLIZZARD_STORE, function()
+	if E.Mists then
+		KUI:Print("The in-game shop cannot be opened safely by KlixUI on MoP Classic. Please use the Blizzard UI.")
+	elseif _G.ToggleStoreUI then
+		_G.ToggleStoreUI()
+	elseif _G.StoreFrame_Show then
+		_G.StoreFrame_Show()
+	else
+		KUI:Print("The in-game shop is not available on this client.")
+	end
+end)
 
 local function sortFunction(a, b)
 	return a.text < b.text

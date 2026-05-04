@@ -26,11 +26,14 @@ local function Reposition(classbar)
 	end
 
 	local height = (frame.CLASSBAR_SHOWN and 19 or 30)
-	if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
-		frame.Power:SetSize(244, height)
-	else
-		frame.Power:SetSize(245, height)
-	end
+	KUI:RunOutOfCombat("KuiUnits:PowerBar:Reposition", function()
+		if not KUI:IsFrameSafe(frame) or not frame.Power then return end
+		if T.IsAddOnLoaded("Masque") and T.IsAddOnLoaded("Masque_KlixUI") then
+			frame.Power:SetSize(244, height)
+		else
+			frame.Power:SetSize(245, height)
+		end
+	end)
 end
 
 local function ForceResourceBarUpdate()
@@ -39,7 +42,10 @@ local function ForceResourceBarUpdate()
 		return
 	end
 
-	UF.ToggleResourceBar(frame.ClassPower)
+	KUI:RunOutOfCombat("KuiUnits:PowerBar:ToggleResourceBar", function()
+		if not KUI:IsFrameSafe(frame) then return end
+		UF.ToggleResourceBar(frame.ClassPower)
+	end)
 end
 
 local f = T.CreateFrame("Frame")

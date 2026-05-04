@@ -924,6 +924,97 @@ function KUI:ErrorPrint(msg)
 	T.print("|cffFF0000KlixUI Error:|r", msg)
 end
 
+local combatQueue = {}
+local combatQueueFrame
+
+function KUI:DebugProtectedAction(...)
+	if not self.DebugProtectedActions then return end
+	self:Print(...)
+end
+
+function KUI:IsFrameSafe(frame)
+	if not frame then
+		self.LastUnsafeFrame = "nil"
+		self.LastUnsafeFrameReason = "missing"
+		return false
+	end
+
+	local name = frame.GetName and frame:GetName()
+	if self:IsUnsafeUnitFrame(frame) then
+		self.LastUnsafeFrame = name or tostring(frame)
+		self.LastUnsafeFrameReason = "unsafe-unit-frame"
+		return false
+	end
+
+	if frame.IsForbidden and frame:IsForbidden() then
+		self.LastUnsafeFrame = name or tostring(frame)
+		self.LastUnsafeFrameReason = "forbidden"
+		return false
+	end
+
+	return true
+end
+
+function KUI:IsUnsafeUnitFrame(frame)
+	if not frame then return true end
+
+	local name = frame.GetName and frame:GetName()
+	if name then
+		if name:find("^PartyMemberFrame") then return true end
+		if name:find("^Cell") then return true end
+		if name:find("^CompactRaidFrame") then return true end
+		if name:find("^CompactPartyFrame") then return true end
+		if name:find("^CompactUnitFrame") then return true end
+		if name == "CompactRaidFrameManager" or name == "CompactRaidFrameContainer" then return true end
+		if name == "RaidFrame" or name == "RaidParentFrame" then return true end
+	end
+
+	if frame.IsForbidden and frame:IsForbidden() then return true end
+	return false
+end
+
+local function EnsureCombatQueueFrame()
+	if combatQueueFrame then return end
+
+	combatQueueFrame = T.CreateFrame("Frame")
+	combatQueueFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	combatQueueFrame:SetScript("OnEvent", function()
+		KUI:FlushCombatQueue()
+	end)
+end
+
+function KUI:RunOutOfCombat(key, func)
+	if type(func) ~= "function" then return false end
+
+	key = key or tostring(func)
+	if T.InCombatLockdown and T.InCombatLockdown() then
+		combatQueue[key] = func
+		EnsureCombatQueueFrame()
+		self.LastProtectedAction = key
+		self.LastProtectedActionQueued = true
+		self:DebugProtectedAction("Queued protected update:", key)
+		return false
+	end
+
+	self.LastProtectedAction = key
+	self.LastProtectedActionQueued = false
+	local ok, err = pcall(func)
+	if not ok then
+		self:DebugProtectedAction("Protected update failed:", key, err)
+	end
+
+	return ok
+end
+
+function KUI:FlushCombatQueue()
+	if T.InCombatLockdown and T.InCombatLockdown() then return end
+
+	for key, func in pairs(combatQueue) do
+		combatQueue[key] = nil
+		self:RunOutOfCombat(key, func)
+	end
+end
+
 function KUI:cOption(name)
 	local color = '|cfff960d9%s |r'
 	return (color):format(name)

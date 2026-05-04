@@ -181,26 +181,6 @@ function MI:LoadMisc()
 		SetAllPetSourcesChecked(true)
 	end
 	
-	-- WorldMapFrame Zoom Bug
-	local WorldMapFrame = _G.WorldMapFrame
-	local WorldMapFrame_OnHide = _G.WorldMapFrame_OnHide
-	local WorldMapLevelButton_OnClick = _G.WorldMapLevelButton_OnClick
-
-	local frame = T.CreateFrame("Frame", nil, UIParent)
-	frame:RegisterEvent("PLAYER_REGEN_ENABLED") 
-	frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	frame:SetScript("OnEvent", function(self)
-		if event == "PLAYER_REGEN_DISABLED" then
-			WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
-			WorldMapFrame:SetScript("OnHide", nil)
-			WorldMapLevelButton:SetScript("OnClick", nil)
-		elseif event == "PLAYER_REGEN_ENABLED" then
-			WorldMapFrame:RegisterEvent("WORLD_MAP_UPDATE")
-			WorldMapFrame:SetScript("OnHide", WorldMapFrame_OnHide)
-			WorldMapLevelButton:SetScript("OnClick", WorldMapLevelButton_OnClick)
-		end
-	end)
-
 end
 
 function MI:RUReset()

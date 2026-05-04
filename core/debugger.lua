@@ -339,20 +339,33 @@ function KUI:DebugTaintFrames()
 		"MiniMapTracking",
 		"MiniMapTrackingButton",
 		"QueueStatusMinimapButton",
+		"PartyMemberFrame1",
+		"PartyMemberFrame1PetFrame",
+		"RaidFrame",
+		"RaidParentFrame",
+		"CompactRaidFrameManager",
+		"CompactRaidFrameContainer",
+		"CompactPartyFrame",
+		"CellRaidFrameHeader0UnitButton15",
+		"CellQuickCastButton",
 		"CharacterFrame",
 		"PaperDollFrame",
 	}
+
+	AddLine(lines, "combat=%s | lastProtectedAction=%s | queued=%s", BoolText(T.InCombatLockdown and T.InCombatLockdown()), tostring(self.LastProtectedAction or "nil"), BoolText(self.LastProtectedActionQueued))
+	AddLine(lines, "lastUnsafeFrame=%s | reason=%s", tostring(self.LastUnsafeFrame or "nil"), tostring(self.LastUnsafeFrameReason or "nil"))
 
 	for _, frameName in ipairs(frames) do
 		local frame = _G[frameName]
 		AddLine(
 			lines,
-			"%s | exists=%s | shown=%s | protected=%s | forbidden=%s | parent=%s",
+			"%s | exists=%s | shown=%s | protected=%s | forbidden=%s | unsafeUnit=%s | parent=%s",
 			frameName,
 			BoolText(not not frame),
 			BoolText(frame and frame.IsShown and frame:IsShown()),
 			BoolText(frame and frame.IsProtected and frame:IsProtected()),
 			BoolText(frame and frame.IsForbidden and frame:IsForbidden()),
+			BoolText(frame and self.IsUnsafeUnitFrame and self:IsUnsafeUnitFrame(frame)),
 			SafeName(frame and frame.GetParent and frame:GetParent() or nil)
 		)
 	end

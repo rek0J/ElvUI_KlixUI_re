@@ -6,6 +6,7 @@ local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 
 local function styleRaid()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.raid ~= true or E.private.KlixUI.skins.blizzard.raid ~= true then return end
+	if E.Mists then return end
 	
 	for i = 1, _G.NUM_RAID_GROUPS do
 		local group = _G["RaidGroup"..i]
