@@ -234,9 +234,17 @@ RandomHearthStone:SetPoint("TOPLEFT", E.UIParent, "TOPLEFT", -100, -100)
 RandomHearthStone:EnableMouse(true)
 RandomHearthStone:Show()
 RandomHearthStone:RegisterForClicks("AnyUp", "AnyDown")
-RandomHearthStone:SetAttribute("type", "macro")
-RandomHearthStone:SetAttribute("macrotext", "/use "..HearthStoneToUse)
-RandomHearthStone.NeedToRandom = false
+-- FIX [T1]: SetAttribute mit InCombatLockdown() absichern.
+-- Bei /reload im Kampf wuerden diese globalen Aufrufe Taint ausloesen.
+-- NeedToRandom = true signalisiert dem PLAYER_REGEN_ENABLED-Handler,
+-- dass "type" und "macrotext" noch nachgesetzt werden muessen.
+if not InCombatLockdown() then
+	RandomHearthStone:SetAttribute("type", "macro")
+	RandomHearthStone:SetAttribute("macrotext", "/use "..HearthStoneToUse)
+	RandomHearthStone.NeedToRandom = false
+else
+	RandomHearthStone.NeedToRandom = true
+end
 
 RandomHearthStone:RegisterEvent("PLAYER_ENTERING_WORLD")
 RandomHearthStone:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -259,6 +267,8 @@ RandomHearthStone:SetScript("OnEvent", function(self, event)
 	end
 	if event == "PLAYER_REGEN_ENABLED" then
 		if self.NeedToRandom == true then
+			-- FIX [T1]: "type"-Attribut auch bei verzoegerter Initialisierung (Reload im Kampf) setzen.
+			self:SetAttribute("type", "macro")
 			HearthStoneToUse_UpdateList()
 			HearthStoneToUse_Random(RandomHearthStone)
 		end

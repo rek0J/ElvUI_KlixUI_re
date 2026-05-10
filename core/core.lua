@@ -39,7 +39,7 @@ BINDING_NAME_KLIXUI_GAME_MENU = MAINMENU_BUTTON
 BINDING_NAME_KLIXUI_HIDE_EMBED = 'Hide Embed Window'
 BINDING_NAME_KLIXUI_SHOW_EMBED = 'Show Embed Window'
 KUI.WoWPatch, KUI.WoWBuild, KUI.WoWPatchReleaseDate, KUI.TocVersion = GetBuildInfo()
-KUI.WoWBuild = select(2, GetBuildInfo()) KUI.WoWBuild = tonumber(KUI.WoWBuild)
+KUI.WoWBuild = tonumber(KUI.WoWBuild)
 KUI.Discord = "https://discord.gg/GbQbDRX"
 
 

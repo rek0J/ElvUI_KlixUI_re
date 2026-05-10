@@ -926,6 +926,12 @@ end
 
 local combatQueue = {}
 local combatQueueFrame
+-- FIX [DRIP]: Drain-Variablen fuer frame-verteilte Queue-Abarbeitung.
+-- Statt alle Funktionen auf einmal abzufeuern (FPS-Spike), laeuft jeweils
+-- eine Funktion pro Frame. So wird der FPS-Drop beim Verlassen des Kampfes verteilt.
+local combatDrainQueue = {}
+local combatDrainIndex = 1
+local combatDrainFrame
 
 function KUI:DebugProtectedAction(...)
 	if not self.DebugProtectedActions then return end
@@ -973,6 +979,36 @@ function KUI:IsUnsafeUnitFrame(frame)
 	return false
 end
 
+-- FIX [DRIP]: Verarbeitet eine Funktion aus dem Drain-Queue pro Frame.
+-- Bei Kampf-Wiedereintritt: verbleibende Eintraege zurueck in combatQueue.
+-- combatQueueFrame ist persistent und hat PLAYER_REGEN_ENABLED dauerhaft
+-- registriert, daher kein erneuter EnsureCombatQueueFrame()-Aufruf noetig.
+local function DrainNextQueuedFunc(self)
+	if T.InCombatLockdown and T.InCombatLockdown() then
+		for i = combatDrainIndex, #combatDrainQueue do
+			combatQueue[combatDrainQueue[i].key] = combatDrainQueue[i].func
+		end
+		wipe(combatDrainQueue)
+		combatDrainIndex = 1
+		self:SetScript("OnUpdate", nil)
+		return
+	end
+
+	local item = combatDrainQueue[combatDrainIndex]
+	if not item then
+		wipe(combatDrainQueue)
+		combatDrainIndex = 1
+		self:SetScript("OnUpdate", nil)
+		return
+	end
+
+	combatDrainIndex = combatDrainIndex + 1
+	local ok, err = pcall(item.func)
+	if not ok then
+		KUI:DebugProtectedAction("Protected update failed (drain):", item.key, err)
+	end
+end
+
 local function EnsureCombatQueueFrame()
 	if combatQueueFrame then return end
 
@@ -1006,12 +1042,39 @@ function KUI:RunOutOfCombat(key, func)
 	return ok
 end
 
+-- FIX [DRIP]: Statt alle Funktionen synchron abzuarbeiten (FPS-Spike),
+-- wird die erste Funktion sofort ausgefuehrt und alle weiteren werden
+-- einzeln ueber aufeinanderfolgende Frames verteilt (1 Funktion/Frame).
+-- Das eliminiert den FPS-Einbruch beim Verlassen des Kampfes.
 function KUI:FlushCombatQueue()
 	if T.InCombatLockdown and T.InCombatLockdown() then return end
 
+	local count = 0
 	for key, func in pairs(combatQueue) do
 		combatQueue[key] = nil
-		self:RunOutOfCombat(key, func)
+		count = count + 1
+		combatDrainQueue[count] = {key = key, func = func}
+	end
+
+	if count == 0 then return end
+
+	-- Erste Funktion sofort ausfuehren (kein wahrnehmbarer Delay)
+	combatDrainIndex = 2
+	local first = combatDrainQueue[1]
+	local ok, err = pcall(first.func)
+	if not ok then
+		self:DebugProtectedAction("Protected update failed:", first.key, err)
+	end
+
+	-- Restliche Funktionen: eine pro Frame ueber combatDrainFrame verteilen
+	if combatDrainIndex <= count then
+		if not combatDrainFrame then
+			combatDrainFrame = T.CreateFrame("Frame")
+		end
+		combatDrainFrame:SetScript("OnUpdate", DrainNextQueuedFunc)
+	else
+		wipe(combatDrainQueue)
+		combatDrainIndex = 1
 	end
 end
 

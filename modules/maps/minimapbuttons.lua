@@ -1654,12 +1654,14 @@ function SMB:GrabMinimapButtons()
 		changed = true
 	end
 
+	-- O(n) statt O(n²): GetChildren() einmal aufrufen und in Tabelle packen
 	for _, Frame in T.pairs({ _G.Minimap, _G.MinimapBackdrop, _G.MinimapCluster }) do
 		if Frame then
 			local NumChildren = Frame:GetNumChildren()
 			if self.NeedsFullScan or NumChildren ~= (Frame.SMBNumChildren or 0) then
+				local children = {Frame:GetChildren()}
 				for i = 1, NumChildren do
-					local object = T.select(i, Frame:GetChildren())
+					local object = children[i]
 					if object then
 						local name = object:GetName()
 						local width = object:GetWidth()
@@ -1687,8 +1689,10 @@ function SMB:GrabMinimapButtons()
 
 	local uiParentChildren = UIParent:GetNumChildren()
 	if self.NeedsFullScan or uiParentChildren ~= (self.UIParentNumChildren or 0) then
+		-- O(n) statt O(n²): UIParent hat 200-400 Kinder; select(i, GetChildren()) war O(n²)
+		local children = {UIParent:GetChildren()}
 		for i = 1, uiParentChildren do
-			local object = T.select(i, UIParent:GetChildren())
+			local object = children[i]
 			if object and object ~= self.Bar and object ~= self.Hider and object ~= self.Toggle and (not object.IsForbidden or not object:IsForbidden()) and (object:IsObjectType('Button') or object:IsObjectType('Frame')) then
 				local width = object:GetWidth()
 				if width and width > 15 and width < 96 and IsLikelyNamedMinimapButton(object) then

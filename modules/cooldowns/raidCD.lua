@@ -132,7 +132,13 @@ local UpdateCharges = function(bar)
 	end
 end
 
+-- FIX [P1]: Throttle hinzugefuegt. Ohne Throttle feuerte BarUpdate 60x/Sek pro Bar.
+-- Bei 10+ aktiven Raid-CDs in einem 25er Raid: 600+ Aufrufe/Sek = FPS-Drop.
+-- 0.05s Throttle reduziert auf 20 Updates/Sek – visuell nicht unterscheidbar.
 local BarUpdate = function(self, elapsed)
+	self._elapsed = (self._elapsed or 0) + elapsed
+	if self._elapsed < 0.05 then return end
+	self._elapsed = 0
 	local curTime = T.GetTime()
 	if self.endTime < curTime then
 		if self.isResses then

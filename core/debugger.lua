@@ -373,6 +373,263 @@ function KUI:DebugTaintFrames()
 	self:ShowDebugOutput("Taint Debug", table_concat(lines, "\n"))
 end
 
+-- ============================================================
+-- Function-level trace
+-- Usage: /kuidbg trace [threshold_ms]   start (default 5ms)
+--        /kuidbg trace stop             show report
+-- ============================================================
+local trace = {
+	active    = false,
+	threshold = 5,
+	results   = {},
+	restores  = {},
+}
+
+local function TraceWrap(label, fn, threshold)
+	local results = trace.results
+	return function(self, ...)
+		local t0 = GetTime()
+		fn(self, ...)
+		local ms = (GetTime() - t0) * 1000
+		if ms >= threshold then
+			tinsert(results, { label = label, ms = ms })
+			if #results <= 20 then
+				KUI:Print(format("|cff8080ff[TRACE]|r %s = %.1f ms", label, ms))
+			end
+		end
+	end
+end
+
+function KUI:TraceStart(threshold)
+	if trace.active then
+		self:Print("|cffff8800[trace]|r already running – /kuidbg trace stop first")
+		return
+	end
+	trace.threshold = threshold or 5
+	trace.results   = {}
+	trace.restores  = {}
+	trace.active    = true
+
+	local found = {}
+
+	-- Instrument KUI_LocPanel OnUpdate (locpanel UpdateCoords, 0.2s throttle)
+	local lp = _G["KUI_LocPanel"]
+	if lp then
+		local orig = lp:GetScript("OnUpdate")
+		if orig then
+			lp:SetScript("OnUpdate", TraceWrap("locpanel:UpdateCoords", orig, trace.threshold))
+			local restore_lp = orig
+			tinsert(trace.restores, function() lp:SetScript("OnUpdate", restore_lp) end)
+			tinsert(found, "locpanel")
+		end
+	end
+
+	-- Instrument SMB:GrabMinimapButtons (6s timer, O(n) table scan)
+	local smb = GetSMBModule()
+	if smb and smb.GrabMinimapButtons then
+		local orig = smb.GrabMinimapButtons
+		smb.GrabMinimapButtons = TraceWrap("SMB:GrabMinimapButtons", orig, trace.threshold)
+		tinsert(trace.restores, function() smb.GrabMinimapButtons = orig end)
+		tinsert(found, "GrabMinimapButtons")
+	end
+
+	if #found == 0 then
+		self:Print("|cffff4444[trace]|r No instrumentable functions found. Frames may not be initialised yet.")
+		trace.active = false
+		return
+	end
+
+	self:Print(format(
+		"|cff00ff00[trace]|r Function timer ON (threshold %d ms).  Tracing: %s.  Use /kuidbg trace stop.",
+		trace.threshold, table_concat(found, ", ")
+	))
+end
+
+function KUI:TraceStop()
+	if not trace.active then
+		self:Print("|cffff8800[trace]|r not running")
+		return
+	end
+	for _, restore in ipairs(trace.restores) do
+		restore()
+	end
+	trace.restores = {}
+	trace.active   = false
+
+	local n = #trace.results
+	if n == 0 then
+		self:Print(format(
+			"|cff00ff00[trace]|r No KlixUI calls exceeded %d ms.",
+			trace.threshold
+		))
+		self:Print("If spikes persist, another addon is the cause. Use /kuidbg scriptprofile + /reload.")
+		return
+	end
+
+	local totals = {}
+	for _, r in ipairs(trace.results) do
+		local d = totals[r.label]
+		if not d then
+			d = { count = 0, total = 0, max = 0 }
+			totals[r.label] = d
+		end
+		d.count = d.count + 1
+		d.total = d.total + r.ms
+		if r.ms > d.max then d.max = r.ms end
+	end
+
+	local lines = {
+		format("=== KlixUI Trace Report === (%d slow calls, threshold %d ms)", n, trace.threshold),
+		"",
+	}
+	for label, d in pairs(totals) do
+		tinsert(lines, format(
+			"%-42s  calls=%-4d  avg=%5.1f ms  max=%5.1f ms",
+			label, d.count, d.total / d.count, d.max
+		))
+	end
+	tinsert(lines, "")
+	tinsert(lines, "If KlixUI functions are fast here but perf still shows spikes,")
+	tinsert(lines, "another addon is responsible. Use /kuidbg scriptprofile + /reload.")
+	self:ShowDebugOutput("KlixUI Trace Report", table_concat(lines, "\n"))
+end
+
+-- ============================================================
+-- Script profiling toggle
+-- Usage: /kuidbg scriptprofile
+-- ============================================================
+function KUI:ToggleScriptProfile()
+	local current = GetCVar and GetCVar("scriptProfile")
+	if current == "1" then
+		SetCVar("scriptProfile", "0")
+		self:Print("|cffff8800[perf]|r Script profiling DISABLED. /reload to apply.")
+	else
+		SetCVar("scriptProfile", "1")
+		self:Print("|cff00ff00[perf]|r Script profiling ENABLED. /reload to apply.")
+		self:Print("After reload: hover the |cffffff00System (KUI)|r datatext to see per-addon CPU usage.")
+	end
+end
+
+-- ============================================================
+-- Performance spike detector
+-- Usage: /kuidbg perf [threshold_ms]   start (default 12ms)
+--        /kuidbg perf stop             show report
+-- ============================================================
+local perf = {
+	frame     = nil,
+	running   = false,
+	threshold = 12,
+	prevTime  = nil,
+	spikes    = {},
+	startTime = nil,
+}
+
+local function PerfOnUpdate(self)
+	local now = GetTime()
+	if not perf.prevTime then
+		perf.prevTime = now
+		return
+	end
+	local frameMs = (now - perf.prevTime) * 1000
+	perf.prevTime = now
+
+	if frameMs >= perf.threshold then
+		local spike = { time = now, ms = frameMs }
+		tinsert(perf.spikes, spike)
+		-- print first 30 spikes so the user can see them in real-time
+		if #perf.spikes <= 30 then
+			KUI:Print(format(
+				"|cffff4444[SPIKE]|r t=+%.1fs  frame=|cffff8800%.1f|r ms  (~%d fps)",
+				now - perf.startTime,
+				frameMs,
+				math.floor(1000 / frameMs + 0.5)
+			))
+		end
+	end
+end
+
+function KUI:PerfStart(threshold)
+	if perf.running then
+		self:Print("|cffff8800[perf]|r already running – use /kuidbg perf stop first")
+		return
+	end
+	perf.threshold = threshold or 12
+	perf.spikes    = {}
+	perf.prevTime  = nil
+	perf.startTime = GetTime()
+	perf.running   = true
+
+	if not perf.frame then
+		perf.frame = CreateFrame("Frame")
+	end
+	perf.frame:SetScript("OnUpdate", PerfOnUpdate)
+
+	self:Print(format(
+		"|cff00ff00[perf]|r Frame-spike monitor ON  (threshold |cffff8800%d|r ms = %d fps).  "
+		.. "Run |cffffff00/kuidbg perf stop|r to see the report.",
+		perf.threshold, math.floor(1000 / perf.threshold + 0.5)
+	))
+end
+
+function KUI:PerfStop()
+	if not perf.running then
+		self:Print("|cffff8800[perf]|r not running")
+		return
+	end
+	perf.running = false
+	perf.frame:SetScript("OnUpdate", nil)
+
+	local n = #perf.spikes
+	if n == 0 then
+		self:Print("|cff00ff00[perf]|r No spikes detected above " .. perf.threshold .. " ms.")
+		return
+	end
+
+	-- calculate intervals between spikes
+	local intervals = {}
+	for i = 2, n do
+		tinsert(intervals, perf.spikes[i].time - perf.spikes[i-1].time)
+	end
+
+	local sumInt, minInt, maxInt = 0, math.huge, 0
+	for _, v in ipairs(intervals) do
+		sumInt = sumInt + v
+		if v < minInt then minInt = v end
+		if v > maxInt then maxInt = v end
+	end
+	local avgInt = n > 1 and (sumInt / #intervals) or 0
+
+	local sumMs, maxMs = 0, 0
+	for _, s in ipairs(perf.spikes) do
+		sumMs = sumMs + s.ms
+		if s.ms > maxMs then maxMs = s.ms end
+	end
+
+	local lines = {
+		format("=== KlixUI Perf Report ===  (%d spikes, threshold %d ms)", n, perf.threshold),
+		format("Spike frame time:   avg=%.1f ms   max=%.1f ms", sumMs / n, maxMs),
+	}
+	if n > 1 then
+		tinsert(lines, format(
+			"Interval between spikes:  avg=%.1f s   min=%.1f s   max=%.1f s",
+			avgInt, minInt, maxInt
+		))
+		tinsert(lines, "")
+		tinsert(lines, "Hint: if avg interval ≈ 10 s → system datatext (UpdateMemory)")
+		tinsert(lines, "      if avg interval ≈  6 s → maps/minimapbuttons (GrabMinimapButtons)")
+		tinsert(lines, "      if avg interval ≈  5 s → microBar UpdateFriends/UpdateGuild")
+		tinsert(lines, "      if avg interval ≈ 15 s → titles datatext (UpdateTitles)")
+		tinsert(lines, "      if avg interval < 2 s   → likely another addon (ElvUI/WeakAuras/AllTheThings/Zygor)")
+		tinsert(lines, "")
+		tinsert(lines, "Next steps when interval is short or hints don't match:")
+		tinsert(lines, "  /kuidbg trace        – time KlixUI locpanel + GrabMinimapButtons (no reload)")
+		tinsert(lines, "  /kuidbg scriptprofile – toggle per-addon CPU tracking, then /reload")
+		tinsert(lines, "  After reload: hover the System (KUI) datatext for per-addon CPU.")
+	end
+
+	self:ShowDebugOutput("KlixUI Perf Report", table_concat(lines, "\n"))
+end
+
 function KUI:DebugCommand(msg)
 	msg = strtrim(msg or "")
 
@@ -383,17 +640,42 @@ function KUI:DebugCommand(msg)
 	if command == "" or command == "help" then
 		self:ShowDebugOutput("KlixUI Debugger Help", table_concat({
 			"/kuidbg help",
+			"",
+			"--- Performance ---",
+			"/kuidbg perf [ms]       – frame-spike monitor (default 12 ms)",
+			"/kuidbg perf stop       – stop and show report",
+			"/kuidbg trace [ms]      – time KlixUI functions: locpanel, GrabMinimapButtons (default 5 ms)",
+			"/kuidbg trace stop      – stop and show per-function report",
+			"/kuidbg scriptprofile   – toggle per-addon CPU profiling (requires /reload)",
+			"",
+			"--- Debugging ---",
 			"/kuidbg minimap",
 			"/kuidbg button <FrameName or Token>",
 			"/kuidbg frame <GlobalFrameName>",
 			"/kuidbg taint",
 			"",
-			"Examples:",
-			"/kuidbg minimap",
-			"/kuidbg button LibDBIcon10_WeakAuras",
-			"/kuidbg frame WorldMapFrame",
-			"/kuidbg taint",
+			"--- Workflow ---",
+			"1. /kuidbg perf → run 60s → /kuidbg perf stop",
+			"2. If interval < 2s: /kuidbg trace → run 60s → /kuidbg trace stop",
+			"3. If trace shows nothing slow: /kuidbg scriptprofile + /reload to find the addon",
 		}, "\n"))
+		return
+	elseif command == "perf" then
+		if lower(rest) == "stop" then
+			self:PerfStop()
+		else
+			self:PerfStart(tonumber(rest))
+		end
+		return
+	elseif command == "trace" then
+		if lower(rest) == "stop" then
+			self:TraceStop()
+		else
+			self:TraceStart(tonumber(rest))
+		end
+		return
+	elseif command == "scriptprofile" then
+		self:ToggleScriptProfile()
 		return
 	elseif command == "minimap" or command == "smb" then
 		self:DebugMinimapButtons()

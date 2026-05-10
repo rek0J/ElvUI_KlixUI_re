@@ -7,7 +7,6 @@ local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local microBar
 
 local DELAY = 5
-local elapsed = DELAY - 5
 
 local microBar = T.CreateFrame("Frame", KUI.Title.."MicroBar", E.UIParent)
 
@@ -139,12 +138,22 @@ function MB:CreateMicroBar()
 	configButton:SetScript("OnLeave", function(self)
                OnLeave(self)
         end)
-	configButton:SetScript("OnClick", function(self) 
-                 if T.InCombatLockdown() then 
-                 return 
-        end 
-                 ToggleElvUIOptions()
-        end)
+	-- Rechtsklick-Unterstuetzung: Button muss explizit fuer AnyUp registriert werden.
+	configButton:RegisterForClicks("AnyUp")
+	configButton:SetScript("OnClick", function(self, button)
+		if T.InCombatLockdown() then return end
+		if button == "RightButton" then
+			-- Rechtsklick: ESC-Menue (Game Menu) toggeln
+			if GameMenuFrame:IsShown() then
+				HideUIPanel(GameMenuFrame)
+			else
+				ShowUIPanel(GameMenuFrame)
+			end
+		else
+			-- Linksklick: ElvUI Optionen
+			ToggleElvUIOptions()
+		end
+	end)
 
 	if MB.db.text.buttons.position == "BOTTOM" then
 	configButton.text:Point("BOTTOM", configButton, 2, -15)
@@ -187,11 +196,17 @@ function MB:CreateMicroBar()
 	charButton:SetScript("OnLeave", function(self)
 		OnLeave(self)
 	end)
-	charButton:SetScript("OnClick", function(self)
-		if InCombatLockdown() then
-			return
+	-- Rechtsklick-Unterstuetzung fuer charButton
+	charButton:RegisterForClicks("AnyUp")
+	charButton:SetScript("OnClick", function(self, button)
+		if InCombatLockdown() then return end
+		if button == "RightButton" then
+			-- Rechtsklick: Charakter-Fenster > Abzeichen-Tab (TokenFrame = Marken/Waehrungen)
+			_G["ToggleCharacter"]("TokenFrame")
+		else
+			-- Linksklick: Charakter-Fenster (Paperdoll)
+			_G["ToggleCharacter"]("PaperDollFrame")
 		end
-		_G["ToggleCharacter"]("PaperDollFrame")
 	end)
 
 	--Friends
@@ -271,10 +286,9 @@ function MB:CreateMicroBar()
 		_G["ToggleFriendsFrame"]()
 	end)
 	friendsButton:SetScript("OnUpdate", function(self, elapse)
-		elapsed = elapsed + elapse
-
-		if elapsed >= DELAY then
-			elapsed = 0
+		self._elapsed = (self._elapsed or 0) + elapse
+		if self._elapsed >= DELAY then
+			self._elapsed = 0
 			UpdateFriends()
 		end
 	end)
@@ -311,20 +325,11 @@ function MB:CreateMicroBar()
 	local function UpdateGuild()
 		MB.db = E.db.KlixUI.microBar
 		if T.IsInGuild() then
-			local guildTotal, online = T.GetNumGuildMembers()
-			for i = 1, guildTotal do
-				local _, _, _, _, _, _, _, _, connected, _, _, _, _, isMobile = T.GetGuildRosterInfo(i)
-				if isMobile then
-					online = online + 1
-				end
-			end
-			
+			-- GetNumGuildMembers returns (total, online) directly; no need to loop roster
+			-- isMobile check omitted: Battle.net mobile app not available in MoP Classic
+			local _, online = T.GetNumGuildMembers()
 			if MB.db.text.guild.enable then
-				if online > 0 then
-					guildButton.online:SetText(online)
-				else
-					guildButton.online:SetText("0")
-				end
+				guildButton.online:SetText(online or 0)
 			end
 		end
 	end
@@ -347,10 +352,10 @@ function MB:CreateMicroBar()
 	guildButton:SetScript("OnEnter", function(self) OnHover(self) end)
 	guildButton:SetScript("OnLeave", function(self) OnLeave(self) end)
 	guildButton:SetScript("OnClick", function(self) if T.InCombatLockdown() then return end _G["ToggleGuildFrame"]() end)
-	guildButton:SetScript("OnUpdate", function (self, elapse)
-		elapsed = elapsed + elapse
-		if elapsed >= DELAY then
-			elapsed = 0
+	guildButton:SetScript("OnUpdate", function(self, elapse)
+		self._elapsed = (self._elapsed or 0) + elapse
+		if self._elapsed >= DELAY then
+			self._elapsed = 0
 			UpdateGuild()
 		end
 	end)

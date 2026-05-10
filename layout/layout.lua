@@ -47,7 +47,11 @@ local function ChatButton_OnClick(self)
 		T.UIFrameFadeIn(self.parent, 0.2, self.parent:GetAlpha(), 1)
 		if T.IsAddOnLoaded('AddOnSkins') then
 			local AS = T.unpack(AddOnSkins) or nil
-			if AS.db.EmbedSystem or AS.db.EmbedSystemDual then AS:Embed_Show() end
+			-- FIX [LUA-ERR]: Embed_Show existiert in AddOnSkins v4.73 (MoP Classic) nicht.
+			-- Nil-Check verhindert "attempt to call method" Fehler.
+			if (AS.db.EmbedSystem or AS.db.EmbedSystemDual) and AS.Embed_Show then
+				AS:Embed_Show()
+			end
 		end
 	else
 		E.db[self.parent:GetName()..'Faded'] = true

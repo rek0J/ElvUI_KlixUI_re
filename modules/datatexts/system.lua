@@ -6,6 +6,9 @@ local format = string.format
 local int, int2 = 6, 5
 local memoryTable = {}
 local cpuTable = {}
+local memStringCache = ""  -- cached memory string, updated every 30s not every 1s
+local memTotalCache = 0    -- cached total memory from last UpdateMemory() call
+local cpuTotalCache = 0    -- cached total CPU from last UpdateCPU() call
 local statusColors = {
 	"|cff0CD809",
 	"|cffE8DA0F",
@@ -67,6 +70,7 @@ local function UpdateMemory()
 		end
 	end)
 
+	memTotalCache = totalMemory
 	return totalMemory
 end
 
@@ -86,6 +90,7 @@ local function UpdateCPU()
 		end
 	end)
 
+	cpuTotalCache = totalCPU
 	return totalCPU
 end
 
@@ -118,11 +123,14 @@ local function OnEnter(self)
 	DT.tooltip:AddDoubleLine(L["Loaded Addons:"], GetNumLoadedAddons(), r, g, b)
 	DT.tooltip:AddDoubleLine(L["Total Addons:"], T.GetNumAddOns(), r, g, b)
 
-	local totalMemory = UpdateMemory()
+	-- Use cached values. UpdateAddOnMemoryUsage() is expensive (heap walk);
+	-- calling it here would run every 1s while the tooltip is open (enteredFrame = true).
+	-- memTotalCache and cpuTotalCache are updated by the Update() cycle (every 30s).
+	local totalMemory = memTotalCache
 	local totalCPU = nil
 	DT.tooltip:AddDoubleLine(L["Total Memory:"], FormatMemory(totalMemory), r, g, b)
 	if cpuProfiling then
-		totalCPU = UpdateCPU()
+		totalCPU = cpuTotalCache
 		DT.tooltip:AddDoubleLine(L["Total CPU:"], T.string_format(homeLatencyString, totalCPU), r, g, b)
 	end
 
@@ -131,7 +139,7 @@ local function OnEnter(self)
 		for i = 1, #memoryTable do
 			if E.db.KlixUI.systemDT.maxAddons - shown <= 1 then break end
 			if (memoryTable[i][4]) then
-				local red = memoryTable[i][3] / totalMemory
+				local red = totalMemory > 0 and (memoryTable[i][3] / totalMemory) or 0
 				local green = 1 - red
 				DT.tooltip:AddDoubleLine(memoryTable[i][2], FormatMemory(memoryTable[i][3]), 1, 1, 1, red, green + .5, 0)
 				shown = shown + 1
@@ -145,7 +153,7 @@ local function OnEnter(self)
 		for i = 1, #cpuTable do
 			if E.db.KlixUI.systemDT.maxAddons - shown <= 1 then break end
 			if (cpuTable[i][4]) then
-				local red = cpuTable[i][3] / totalCPU
+				local red = totalCPU and totalCPU > 0 and (cpuTable[i][3] / totalCPU) or 0
 				local green = 1 - red
 				DT.tooltip:AddDoubleLine(cpuTable[i][2], T.string_format(homeLatencyString, cpuTable[i][3]), 1, 1, 1, red, green + .5, 0)
 				shown = shown + 1
@@ -173,7 +181,19 @@ local function Update(self, t)
 
 	if int <= 0 then
 		RebuildAddonList()
-		int = 10
+		-- UpdateMemory/UpdateCPU only here (every 30s). Both are expensive C calls
+		-- (heap walk / script timer read). Running them from OnEnter caused spikes
+		-- every 1s whenever the tooltip was open.
+		if E.db.KlixUI.systemDT.showMemory then
+			memStringCache = ("|cffffff00%s|r"):format(FormatMemory(UpdateMemory()))
+		else
+			UpdateMemory()  -- still populate memTotalCache and sort memoryTable
+			memStringCache = ""
+		end
+		if T.GetCVar("scriptProfile") == "1" then
+			UpdateCPU()  -- populate cpuTotalCache and sort cpuTable
+		end
+		int = 30
 	end
 
 	if int2 <= 0 then
@@ -199,11 +219,10 @@ local function Update(self, t)
 			fpsColor = 3
 		end
 
-		-- set the datatext
+		-- set the datatext using cached memString (updated every 30s by int block above)
 		local fpsString = E.db.KlixUI.systemDT.showFPS and ("%s: %s%d|r "):format(L["FPS"], statusColors[fpsColor], fps) or ""
 		local msString = E.db.KlixUI.systemDT.showMS and ("%s: %s%d|r "):format(L["MS"], statusColors[latencyColor], latency) or ""
-		local memString = E.db.KlixUI.systemDT.showMemory and ("|cffffff00%s|r"):format(FormatMemory(UpdateMemory())) or ""
-		self.text:SetText(T.string_join("", fpsString, msString, memString))
+		self.text:SetText(T.string_join("", fpsString, msString, memStringCache))
 		int2 = 1
 
 		if enteredFrame then OnEnter(self) end

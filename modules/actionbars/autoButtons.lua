@@ -350,10 +350,15 @@ function ABS:ScanItem(event)
         end
     end
     
-	-- Sort our tables   
+	-- FIX [SORT]: GetItemInfo() im Sort-Comparator wird O(n log n) mal aufgerufen.
+    -- Caching auf O(n) reduziert ueberfluessige API-Aufrufe beim Kampf-Exit.
+    local itemTypeCache = {}
+    for _, itemID in ipairs(questItemIDList) do
+        itemTypeCache[itemID] = T.select(7, T.GetItemInfo(itemID))
+    end
     sort(questItemIDList, function(v1, v2)
-        local itemType1 = T.select(7, T.GetItemInfo(v1))
-        local itemType2 = T.select(7, T.GetItemInfo(v2))
+        local itemType1 = itemTypeCache[v1]
+        local itemType2 = itemTypeCache[v2]
         if itemType1 and itemType2 then
             return itemType1 > itemType2
         else
@@ -469,7 +474,12 @@ function ABS:ScanItem(event)
                 AutoButton.itemID = slotID
                 AutoButton.spellName = IsUsableItem(slotID)
                 
+                -- FIX [P-AB]: Throttle fuer Inventar-Cooldown-Anzeige. Ohne Throttle:
+                -- GetInventoryItemCooldown + CooldownFrame_Set jeden Frame = unnoetige CPU-Last.
                 AutoButton:SetScript("OnUpdate", function(self, elapsed)
+                    self._cdElapsed = (self._cdElapsed or 0) + elapsed
+                    if self._cdElapsed < 0.1 then return end
+                    self._cdElapsed = 0
                     local cd_start, cd_finish, cd_enable = T.GetInventoryItemCooldown("player", self.slotID)
                     T.CooldownFrame_Set(AutoButton.Cooldown, cd_start, cd_finish, cd_enable)
                 end)

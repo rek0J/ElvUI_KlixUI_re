@@ -41,6 +41,9 @@ local cycles = {
 }
 
 function KC:ChatEdit_CustomTabPressed(self)
+	-- FIX [T2]: SetAttribute auf einem secure ChatEditBox-Frame waere im Kampf Taint.
+	-- Tab-Cycling waehrend Kampf ist kein relevanter Use-Case und wird sicher blockiert.
+	if InCombatLockdown() then return end
 	if strsub(tostring(self:GetText()), 1, 1) == "/" then return end
 	local currChatType = self:GetAttribute("chatType")
 	for i, curr in ipairs(cycles) do

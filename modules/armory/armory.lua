@@ -121,18 +121,12 @@ local heirlooms = {
 function KA:OnEnter()
 	if self.Link and self.Link ~= '' then
 		_G["GameTooltip"]:SetOwner(self, 'ANCHOR_RIGHT')
-
-		self:SetScript('OnUpdate', function()
-			_G["GameTooltip"]:ClearLines()
-			_G["GameTooltip"]:SetHyperlink(self.Link)
-
-			_G["GameTooltip"]:Show()
-		end)
+		_G["GameTooltip"]:SetHyperlink(self.Link)
+		_G["GameTooltip"]:Show()
 	end
 end
 
 function KA:OnLeave()
-	self:SetScript('OnUpdate', nil)
 	_G["GameTooltip"]:Hide()
 end
 
@@ -140,20 +134,13 @@ function KA:Transmog_OnEnter()
 	if self.Link and self.Link ~= '' then
 		self.Texture:SetVertexColor(1, .8, 1)
 		_G["GameTooltip"]:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
-		
-		self:SetScript('OnUpdate', function()
-			_G["GameTooltip"]:ClearLines()
-			_G["GameTooltip"]:SetHyperlink(self.Link)
-			
-			_G["GameTooltip"]:Show()
-		end)
+		_G["GameTooltip"]:SetHyperlink(self.Link)
+		_G["GameTooltip"]:Show()
 	end
 end
 
 function KA:Transmog_OnLeave()
 	self.Texture:SetVertexColor(1, .5, 1)
-	
-	self:SetScript('OnUpdate', nil)
 	_G["GameTooltip"]:Hide()
 end
 

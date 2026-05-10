@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep -l \"elapsed\")",
+      "Bash(findstr /N \"function LP:UpdateCoords\" modules\\\\locpanel\\\\locpanel.lua)"
+    ]
+  }
+}
