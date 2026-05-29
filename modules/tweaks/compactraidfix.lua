@@ -3,18 +3,21 @@ local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 -- Fix: ADDON_ACTION_BLOCKED – CompactRaidFrame
 --
 -- Root cause: HereBeDragons (KlixUI/TomTom) fires callbacks in a tainted context →
--- TomTom calls SetZoom → CVar change → CompactRaidFrameManager_UpdateContainerVisibility
--- → Show() on a SecureHandlerShowHideTemplate frame → ADDON_ACTION_BLOCKED.
+-- TomTom calls SetZoom → CVar change → two separate paths both blocked:
 --
--- RegisterStateDriver alone does NOT suppress the error. It overrides visibility
--- via the secure attribute system AFTER Show() is attempted, but the blocked call
--- fires at the call site. The fix must prevent Show() from being called at all.
+-- Path 1 (9×): CompactRaidFrameManager_UpdateContainerVisibility → CompactRaidFrameManager:Show()
+-- Path 2 (1×): CompactUnitFrame OnEvent → CompactUnitFrame_UpdateAll → CompactUnitFrame_UpdateVisible
+--              → CompactRaidFrame1:Show()
 --
--- Fix: replace the Blizzard update functions with no-ops. These frames are managed
--- by ElvUI's raid-frame system and must never be shown. RegisterStateDriver("hide")
--- is kept as a secure fallback for any Show() call from other code paths.
+-- Fix A: replace CompactRaidFrameManager_UpdateShown and _UpdateContainerVisibility with no-ops.
+-- Fix B: wrap CompactUnitFrame_UpdateVisible to bail early for CompactRaidFrame* frames.
+--        The wrapper is installed once (guard flag) and preserves the original for any
+--        other compact frame types ElvUI may legitimately use.
+-- Fix C: RegisterStateDriver("hide") on container/manager frames as a secure fallback.
 
 local FRAMES_TO_FIX = { "CompactRaidFrameContainer", "CompactRaidFrameManager" }
+
+local unitFrameOverridden = false
 
 local function OverrideFunctions()
 	if CompactRaidFrameManager_UpdateShown then
@@ -22,6 +25,15 @@ local function OverrideFunctions()
 	end
 	if CompactRaidFrameManager_UpdateContainerVisibility then
 		CompactRaidFrameManager_UpdateContainerVisibility = function() end
+	end
+	if not unitFrameOverridden and CompactUnitFrame_UpdateVisible then
+		local orig = CompactUnitFrame_UpdateVisible
+		CompactUnitFrame_UpdateVisible = function(frame)
+			local name = frame and frame.GetName and frame:GetName()
+			if name and name:match("^CompactRaidFrame%d") then return end
+			return orig(frame)
+		end
+		unitFrameOverridden = true
 	end
 end
 
