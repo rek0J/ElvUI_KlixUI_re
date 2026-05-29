@@ -772,14 +772,77 @@ function SMB:SetButtonTokenInList(listKey, token, enabled)
 end
 
 function SMB:SyncConfiguredLists()
-	local discovered = self:GetDiscoveredButtonKeys()
-	if #discovered == 0 then return end
-
 	local knownSet, _, knownOrdered = ParseButtonTokens(self.db.knownButtons)
+	local changed = false
+
+	-- Phase 1: Clean stale entries from older versions. Runs unconditionally so that
+	-- the DB is sanitised even when no buttons have been discovered yet (e.g. when the
+	-- options panel opens before the first GrabMinimapButtons pass completes).
+
+	-- 1a: Remove ignoreButtons entries that were registered by an older code path.
+	do
+		local ignoreSet = {}
+		for _, name in ipairs(ignoreButtons) do
+			ignoreSet[NormalizeButtonToken(name)] = true
+		end
+		local cleaned = {}
+		for _, token in ipairs(knownOrdered) do
+			if ignoreSet[token] then
+				knownSet[token] = nil
+				changed = true
+			else
+				cleaned[#cleaned + 1] = token
+			end
+		end
+		knownOrdered = cleaned
+	end
+
+	-- 1b: Remove non-preferred alias entries (e.g. LIBDBICON10_KLIXUI when KLIXUI is
+	-- the displayKey). Older versions stored the full frame-name; this deduplicates.
+	do
+		local aliasToDisplay = {}
+		for _, Button in ipairs(self.Buttons or {}) do
+			local data = Button.SMBData
+			if data and data.displayKey and data.aliases then
+				for alias in T.pairs(data.aliases) do
+					if alias ~= data.displayKey then
+						aliasToDisplay[alias] = data.displayKey
+					end
+				end
+			end
+		end
+		local cleaned = {}
+		local aliasRemoved = false
+		for _, token in ipairs(knownOrdered) do
+			if aliasToDisplay[token] then
+				knownSet[token] = nil
+				aliasRemoved = true
+			else
+				cleaned[#cleaned + 1] = token
+			end
+		end
+		if aliasRemoved then
+			knownOrdered = cleaned
+			knownSet = {}
+			for _, token in ipairs(knownOrdered) do
+				knownSet[token] = true
+			end
+			changed = true
+		end
+	end
+
+	-- Phase 2: Add newly discovered buttons. Skip when nothing is registered yet.
+	local discovered = self:GetDiscoveredButtonKeys()
+	if #discovered == 0 then
+		if changed then
+			self.db.knownButtons = T.table_concat(knownOrdered, ",")
+		end
+		return
+	end
+
 	local whiteSet, hasWhiteList, whiteOrdered = ParseButtonTokens(self.db.whitelist)
 	local _, hasBlackList = ParseButtonTokens(self.db.blacklist)
 	local _, hasCollapsedList = ParseButtonTokens(self.db.collapsedButtons)
-	local changed = false
 
 	if not hasWhiteList then
 		whiteOrdered = {}
@@ -1600,7 +1663,7 @@ function SMB:UpdateButtonBar()
 			self.Bar:Styling()
 		end
 	else
-		self.Bar:SetBackdrop(nil)
+		if self.Bar.SetBackdrop then self.Bar:SetBackdrop(nil) end
 		if self.Bar.squares or self.Bar.gradient or self.Bar.mshadow then
 			self.Bar.squares:SetTexture(nil)
 			self.Bar.gradient:SetTexture(nil)

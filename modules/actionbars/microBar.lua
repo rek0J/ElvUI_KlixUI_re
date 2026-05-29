@@ -6,7 +6,6 @@ local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 
 local microBar
 
-local DELAY = 5
 
 local microBar = T.CreateFrame("Frame", KUI.Title.."MicroBar", E.UIParent)
 
@@ -285,13 +284,6 @@ function MB:CreateMicroBar()
 		end
 		_G["ToggleFriendsFrame"]()
 	end)
-	friendsButton:SetScript("OnUpdate", function(self, elapse)
-		self._elapsed = (self._elapsed or 0) + elapse
-		if self._elapsed >= DELAY then
-			self._elapsed = 0
-			UpdateFriends()
-		end
-	end)
 
 	--Guild
 	local guildButton = T.CreateFrame("Button", nil, microBar, "SecureActionButtonTemplate")
@@ -352,13 +344,6 @@ function MB:CreateMicroBar()
 	guildButton:SetScript("OnEnter", function(self) OnHover(self) end)
 	guildButton:SetScript("OnLeave", function(self) OnLeave(self) end)
 	guildButton:SetScript("OnClick", function(self) if T.InCombatLockdown() then return end _G["ToggleGuildFrame"]() end)
-	guildButton:SetScript("OnUpdate", function(self, elapse)
-		self._elapsed = (self._elapsed or 0) + elapse
-		if self._elapsed >= DELAY then
-			self._elapsed = 0
-			UpdateGuild()
-		end
-	end)
 
 	--Achievements
 	local achieveButton = T.CreateFrame("Button", nil, microBar, "SecureActionButtonTemplate")
@@ -759,6 +744,18 @@ function MB:CreateMicroBar()
 	supportButton:SetScript("OnLeave", function(self) OnLeave(self) end)
 	supportButton:SetScript("OnClick", function(self) if T.InCombatLockdown() then return end ToggleHelpFrame() end)
 	
+	microBar:RegisterEvent("FRIENDLIST_UPDATE")
+	microBar:RegisterEvent("GUILD_ROSTER_UPDATE")
+	microBar:SetScript("OnEvent", function(self, event)
+		if event == "FRIENDLIST_UPDATE" then
+			UpdateFriends()
+		elseif event == "GUILD_ROSTER_UPDATE" then
+			UpdateGuild()
+		end
+	end)
+	UpdateFriends()
+	UpdateGuild()
+
 	E:CreateMover(microBar, "KUI_MicroBarMover", L["KlixUI Micro Bar"], nil, nil, nil, 'ALL,ACTIONBARS,KLIXUI', nil, "KlixUI,modules,actionbars,microBar")
 end
 

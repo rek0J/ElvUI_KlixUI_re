@@ -374,6 +374,16 @@ function KUI:DebugTaintFrames()
 end
 
 -- ============================================================
+-- Precision timing: debugprofilestop() delta is sub-ms and monotonic.
+-- Taking before/after delta avoids the global-reset side-effect of
+-- debugprofilestart() and works correctly even with nested calls.
+-- ============================================================
+local _dpStop = debugprofilestop
+local function PreciseMs()
+	return _dpStop and _dpStop() or (GetTime() * 1000)
+end
+
+-- ============================================================
 -- Function-level trace
 -- Usage: /kuidbg trace [threshold_ms]   start (default 5ms)
 --        /kuidbg trace stop             show report
@@ -383,18 +393,79 @@ local trace = {
 	threshold = 5,
 	results   = {},
 	restores  = {},
+	ring      = {},    -- rolling window for perf+trace attribution
+	ringN     = 20,
+	ringIdx   = 0,
 }
 
+local function TraceRecord(label, ms)
+	trace.ringIdx = (trace.ringIdx % trace.ringN) + 1
+	trace.ring[trace.ringIdx] = { label = label, ms = ms, t = GetTime() }
+	tinsert(trace.results, { label = label, ms = ms })
+	local n = #trace.results
+	if n <= 30 then
+		KUI:Print(format("|cff8080ff[TRACE]|r %s = |cffff8800%.2f|r ms", label, ms))
+	elseif n == 31 then
+		KUI:Print("|cff8080ff[TRACE]|r (too many hits – further prints suppressed; /kuidbg trace stop for report)")
+	end
+end
+
 local function TraceWrap(label, fn, threshold)
-	local results = trace.results
 	return function(self, ...)
-		local t0 = GetTime()
+		local t0 = PreciseMs()
 		fn(self, ...)
-		local ms = (GetTime() - t0) * 1000
+		local ms = PreciseMs() - t0
+		if ms >= threshold then TraceRecord(label, ms) end
+	end
+end
+
+local function TraceWrapEvent(label, fn, threshold)
+	return function(self, event, ...)
+		local t0 = PreciseMs()
+		fn(self, event, ...)
+		local ms = PreciseMs() - t0
 		if ms >= threshold then
-			tinsert(results, { label = label, ms = ms })
-			if #results <= 20 then
-				KUI:Print(format("|cff8080ff[TRACE]|r %s = %.1f ms", label, ms))
+			TraceRecord(label .. "[" .. tostring(event) .. "]", ms)
+		end
+	end
+end
+
+local function TryWrapScript(frame, scriptType, label, threshold, restores, found)
+	if not frame or not frame.GetScript then return false end
+	local orig = frame:GetScript(scriptType)
+	if not orig then return false end
+	local wrapped = (scriptType == "OnEvent")
+		and TraceWrapEvent(label, orig, threshold)
+		or  TraceWrap(label, orig, threshold)
+	frame:SetScript(scriptType, wrapped)
+	tinsert(restores, function()
+		if frame and frame.SetScript then frame:SetScript(scriptType, orig) end
+	end)
+	tinsert(found, label)
+	return true
+end
+
+local function TryWrapMethod(obj, methodName, label, threshold, restores, found)
+	if not obj or type(obj[methodName]) ~= "function" then return false end
+	local orig = obj[methodName]
+	obj[methodName] = TraceWrap(label, orig, threshold)
+	tinsert(restores, function() obj[methodName] = orig end)
+	tinsert(found, label)
+	return true
+end
+
+-- Scan _G for any frame whose global name starts with KUI_ or KlixUI and
+-- wrap its OnUpdate/OnEvent scripts.  One-time cost at trace start only.
+local function AutoScanGlobals(threshold, restores, found)
+	for gName, obj in pairs(_G) do
+		if type(gName) == "string"
+		   and (gName:find("^KUI_") or gName:find("^KlixUI"))
+		   and type(obj) == "table"
+		   and obj.GetScript and obj.IsObjectType then
+			local ok, isF = pcall(obj.IsObjectType, obj, "Frame")
+			if ok and isF then
+				TryWrapScript(obj, "OnUpdate", "OnUpdate:" .. gName, threshold, restores, found)
+				TryWrapScript(obj, "OnEvent",  "OnEvent:"  .. gName, threshold, restores, found)
 			end
 		end
 	end
@@ -408,41 +479,48 @@ function KUI:TraceStart(threshold)
 	trace.threshold = threshold or 5
 	trace.results   = {}
 	trace.restores  = {}
+	trace.ring      = {}
+	trace.ringIdx   = 0
 	trace.active    = true
 
 	local found = {}
 
-	-- Instrument KUI_LocPanel OnUpdate (locpanel UpdateCoords, 0.2s throttle)
-	local lp = _G["KUI_LocPanel"]
-	if lp then
-		local orig = lp:GetScript("OnUpdate")
-		if orig then
-			lp:SetScript("OnUpdate", TraceWrap("locpanel:UpdateCoords", orig, trace.threshold))
-			local restore_lp = orig
-			tinsert(trace.restores, function() lp:SetScript("OnUpdate", restore_lp) end)
-			tinsert(found, "locpanel")
+	-- 1. Auto-scan all globally-named KUI_* / KlixUI* frames
+	AutoScanGlobals(trace.threshold, trace.restores, found)
+
+	-- 2. SMB module methods (not frame scripts, need manual wrapping)
+	local smb = GetSMBModule()
+	if smb then
+		TryWrapMethod(smb, "GrabMinimapButtons", "SMB:GrabMinimapButtons", trace.threshold, trace.restores, found)
+		TryWrapMethod(smb, "SyncConfiguredLists", "SMB:SyncConfiguredLists", trace.threshold, trace.restores, found)
+	end
+
+	-- 3. Known KlixUI module frame scripts (cooldowns, announcements, etc.)
+	local moduleTargets = { "RaidCD", "EnemyCD", "DiminishCD", "PulseCD", "Announcer", "MicroBar", "RaidMarkers" }
+	for _, mName in ipairs(moduleTargets) do
+		local ok, mod = pcall(self.GetModule, self, mName)
+		if ok and mod then
+			local mFrame = rawget(mod, "frame") or rawget(mod, "Frame")
+			if mFrame then
+				TryWrapScript(mFrame, "OnUpdate", mName .. ":OnUpdate", trace.threshold, trace.restores, found)
+				TryWrapScript(mFrame, "OnEvent",  mName .. ":OnEvent",  trace.threshold, trace.restores, found)
+			end
 		end
 	end
 
-	-- Instrument SMB:GrabMinimapButtons (6s timer, O(n) table scan)
-	local smb = GetSMBModule()
-	if smb and smb.GrabMinimapButtons then
-		local orig = smb.GrabMinimapButtons
-		smb.GrabMinimapButtons = TraceWrap("SMB:GrabMinimapButtons", orig, trace.threshold)
-		tinsert(trace.restores, function() smb.GrabMinimapButtons = orig end)
-		tinsert(found, "GrabMinimapButtons")
-	end
-
 	if #found == 0 then
-		self:Print("|cffff4444[trace]|r No instrumentable functions found. Frames may not be initialised yet.")
+		self:Print("|cffff4444[trace]|r No instrumentable targets found. Addon may not be fully initialized yet.")
 		trace.active = false
 		return
 	end
 
 	self:Print(format(
-		"|cff00ff00[trace]|r Function timer ON (threshold %d ms).  Tracing: %s.  Use /kuidbg trace stop.",
-		trace.threshold, table_concat(found, ", ")
+		"|cff00ff00[trace]|r Tracing |cffff8800%d|r targets (threshold |cffff8800%.1f|r ms).",
+		#found, trace.threshold
 	))
+	self:Print("Targets: " .. table_concat(found, ", "))
+	self:Print("Tip: also run |cffffff00/kuidbg perf|r – spikes will show which function was responsible.")
+	self:Print("Use |cffffff00/kuidbg trace stop|r for the full report.")
 end
 
 function KUI:TraceStop()
@@ -459,7 +537,7 @@ function KUI:TraceStop()
 	local n = #trace.results
 	if n == 0 then
 		self:Print(format(
-			"|cff00ff00[trace]|r No KlixUI calls exceeded %d ms.",
+			"|cff00ff00[trace]|r No KlixUI calls exceeded %.1f ms.",
 			trace.threshold
 		))
 		self:Print("If spikes persist, another addon is the cause. Use /kuidbg scriptprofile + /reload.")
@@ -478,14 +556,23 @@ function KUI:TraceStop()
 		if r.ms > d.max then d.max = r.ms end
 	end
 
-	local lines = {
-		format("=== KlixUI Trace Report === (%d slow calls, threshold %d ms)", n, trace.threshold),
-		"",
-	}
+	-- Sort by total time descending so the worst offender is at the top
+	local sorted = {}
 	for label, d in pairs(totals) do
+		tinsert(sorted, { label = label, d = d })
+	end
+	table.sort(sorted, function(a, b) return a.d.total > b.d.total end)
+
+	local lines = {
+		format("=== KlixUI Trace Report === (%d slow calls, threshold %.1f ms)", n, trace.threshold),
+		format("%-52s  %5s  %8s  %8s", "Function", "Calls", "Avg ms", "Max ms"),
+		string.rep("-", 80),
+	}
+	for _, entry in ipairs(sorted) do
+		local d = entry.d
 		tinsert(lines, format(
-			"%-42s  calls=%-4d  avg=%5.1f ms  max=%5.1f ms",
-			label, d.count, d.total / d.count, d.max
+			"%-52s  %5d  %8.2f  %8.2f",
+			entry.label, d.count, d.total / d.count, d.max
 		))
 	end
 	tinsert(lines, "")
@@ -534,16 +621,33 @@ local function PerfOnUpdate(self)
 	perf.prevTime = now
 
 	if frameMs >= perf.threshold then
-		local spike = { time = now, ms = frameMs }
+		local spike = { time = now, ms = frameMs, attrib = nil }
+
+		-- If trace is also running, attach any recent trace hits as attribution.
+		-- The ring buffer holds the last ~20 calls within a 1s window.
+		if trace.active then
+			local parts = {}
+			for i = 1, trace.ringN do
+				local r = trace.ring[i]
+				if r and (now - r.t) <= 1.0 then
+					tinsert(parts, format("%s=%.1fms", r.label, r.ms))
+				end
+			end
+			if #parts > 0 then
+				spike.attrib = table_concat(parts, "  ")
+			end
+		end
+
 		tinsert(perf.spikes, spike)
-		-- print first 30 spikes so the user can see them in real-time
 		if #perf.spikes <= 30 then
-			KUI:Print(format(
+			local line = format(
 				"|cffff4444[SPIKE]|r t=+%.1fs  frame=|cffff8800%.1f|r ms  (~%d fps)",
-				now - perf.startTime,
-				frameMs,
-				math.floor(1000 / frameMs + 0.5)
-			))
+				now - perf.startTime, frameMs, math.floor(1000 / frameMs + 0.5)
+			)
+			if spike.attrib then
+				line = line .. "\n         |cff8080ff→ " .. spike.attrib .. "|r"
+			end
+			KUI:Print(line)
 		end
 	end
 end
@@ -585,7 +689,6 @@ function KUI:PerfStop()
 		return
 	end
 
-	-- calculate intervals between spikes
 	local intervals = {}
 	for i = 2, n do
 		tinsert(intervals, perf.spikes[i].time - perf.spikes[i-1].time)
@@ -617,12 +720,27 @@ function KUI:PerfStop()
 		tinsert(lines, "")
 		tinsert(lines, "Hint: if avg interval ≈ 10 s → system datatext (UpdateMemory)")
 		tinsert(lines, "      if avg interval ≈  6 s → maps/minimapbuttons (GrabMinimapButtons)")
-		tinsert(lines, "      if avg interval ≈  5 s → microBar UpdateFriends/UpdateGuild")
 		tinsert(lines, "      if avg interval ≈ 15 s → titles datatext (UpdateTitles)")
 		tinsert(lines, "      if avg interval < 2 s   → likely another addon (ElvUI/WeakAuras/AllTheThings/Zygor)")
 		tinsert(lines, "")
-		tinsert(lines, "Next steps when interval is short or hints don't match:")
-		tinsert(lines, "  /kuidbg trace        – time KlixUI locpanel + GrabMinimapButtons (no reload)")
+
+		-- Show attribution lines collected during concurrent trace
+		local attributed = {}
+		for _, s in ipairs(perf.spikes) do
+			if s.attrib then
+				tinsert(attributed, format("  t=+%.1fs  %.1fms  → %s", s.time - perf.startTime, s.ms, s.attrib))
+			end
+		end
+		if #attributed > 0 then
+			tinsert(lines, format("Attributed spikes (%d/%d had trace data):", #attributed, n))
+			for _, line in ipairs(attributed) do
+				tinsert(lines, line)
+			end
+			tinsert(lines, "")
+		end
+
+		tinsert(lines, "Next steps:")
+		tinsert(lines, "  /kuidbg trace        – auto-instrument KlixUI frames+events (no reload)")
 		tinsert(lines, "  /kuidbg scriptprofile – toggle per-addon CPU tracking, then /reload")
 		tinsert(lines, "  After reload: hover the System (KUI) datatext for per-addon CPU.")
 	end
@@ -644,9 +762,14 @@ function KUI:DebugCommand(msg)
 			"--- Performance ---",
 			"/kuidbg perf [ms]       – frame-spike monitor (default 12 ms)",
 			"/kuidbg perf stop       – stop and show report",
-			"/kuidbg trace [ms]      – time KlixUI functions: locpanel, GrabMinimapButtons (default 5 ms)",
-			"/kuidbg trace stop      – stop and show per-function report",
+			"/kuidbg trace [ms]      – auto-instrument KlixUI frames+events (default 5 ms)",
+			"/kuidbg trace stop      – stop and show per-function timing report (sorted by total cost)",
 			"/kuidbg scriptprofile   – toggle per-addon CPU profiling (requires /reload)",
+			"",
+			"  Combined workflow for spike attribution:",
+			"    /kuidbg perf  →  /kuidbg trace  →  reproduce the issue",
+			"    /kuidbg trace stop  →  /kuidbg perf stop",
+			"  Each spike line will show which KlixUI function ran in that frame.",
 			"",
 			"--- Debugging ---",
 			"/kuidbg minimap",
