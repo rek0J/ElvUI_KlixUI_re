@@ -3,4 +3,5 @@
 	<script file="speedyloot.lua"/>
 	<script file="easydelete.lua"/>
 	<script file="countdown.lua"/>
+	<script file="compactraidfix.lua"/>
 </Ui>
