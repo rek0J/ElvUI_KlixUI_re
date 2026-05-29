@@ -1,5 +1,47 @@
 # Changelog.md
 
+## 2026-05-29 - Performance, Taint und Debugger Verbesserungen
+
+Diese Session fokussiert sich auf drei separate Problembereiche: einen Performance-Bug im MicroBar, einen `ADDON_ACTION_BLOCKED`-Taint-Fehler durch `CompactRaidFrameManager`, und eine umfassende Erweiterung des In-Game-Debuggers mit Cross-Attribution zwischen Performance-Monitor und Funktions-Tracer.
+
+### Performance: MicroBar event-basierte Updates
+
+- Die `OnUpdate`-Polling-Schleifen der Friends- und Guild-Buttons im MicroBar wurden entfernt. Diese liefen alle 5 Sekunden pro Button und verursachten permanenten Frame-Overhead ohne Anlass.
+- Ersetzt durch event-basierte Updates via `FRIENDLIST_UPDATE` und `GUILD_ROSTER_UPDATE` — Counts werden jetzt nur noch aktualisiert, wenn sich die Daten tatsächlich ändern.
+- `DELAY = 5`-Konstante entfernt.
+
+### Taint-Fix: CompactRaidFrameManager ADDON_ACTION_BLOCKED
+
+- Neues Modul `modules/tweaks/compactraidfix.lua` hinzugefügt, das den 9× wiederholten `ADDON_ACTION_BLOCKED`-Fehler behebt.
+- **Root Cause:** KlixUI HereBeDragons feuert `PlayerZoneChanged`-Callback (tainted Context) → TomTom ruft `SetZoom` auf → CVar-Änderung → Blizzard `CompactRaidFrameManager_UpdateContainerVisibility` → `Show()` auf einem `SecureHandlerShowHideTemplate`-Frame → geblockt.
+- **Warum der alte Fix nicht reichte:** `RegisterStateDriver("hide")` überschreibt die Sichtbarkeit über das sichere Attribut-System, aber erst *nachdem* `Show()` versucht wurde — der Block feuert bereits an der Call-Site.
+- **Richtiger Fix:** `CompactRaidFrameManager_UpdateShown` und `CompactRaidFrameManager_UpdateContainerVisibility` werden durch No-Ops ersetzt, da ElvUI diese Frames durch sein eigenes Raid-Frame-System verwaltet. `RegisterStateDriver("hide")` bleibt als sicherer Fallback.
+- Der Override läuft beim Load, bei `ADDON_LOADED` für `Blizzard_CompactRaidFrames`, bei `PLAYER_ENTERING_WORLD` und `PLAYER_REGEN_ENABLED` — damit werden Late-Loading und ElvUI-Re-Hooks nach Zone-Wechseln abgedeckt.
+- ElvUI's `OnShow`/`OnHide`-Hooks auf den Frames werden entfernt und Frames über das sichere Attribut-System ausgeblendet.
+
+### SyncConfiguredLists Aufräumen
+
+- `SMB:SyncConfiguredLists` hat jetzt eine Phase-1-Cleanup-Schritt, der bedingungslos läuft (auch bevor Buttons gefunden wurden).
+- **Phase 1a:** Entfernt veraltete `ignoreButtons`-Einträge aus älteren DB-Versionen.
+- **Phase 1b:** Entfernt nicht-bevorzugte Alias-Einträge (z.B. `LIBDBICON10_KLIXUI` wenn `KLIXUI` der bevorzugte `displayKey` ist) — behebt doppelte Button-Einträge aus alten Installationen.
+- Absturz-Fix in `UpdateButtonBar` wenn `self.Bar.SetBackdrop` auf manchen Classic-Clients nil ist (Guard hinzugefügt).
+
+### Debugger: Cross-Attribution und Auto-Scan
+
+- Timing von `GetTime()` (10 ms Auflösung) auf `debugprofilestop()` umgestellt für Sub-Millisekunden-Präzision in `/kuidbg trace` und `/kuidbg perf`.
+- Rolling Ring Buffer (20 Einträge) zwischen Tracer und Performance-Monitor geteilt — jede Spike-Zeile zeigt jetzt, welche KlixUI-Funktion in diesem Frame lief.
+- `/kuidbg trace` scannt automatisch alle global benannten `KUI_*` / `KlixUI*`-Frames statt nur einer festen Liste; instrumentiert zusätzlich RaidCD, EnemyCD, DiminishCD, PulseCD, Announcer, MicroBar, RaidMarkers Modul-Frames und `SMB:SyncConfiguredLists`.
+- `TraceStop`-Report ist jetzt nach Gesamtzeit absteigend sortiert — der schlimmste Verursacher steht oben.
+- `TraceWrapEvent` hinzugefügt, der den Event-Namen im Label mitführt (`FunctionName[EVENT_NAME]`).
+- Kombinierter `/kuidbg perf` + `/kuidbg trace` Workflow ist in `/kuidbg help` dokumentiert.
+
+### Status
+
+- Alle Änderungen dieser Session sind lokal (noch kein Commit).
+- Die 9× `ADDON_ACTION_BLOCKED`-Fehler sollten nach `/reload` weg sein.
+- MicroBar-OnUpdate-Overhead ist eliminiert.
+- Debugger ist bereit für erweiterte Performance-Diagnose.
+
 ## 2026-04-15 - Character Frame, Toasts and MoP UI Follow-up
 
 This update continues the MoP Classic port with a narrower follow-up pass on the character frame, the Armory/Stats panel, toast notifications, LibDBIcon/minimap tooltip behavior, and Blizzard UI skin guards. The goal remained conservative: keep working legacy pieces, disable broken retail-only overlays on MoP, and replace missing APIs with client-safe fallbacks.

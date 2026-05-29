@@ -8,21 +8,19 @@ local DISABLED_FONT_COLOR = DISABLED_FONT_COLOR
 
 local ChangeLogData = {
 	"Changes:",
-		"- Continued MoP Classic compatibility cleanup across Armory, Toasts, Movers, Minimap Buttons and Blizzard skins",
-		"- Fixed Character, Talent and Trainer related MoP issues by disabling incompatible overlays and retail-only extra skins",
-		"- Fixed Armory stats panel sizing and anchoring, MoP stat/spec paths and restored native Blizzard stats handling where needed",
-		"- Fixed SpeedyLoot, Gossip, CombatText, recipe and currency toast paths with MoP-safe API fallbacks and guards",
-		"- Fixed multiple Blizzard skin modules for MoP UI differences, missing subframes and unsupported retail-only systems",
-		"- Improved Square Minimap Buttons filtering, broker naming, tooltip styling and LibDBIcon compatibility follow-up",
-		"- Improved Blizzard frame mover anchoring/session handling and cleaned up missing-frame and slider edge cases",
-		"- Added safer MoP feature detection so unsupported systems are skipped defensively instead of hard crashing",
+		"- Fixed 9x ADDON_ACTION_BLOCKED taint: CompactRaidFrameManager Show() blocked by HereBeDragons/TomTom zone-change chain",
+		"- Fixed MicroBar performance: replaced OnUpdate polling (every 5s) with FRIENDLIST_UPDATE / GUILD_ROSTER_UPDATE events",
+		"- Fixed SMB:SyncConfiguredLists: stale ignoreButtons and non-preferred alias entries now cleaned unconditionally",
+		"- Fixed UpdateButtonBar crash when SetBackdrop is nil on some Classic clients",
+		"- Upgraded /kuidbg trace: auto-scans all KUI_*/KlixUI* frames, sub-ms timing, event-name labels",
+		"- Upgraded /kuidbg perf: ring-buffer cross-attribution shows which KlixUI function caused each spike",
 		" ", -- Section space!
 
 	" ",
 
 	"Notes:",
 		"|cff00ffda- Detailed release notes are available in 'changelog.md'.|r",
-		"|cff00ffda- Retail-only blocks without a safe MoP fallback are now skipped defensively instead of crashing.|r",
+		"|cff00ffda- After /reload the ADDON_ACTION_BLOCKED errors for CompactRaidFrameManager should be gone.|r",
 }
 
 local function ModifiedString(string)
