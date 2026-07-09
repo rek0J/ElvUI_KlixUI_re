@@ -48,7 +48,7 @@ function KAB:ABStyling()
 	end
 	
 	-- Stance Buttons
-	for i = 1, NUM_STANCE_SLOTS do
+	for i = 1, (NUM_STANCE_SLOTS or 0) do
 		local stanceButtons = {_G["ElvUI_StanceBarButton"..i]}
 		for _, button in T.pairs(stanceButtons) do
 			button:CreateIconShadow()
@@ -94,14 +94,16 @@ function KAB:SpellActivationGlow()
 		if LibStub then
 			local lib = LibStub:GetLibrary("LibButtonGlow-1.0",4)
 			if lib then
+				-- NOTE: replaces LibButtonGlow-1.0 globally — affects all addons using it (DBM, BigWigs etc.)
+				-- Only active when KlixUI glow is enabled and CoolGlow is absent.
+				function lib.HideOverlayGlow(button)
+					LCG.PixelGlow_Stop(button)
+				end
 				function lib.ShowOverlayGlow(button)
 					if button:GetAttribute("type") == "action" then
 						local actionType,actionID = T.GetActionInfo(button:GetAttribute("action"))
 						local color = {E.db.KlixUI.actionbars.glow.color.r, E.db.KlixUI.actionbars.glow.color.g, E.db.KlixUI.actionbars.glow.color.b, E.db.KlixUI.actionbars.glow.color.a or 1}
 						LCG.PixelGlow_Start(button, color, E.db.KlixUI.actionbars.glow.number, E.db.KlixUI.actionbars.glow.frequency, E.db.KlixUI.actionbars.glow.length, E.db.KlixUI.actionbars.glow.thickness, E.db.KlixUI.actionbars.glow.xOffset, E.db.KlixUI.actionbars.glow.yOffset, nil)
-					end
-					function lib.HideOverlayGlow(button)
-						LCG.PixelGlow_Stop(button)
 					end
 				end
 			end

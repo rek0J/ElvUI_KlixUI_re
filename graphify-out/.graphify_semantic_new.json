@@ -1,0 +1,540 @@
+{
+  "nodes": [
+    {
+      "id": "readme_elvui_klixui",
+      "label": "ElvUI_KlixUI-Classic AddOn",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_klixui",
+      "label": "KlixUI Changelog",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_graphify_rules",
+      "label": "CLAUDE.md Graphify Rules",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_microbar_perf",
+      "label": "MicroBar Event-Based Update Fix",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 7-11",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_compactraidfix",
+      "label": "CompactRaidFrameManager Taint Fix",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 13-21",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_syncconfiguredlists",
+      "label": "SyncConfiguredLists Cleanup",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 23-28",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_debugger",
+      "label": "KlixUI Debugger Cross-Attribution",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 30-37",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_mop_porting",
+      "label": "MoP Classic Porting Update",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 141-219",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_mop_char_toasts",
+      "label": "Character Frame Toasts and MoP UI Follow-up",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 46-105",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "changelog_minimap_combattext",
+      "label": "Minimap Buttons and CombatText Follow-up",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 107-139",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "lib_herebedragons",
+      "label": "HereBeDragons Library",
+      "file_type": "document",
+      "source_file": "libs/HereBeDragons/CHANGELOG.md",
+      "source_location": null,
+      "source_url": "https://github.com/Nevcairiel/HereBeDragons",
+      "captured_at": null,
+      "author": "Nevcairiel",
+      "contributor": null
+    },
+    {
+      "id": "lib_libeasing",
+      "label": "LibEasing-1.0",
+      "file_type": "document",
+      "source_file": "libs/LibEasing/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Michael P. Starkweather (mpstark)",
+      "contributor": null
+    },
+    {
+      "id": "lib_libprocessable",
+      "label": "LibProcessable",
+      "file_type": "document",
+      "source_file": "libs/LibProcessable/CHANGELOG.md",
+      "source_location": null,
+      "source_url": "https://github.com/p3lim-wow/LibProcessable",
+      "captured_at": null,
+      "author": "Adrian L Lange",
+      "contributor": null
+    },
+    {
+      "id": "lib_librealminfo",
+      "label": "LibRealmInfo",
+      "file_type": "document",
+      "source_file": "libs/LibRealmInfo/LICENSE.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Phanx",
+      "contributor": null
+    },
+    {
+      "id": "lib_libtourist",
+      "label": "LibTourist-3.0",
+      "file_type": "document",
+      "source_file": "libs/LibTourist-3.0/CHANGES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Odica",
+      "contributor": null
+    },
+    {
+      "id": "lib_libtouristclassic",
+      "label": "LibTouristClassic-1.0",
+      "file_type": "document",
+      "source_file": "libs/LibTouristClassic-1.0/CHANGES.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Odica Jaedenar",
+      "contributor": null
+    },
+    {
+      "id": "media_classicons_credit",
+      "label": "Class Icons Credit ADDOriN",
+      "file_type": "document",
+      "source_file": "media/textures/classIcons/credit.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "ADDOriN",
+      "contributor": null
+    },
+    {
+      "id": "rationale_taint_herebedragons",
+      "label": "HereBeDragons Taint Root Cause",
+      "file_type": "rationale",
+      "source_file": "changelog.md",
+      "source_location": "lines 16-21",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "rationale_libstub_pattern",
+      "label": "LibStub-Based Library Pattern",
+      "file_type": "rationale",
+      "source_file": "libs/LibEasing/README.md",
+      "source_location": "line 8",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "rationale_libeasing_penner",
+      "label": "Robert Penner Easing Equations",
+      "file_type": "rationale",
+      "source_file": "libs/LibEasing/README.md",
+      "source_location": "lines 3-5",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Robert Penner",
+      "contributor": "EmmanuelOga"
+    }
+  ],
+  "edges": [
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_microbar_perf",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 7-11",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_compactraidfix",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 13-21",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_syncconfiguredlists",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 23-28",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_debugger",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 30-37",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_mop_porting",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 141-219",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_mop_char_toasts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 46-105",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_klixui",
+      "target": "changelog_minimap_combattext",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 107-139",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_compactraidfix",
+      "target": "lib_herebedragons",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "line 16",
+      "weight": 1.0
+    },
+    {
+      "source": "changelog_compactraidfix",
+      "target": "rationale_taint_herebedragons",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "lines 16-18",
+      "weight": 1.0
+    },
+    {
+      "source": "rationale_taint_herebedragons",
+      "target": "lib_herebedragons",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md",
+      "source_location": "line 16",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_libeasing",
+      "target": "rationale_libstub_pattern",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "libs/LibEasing/README.md",
+      "source_location": "line 8",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_libeasing",
+      "target": "rationale_libeasing_penner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "libs/LibEasing/README.md",
+      "source_location": "lines 3-5",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_libprocessable",
+      "target": "lib_libeasing",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "libs/LibProcessable/CHANGELOG.md",
+      "source_location": null,
+      "weight": 0.65
+    },
+    {
+      "source": "lib_libtouristclassic",
+      "target": "lib_libtourist",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "libs/LibTouristClassic-1.0/CHANGES.txt",
+      "source_location": null,
+      "weight": 0.95
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "changelog_klixui",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_herebedragons",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_libeasing",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_libprocessable",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_librealminfo",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_libtourist",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "lib_libtouristclassic",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "readme_elvui_klixui",
+      "target": "media_classicons_credit",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 0.65
+    },
+    {
+      "source": "claude_graphify_rules",
+      "target": "readme_elvui_klixui",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "changelog_mop_porting",
+      "target": "changelog_mop_char_toasts",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "changelog.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "changelog_mop_char_toasts",
+      "target": "changelog_minimap_combattext",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "changelog.md",
+      "source_location": null,
+      "weight": 0.85
+    },
+    {
+      "source": "changelog_debugger",
+      "target": "changelog_microbar_perf",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "changelog.md",
+      "source_location": null,
+      "weight": 0.75
+    },
+    {
+      "source": "lib_libtourist",
+      "target": "lib_libtouristclassic",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "libs/LibTouristClassic-1.0/CHANGES.txt",
+      "source_location": null,
+      "weight": 0.9
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "mop_classic_porting_effort",
+      "label": "MoP Classic Porting Effort",
+      "nodes": [
+        "changelog_mop_porting",
+        "changelog_mop_char_toasts",
+        "changelog_minimap_combattext"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "changelog.md"
+    },
+    {
+      "id": "klixui_lib_bundle",
+      "label": "KlixUI Bundled Libraries",
+      "nodes": [
+        "lib_herebedragons",
+        "lib_libeasing",
+        "lib_libprocessable",
+        "lib_librealminfo"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "README.md"
+    },
+    {
+      "id": "taint_perf_debug_session",
+      "label": "2026-05-29 Taint Performance Debugger Session",
+      "nodes": [
+        "changelog_microbar_perf",
+        "changelog_compactraidfix",
+        "changelog_debugger"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "changelog.md"
+    }
+  ],
+  "input_tokens": 33178,
+  "output_tokens": 0
+}

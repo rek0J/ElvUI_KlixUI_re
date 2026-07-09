@@ -28,6 +28,7 @@ local blacklisted = {
   ["USE_NO_REFUND_CONFIRM"] = true, -- another option rendered unusable 7.3 hotfix
   ["BUYOUT_AUCTION"] = true, -- require interaction
   ["RENAME_PET"] = true, -- name need to be defined by user
+  ["REPLACE_GLYPH"] = true, -- it call protected function PlaceGlyphInSocket
 }
 
 function CSP:Message(...)

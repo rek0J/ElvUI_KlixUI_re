@@ -336,8 +336,8 @@ T.GetCurrentRegion = GetCurrentRegion
 T.GetCurrentTitle = GetCurrentTitle
 T.GetCursorInfo = GetCursorInfo
 T.GetCursorPosition = GetCursorPosition
-T.GetCVar = GetCVar
-T.GetCVarBool = GetCVarBool
+T.GetCVar     = C_CVar and C_CVar.GetCVar     or GetCVar
+T.GetCVarBool = C_CVar and C_CVar.GetCVarBool or GetCVarBool
 T.GetDetailedItemLevelInfo = GetDetailedItemLevelInfo
 T.GetDifficultyInfo = GetDifficultyInfo
 T.GetDistanceSqToQuest = GetDistanceSqToQuest
@@ -383,8 +383,11 @@ T.GetInventoryItemTexture = GetInventoryItemTexture
 T.GetInventorySlotInfo = GetInventorySlotInfo
 T.GetItemClassInfo = GetItemClassInfo
 T.GetItemCooldown = function(...)
-	if GetItemCooldown then
-		local start, duration, enable = GetItemCooldown(...)
+	-- Plain GetItemCooldown global is gone on newer clients; itemID-based lookup
+	-- moved to C_Container.GetItemCooldown (same args/returns as the old global).
+	local fn = GetItemCooldown or (C_Container and C_Container.GetItemCooldown)
+	if fn then
+		local start, duration, enable = fn(...)
 		return start or 0, duration or 0, enable or 0
 	end
 
@@ -398,7 +401,7 @@ T.GetItemInfoFromHyperlink = GetItemInfoFromHyperlink
 T.GetItemInfoInstant = GetItemInfoInstant
 T.GetItemLevelColor = GetItemLevelColor
 T.GetItemQualityColor = GetItemQualityColor
-T.GetItemSpell = GetItemSpell
+T.GetItemSpell = GetItemSpell or (rawget(_G, "C_Item") and rawget(_G, "C_Item").GetItemSpell)
 T.GetLatestThreeSenders = GetLatestThreeSenders
 T.GetLFGCompletionReward = GetLFGCompletionReward
 T.GetLFGCompletionRewardItem = GetLFGCompletionRewardItem
@@ -543,14 +546,23 @@ T.GetSpellAvailableLevel = GetSpellAvailableLevel
 T.GetSpellBonusDamage = GetSpellBonusDamage
 T.GetSpellBonusHealing = GetSpellBonusHealing
 T.GetSpellBookItemInfo = GetSpellBookItemInfo
-T.GetSpellCharges = GetSpellCharges
-T.GetSpellCooldown = GetSpellCooldown
+T.GetSpellCharges  = C_Spell and C_Spell.GetSpellCharges  or GetSpellCharges
+T.GetSpellCooldown = C_Spell and C_Spell.GetSpellCooldown or GetSpellCooldown
 T.GetSpellCritChance = GetSpellCritChance
 T.GetSpellHitModifier = GetSpellHitModifier
-T.GetSpellInfo = GetSpellInfo
+if C_Spell and C_Spell.GetSpellInfo then
+	T.GetSpellInfo = function(id)
+		local info = C_Spell.GetSpellInfo(id)
+		if info then
+			return info.name, info.subName or "", info.iconID, info.castTime, info.minRange, info.maxRange, info.spellID or id, info.originalIconID
+		end
+	end
+else
+	T.GetSpellInfo = GetSpellInfo
+end
 T.GetSpellLink = GetSpellLink
 T.GetSpellRank = GetSpellRank
-T.GetSpellTexture = GetSpellTexture
+T.GetSpellTexture  = C_Spell and C_Spell.GetSpellTexture  or GetSpellTexture
 T.GetStatistic = GetStatistic
 T.GetSubZoneText = GetSubZoneText
 T.GetTalentInfo = GetTalentInfo
@@ -721,7 +733,7 @@ T.SendWho = SendWho
 T.SetAchievementComparisonUnit = SetAchievementComparisonUnit
 T.SetAchievementSearchString = SetAchievementSearchString
 T.SetCurrentTitle = SetCurrentTitle
-T.SetCVar = SetCVar
+T.SetCVar     = C_CVar and C_CVar.SetCVar     or SetCVar
 T.SetItemButtonCount = SetItemButtonCount
 T.SetItemButtonNameFrameVertexColor = SetItemButtonNameFrameVertexColor
 T.SetItemButtonNormalTextureVertexColor = SetItemButtonNormalTextureVertexColor

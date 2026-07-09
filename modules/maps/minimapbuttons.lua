@@ -37,6 +37,14 @@ local ignoreButtons = {
 	'RecipeRadarMinimapButtonFrame',
 	'SquareMinimapButtonBar',
 	'KUI_SquareMinimapButtonBarMover',
+	-- LFG / Dungeon Browser / Raid Browser / Group Finder — must stay on minimap
+	'LFGMinimapFrame',
+	'MiniMapLFGFrame',
+	'LFDMinimapFrame',
+	'LFGFrame',
+	'GroupFinderFrame',
+	'RaidBrowserFrame',
+	'PremadeGroupsFrame',
 }
 
 local GenericIgnores = {
@@ -389,12 +397,36 @@ local function NameMatchesPinPattern(frameName)
 	return false
 end
 
+-- Patterns for Blizzard frames that must stay on the minimap and must never be collected.
+-- Used in addition to the exact-name ignoreButtons list above.
+local ForbiddenPatterns = {
+	"QueueStatus",
+	"LFG",
+	"LFD",
+	"RaidBrowser",
+	"GroupFinder",
+	"PremadeGroups",
+	"LookingForGroup",
+}
+
+local function IsForbiddenMinimapButton(name)
+	if not name or name == "" then return false end
+	if T.tContains(ignoreButtons, name) then return true end
+	for _, pattern in ipairs(ForbiddenPatterns) do
+		if name:find(pattern, 1, true) then
+			return true
+		end
+	end
+	return false
+end
+
 local function IsLikelyNamedMinimapButton(object)
 	if not object or not object.GetName then return false end
 
 	local frameName = object:GetName()
 	if not frameName or frameName == "" then return false end
 	if issecurevariable and issecurevariable(_G, frameName) then return false end
+	if IsForbiddenMinimapButton(frameName) then return false end
 	if IsTomCatsButton(frameName) then return true end
 	if NameEndsWithNumber(frameName) then return false end
 
@@ -1275,7 +1307,7 @@ function SMB:SkinMinimapButton(Button)
 	if not Name then return end
 	if not OriginalIconTexture then return end
 
-	if T.tContains(ignoreButtons, Name) then return end
+	if IsForbiddenMinimapButton(Name) then return end
 
 	for i = 1, #GenericIgnores do
 		if T.string_sub(Name, 1, T.string_len(GenericIgnores[i])) == GenericIgnores[i] then return end

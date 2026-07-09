@@ -1,8 +1,34 @@
 local E, _, V, P, G = unpack(ElvUI)
-local locale = (E.global.general.locale and E.global.general.locale ~= "auto") and E.global.general.locale or GetLocale()
+local locale = (E.global and E.global.general and E.global.general.locale and E.global.general.locale ~= "auto") and E.global.general.locale or GetLocale()
 local L = E.Libs.ACL:GetLocale('ElvUI', locale)
 local EP = LibStub("LibElvUIPlugin-1.0")
 local addon, Engine = ...
+
+-- MoP Classic Phase 5+: restore globals moved into C_AddOns / C_CVar / C_SpecializationInfo
+if C_AddOns then
+	GetAddOnMetadata        = C_AddOns.GetAddOnMetadata        or GetAddOnMetadata
+	IsAddOnLoaded           = C_AddOns.IsAddOnLoaded           or IsAddOnLoaded
+	do -- arg order changed: old (character, name) → new (name [, character])
+		local _orig = C_AddOns.GetAddOnEnableState
+		GetAddOnEnableState = function(character, addon) return _orig(addon, character) end
+	end
+	DisableAddOn            = C_AddOns.DisableAddOn            or DisableAddOn
+	EnableAddOn             = C_AddOns.EnableAddOn             or EnableAddOn
+	DisableAllAddOns        = C_AddOns.DisableAllAddOns        or DisableAllAddOns
+	EnableAllAddOns         = C_AddOns.EnableAllAddOns         or EnableAllAddOns
+	GetAddOnInfo            = C_AddOns.GetAddOnInfo            or GetAddOnInfo
+	GetNumAddOns            = C_AddOns.GetNumAddOns            or GetNumAddOns
+	LoadAddOn               = C_AddOns.LoadAddOn               or LoadAddOn
+	GetAddOnDependencies    = C_AddOns.GetAddOnDependencies    or GetAddOnDependencies
+	GetAddOnOptionalDependencies = C_AddOns.GetAddOnOptionalDependencies or GetAddOnOptionalDependencies
+end
+if C_SpecializationInfo then
+	GetSpecialization       = C_SpecializationInfo.GetSpecialization       or GetSpecialization
+	GetSpecializationInfo   = C_SpecializationInfo.GetSpecializationInfo   or GetSpecializationInfo
+	GetActiveSpecGroup      = C_SpecializationInfo.GetActiveSpecGroup      or GetActiveSpecGroup
+	SetSpecialization       = C_SpecializationInfo.SetSpecialization       or SetSpecialization
+	GetNumSpecializations   = C_SpecializationInfo.GetNumSpecializations   or GetNumSpecializations
+end
 
 local KUI = E.Libs.AceAddon:NewAddon(addon, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 

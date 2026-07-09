@@ -139,10 +139,19 @@ local function BuildFrameDump(frame)
 	AddLine(lines, "Visible: %s", BoolText(frame and frame.IsVisible and frame:IsVisible()))
 	AddLine(lines, "Protected: %s", BoolText(frame and frame.IsProtected and frame:IsProtected()))
 	AddLine(lines, "Forbidden: %s", BoolText(frame and frame.IsForbidden and frame:IsForbidden()))
+	AddLine(lines, "MouseEnabled: %s", BoolText(frame and frame.IsMouseEnabled and frame:IsMouseEnabled()))
 	AddLine(lines, "FrameStrata: %s", tostring(frame and frame.GetFrameStrata and frame:GetFrameStrata() or "nil"))
 	AddLine(lines, "FrameLevel: %s", tostring(frame and frame.GetFrameLevel and frame:GetFrameLevel() or "nil"))
 	AddLine(lines, "Alpha: %s", tostring(frame and frame.GetAlpha and frame:GetAlpha() or "nil"))
 	AddLine(lines, "Size: %s x %s", tostring(frame and frame.GetWidth and frame:GetWidth() or "nil"), tostring(frame and frame.GetHeight and frame:GetHeight() or "nil"))
+	if frame and frame.GetAttribute then
+		AddLine(lines, "attr type: %s", tostring(frame:GetAttribute("type")))
+		AddLine(lines, "attr item: %s", tostring(frame:GetAttribute("item")))
+		AddLine(lines, "attr macrotext: %s", tostring(frame:GetAttribute("macrotext")))
+	end
+	if frame and frame.itemID ~= nil then
+		AddLine(lines, "itemID: %s | itemName: %s | slotID: %s", tostring(frame.itemID), tostring(frame.itemName), tostring(frame.slotID))
+	end
 	AddPointInfo(lines, frame)
 	AddTextureSlots(lines, frame)
 	AddRegionInfo(lines, frame)
@@ -586,12 +595,12 @@ end
 -- Usage: /kuidbg scriptprofile
 -- ============================================================
 function KUI:ToggleScriptProfile()
-	local current = GetCVar and GetCVar("scriptProfile")
+	local current = T.GetCVar("scriptProfile")
 	if current == "1" then
-		SetCVar("scriptProfile", "0")
+		T.SetCVar("scriptProfile", "0")
 		self:Print("|cffff8800[perf]|r Script profiling DISABLED. /reload to apply.")
 	else
-		SetCVar("scriptProfile", "1")
+		T.SetCVar("scriptProfile", "1")
 		self:Print("|cff00ff00[perf]|r Script profiling ENABLED. /reload to apply.")
 		self:Print("After reload: hover the |cffffff00System (KUI)|r datatext to see per-addon CPU usage.")
 	end
@@ -748,6 +757,212 @@ function KUI:PerfStop()
 	self:ShowDebugOutput("KlixUI Perf Report", table_concat(lines, "\n"))
 end
 
+function KUI:DebugAutoButtons()
+	local lines = {}
+	local names = {"AutoQuestButton", "AutoSlotButton"}
+	for _, prefix in ipairs(names) do
+		AddLine(lines, "=== %s ===", prefix)
+		for i = 1, 12 do
+			local btn = _G[prefix .. i]
+			if not btn then break end
+			local alpha = btn.GetAlpha and btn:GetAlpha() or "?"
+			local mouseOn = btn.IsMouseEnabled and BoolText(btn:IsMouseEnabled()) or "?"
+			local shown = btn.IsShown and BoolText(btn:IsShown()) or "?"
+			local forbidden = btn.IsForbidden and BoolText(btn:IsForbidden()) or "?"
+			local attrType = btn.GetAttribute and tostring(btn:GetAttribute("type")) or "?"
+			local attrBag  = btn.GetAttribute and tostring(btn:GetAttribute("bag"))  or "?"
+			local attrSlot = btn.GetAttribute and tostring(btn:GetAttribute("slot")) or "?"
+			local attrMacro = btn.GetAttribute and tostring(btn:GetAttribute("macrotext")) or "?"
+			AddLine(lines, "[%d] shown=%s alpha=%s mouse=%s forbidden=%s", i, shown, tostring(alpha), mouseOn, forbidden)
+			AddLine(lines, "    type=%s bag=%s slot=%s macro=%s", attrType, attrBag, attrSlot, attrMacro)
+			AddLine(lines, "    itemID=%s itemName=%s slotID=%s", tostring(btn.itemID), tostring(btn.itemName), tostring(btn.slotID))
+		end
+	end
+	AddLine(lines, "")
+	AddLine(lines, "InCombatLockdown: %s", BoolText(InCombatLockdown()))
+
+	-- Quest watch API state
+	local gwf = _G.GetQuestIndexForWatch
+	local C_QL = rawget(_G, "C_QuestLog")
+	local gwf_c = C_QL and rawget(C_QL, "GetQuestIndexForWatch")
+	local gnw   = _G.GetNumQuestWatches
+	local gnw_c = C_QL and rawget(C_QL, "GetNumQuestWatches")
+	AddLine(lines, "")
+	AddLine(lines, "=== Quest Watch API ===")
+	AddLine(lines, "GetQuestIndexForWatch: %s | C_QuestLog.GetQuestIndexForWatch: %s",
+		BoolText(gwf ~= nil), BoolText(gwf_c ~= nil))
+	AddLine(lines, "GetNumQuestWatches: %s | C_QuestLog.GetNumQuestWatches: %s",
+		BoolText(gnw ~= nil), BoolText(gnw_c ~= nil))
+	local watchCount = (gnw and gnw()) or (gnw_c and gnw_c()) or 0
+	AddLine(lines, "WatchCount: %d", watchCount)
+	for wi = 1, watchCount do
+		local qli = (gwf and gwf(wi)) or (gwf_c and gwf_c(wi))
+		local title
+		if qli and _G.GetQuestLogTitle then
+			title = (_G.GetQuestLogTitle(qli))
+		end
+		local link
+		if qli and _G.GetQuestLogSpecialItemInfo then
+			link = (_G.GetQuestLogSpecialItemInfo(qli))
+		end
+		AddLine(lines, "  watch[%d] → logIdx=%s title=%s specialItem=%s", wi,
+			tostring(qli), tostring(title), tostring(link ~= nil and "yes" or "no"))
+	end
+
+	self:ShowDebugOutput("AutoButtons Debug", table_concat(lines, "\n"))
+end
+
+function KUI:DebugAutoButtonTest(args)
+	if args == "close" or args == "hide" then
+		if _G["KUI_ABTestButton"] then _G["KUI_ABTestButton"]:Hide() end
+		if _G["KUI_ABBareButton"] then _G["KUI_ABBareButton"]:Hide() end
+		self:Print("[abtest] Test buttons hidden.")
+		return
+	end
+
+	-- /kuidbg abtest bare <itemID>  – completely bare button, zero addon scripts
+	local bareMode = false
+	local trimmed = args or ""
+	if trimmed:sub(1, 5) == "bare " then
+		bareMode = true
+		trimmed = trimmed:sub(6)
+	end
+
+	local itemID = tonumber(trimmed)
+	if not itemID then
+		self:Print("Usage: /kuidbg abtest <itemID>  |  /kuidbg abtest bare <itemID>  |  /kuidbg abtest close")
+		return
+	end
+
+	if bareMode then
+		if InCombatLockdown() then self:Print("[abtest] Cannot modify in combat.") return end
+		local itemName = T.GetItemInfo and T.GetItemInfo(itemID)
+		local icon = T.GetItemIcon and T.GetItemIcon(itemID)
+		local bare = _G["KUI_ABBareButton"]
+		if not bare then
+			bare = CreateFrame("Button", "KUI_ABBareButton", UIParent, "SecureActionButtonTemplate")
+			bare:SetSize(48, 48)
+			bare:SetFrameStrata("DIALOG")
+			bare:SetFrameLevel(100)
+			bare:EnableMouse(true)
+			bare:RegisterForClicks("AnyUp")
+			local t = bare:CreateTexture(nil, "ARTWORK")
+			t:SetAllPoints()
+			bare.tex = t
+			-- WrapScript: call UseItemByName directly in secure Lua (bypasses type dispatch)
+			bare:WrapScript(bare, "OnClick", [[
+				local b = self:GetAttribute("bag")
+				local s = self:GetAttribute("slot")
+				if b ~= nil and s then
+					if UseContainerItem then UseContainerItem(b, s) return false end
+				end
+				local nm = self:GetAttribute("item")
+				if nm then
+					if UseItemByName then UseItemByName(nm) return false end
+					if RunMacroText then RunMacroText("/use "..nm) return false end
+				end
+			]])
+		end
+		local bag, slot = KUI:BagSearch(itemID)
+		bare:ClearAllPoints()
+		bare:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+		bare:SetAttribute("item", nil)
+		bare:SetAttribute("macrotext", nil)
+		if bag ~= nil and slot then
+			bare:SetAttribute("bag", bag)
+			bare:SetAttribute("slot", slot)
+		else
+			bare:SetAttribute("bag", nil)
+			bare:SetAttribute("slot", nil)
+			bare:SetAttribute("item", itemName or nil)
+		end
+		bare.tex:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark")
+		bare:Show()
+		self:Print(format("[abtest] BARE+WrapScript | itemID=%d | name=%s | bag=%s | slot=%s — klick und check ob Item benutzt wird", itemID, tostring(itemName), tostring(bag), tostring(slot)))
+		return
+	end
+
+	if InCombatLockdown() then
+		self:Print("[abtest] Cannot modify in combat.")
+		return
+	end
+
+	local btn = _G["KUI_ABTestButton"]
+	if not btn then
+		btn = CreateFrame("Button", "KUI_ABTestButton", UIParent, "SecureActionButtonTemplate")
+		btn:SetSize(48, 48)
+		btn:SetFrameStrata("DIALOG")
+		btn:EnableMouse(true)
+		btn:RegisterForClicks("AnyUp")
+		if btn.CreateBackdrop then
+			btn:CreateBackdrop("Default")
+			if btn.backdrop then btn.backdrop:EnableMouse(false) end
+		end
+		btn.tex = btn:CreateTexture(nil, "ARTWORK")
+		btn.tex:SetAllPoints()
+		btn.label = btn:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		btn.label:SetPoint("TOP", btn, "BOTTOM", 0, -2)
+		btn:HookScript("OnMouseDown", function(self, b)
+			print(string.format(
+				"|cfff960d9[ABTest]|r MDOWN | btn=%s | type=%s | bag=%s | slot=%s | macro=%s | mouse=%s | combat=%s",
+				tostring(b),
+				tostring(self:GetAttribute("type")),
+				tostring(self:GetAttribute("bag")),
+				tostring(self:GetAttribute("slot")),
+				tostring(self:GetAttribute("macrotext")),
+				tostring(self:IsMouseEnabled()),
+				tostring(InCombatLockdown())))
+		end)
+		btn:HookScript("OnMouseUp", function(self, b)
+			print(string.format("|cfff960d9[ABTest]|r MUP | btn=%s", tostring(b)))
+		end)
+		btn:SetScript("PreClick", function(self, b)
+			print(string.format(
+				"|cfff960d9[ABTest]|r PRE | btn=%s | type=%s | bag=%s | slot=%s | macro=%s | combat=%s",
+				tostring(b),
+				tostring(self:GetAttribute("type")),
+				tostring(self:GetAttribute("bag")),
+				tostring(self:GetAttribute("slot")),
+				tostring(self:GetAttribute("macrotext")),
+				tostring(InCombatLockdown())))
+		end)
+		btn:SetScript("PostClick", function(self, b)
+			print("|cfff960d9[ABTest]|r POST → secure action fired")
+		end)
+	end
+
+	btn:ClearAllPoints()
+	btn:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	btn:SetFrameLevel(100)
+	btn:SetAttribute("item", nil)
+	btn:SetAttribute("macrotext", nil)
+	btn:SetAttribute("bag", nil)
+	btn:SetAttribute("slot", nil)
+
+	local itemName = T.GetItemInfo and T.GetItemInfo(itemID)
+	local icon = T.GetItemIcon and T.GetItemIcon(itemID)
+	btn.tex:SetTexture(icon or "Interface\\Icons\\INV_Misc_QuestionMark")
+
+	-- type="item" + item=name calls UseItemByName(name) directly.
+	-- bag/slot approach was confirmed broken in MoP Classic 5.5.4.
+	if itemName then
+		btn:SetAttribute("type", "item")
+		btn:SetAttribute("item", itemName)
+		btn.label:SetText("type=item | " .. itemName)
+		self:Print(format("[abtest] itemID=%d | name=%s → type=item item=name", itemID, itemName))
+	else
+		local macro = "/use item:" .. itemID
+		btn:SetAttribute("type", "macro")
+		btn:SetAttribute("macrotext", macro)
+		btn.label:SetText(macro)
+		self:Print(format("[abtest] itemID=%d | name not cached → macro=%s", itemID, macro))
+	end
+	btn:SetAlpha(1)
+	btn:Show()
+
+	self:Print("[abtest] MDOWN/MUP/PRE/POST erscheinen im Chat. /kuidbg abtest close zum Entfernen.")
+end
+
 function KUI:DebugCommand(msg)
 	msg = strtrim(msg or "")
 
@@ -776,6 +991,10 @@ function KUI:DebugCommand(msg)
 			"/kuidbg button <FrameName or Token>",
 			"/kuidbg frame <GlobalFrameName>",
 			"/kuidbg taint",
+			"/kuidbg autobuttons      – dump AutoQuestButton/AutoSlotButton state",
+		"/kuidbg abclick          – toggle click debugger (MDOWN/MUP/PRE/POST per click in chat)",
+		"/kuidbg abtest <itemID>  – create standalone test button with /use item:ID",
+		"/kuidbg abtest close     – hide test button",
 			"",
 			"--- Workflow ---",
 			"1. /kuidbg perf → run 60s → /kuidbg perf stop",
@@ -811,6 +1030,16 @@ function KUI:DebugCommand(msg)
 		return
 	elseif command == "taint" then
 		self:DebugTaintFrames()
+		return
+	elseif command == "autobuttons" or command == "ab" then
+		self:DebugAutoButtons()
+		return
+	elseif command == "abclick" then
+		KUI.AutoButtonClickDebug = not KUI.AutoButtonClickDebug
+		self:Print("AutoButton click debug: " .. (KUI.AutoButtonClickDebug and "|cff00ff00ON|r" or "|cffff0000OFF|r"))
+		return
+	elseif command == "abtest" then
+		self:DebugAutoButtonTest(rest)
 		return
 	end
 

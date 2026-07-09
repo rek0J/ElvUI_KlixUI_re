@@ -234,7 +234,7 @@ function CH:ChatFrame_SystemEventHandler(chat, event, message, ...)
 		end
 		return true
 	else
-		return ChatFrame_SystemEventHandler(chat, event, message, ...)
+		if ChatFrame_SystemEventHandler then return ChatFrame_SystemEventHandler(chat, event, message, ...) end
 	end
 end
 

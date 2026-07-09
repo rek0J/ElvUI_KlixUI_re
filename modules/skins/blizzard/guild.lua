@@ -6,7 +6,6 @@ local _G = _G
 local select = select
 --WoW API / Variables
 local CreateFrame = CreateFrame
-local GetCVar = GetCVar
 local GetGuildLogoInfo = GetGuildLogoInfo
 local SetSmallGuildTabardTextures = SetSmallGuildTabardTextures
 local GetGuildTradeSkillInfo = GetGuildTradeSkillInfo

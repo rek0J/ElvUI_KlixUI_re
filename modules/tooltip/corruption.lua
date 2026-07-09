@@ -134,7 +134,7 @@ function CTT:GetCorruption(bonuses)
         for i, bonus_id in pairs(bonuses) do
             bonus_id = tostring(bonus_id)
             if CTT.Ranks[bonus_id] ~= nil then
-                local name, rank, icon, castTime, minRange, maxRange = GetSpellInfo(CTT.Ranks[bonus_id][3])
+                local name, rank, icon, castTime, minRange, maxRange = T.GetSpellInfo(CTT.Ranks[bonus_id][3])
                 if CTT.db.english then
                     name = CTT.Ranks[bonus_id][1]
                 end

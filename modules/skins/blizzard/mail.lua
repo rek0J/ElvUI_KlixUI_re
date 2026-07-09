@@ -89,7 +89,7 @@ local function styleMail()
 	OpenMailFrame:Styling()
 
 	OpenMailFrame:SetPoint("TOPLEFT", _G.InboxFrame, "TOPRIGHT", 5, 0)
-	_G.OpenMailFrameIcon:Hide()
+	if _G.OpenMailFrameIcon then _G.OpenMailFrameIcon:Hide() end
 	_G.OpenMailTitleText:ClearAllPoints()
 	_G.OpenMailTitleText:SetPoint("TOP", 0, -4)
 	_G.OpenMailHorizontalBarLeft:Hide()

@@ -1,0 +1,2177 @@
+{
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\ElvUI_KlixUI.toc": {
+    "mtime": 1780537207.3197238,
+    "ast_hash": "7090aee73b9709c4c0c35133de374519",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\.claude\\settings.json": {
+    "mtime": 1780155691.68944,
+    "ast_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d",
+    "semantic_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\.claude\\settings.local.json": {
+    "mtime": 1778360691.4137504,
+    "ast_hash": "b03b93b68d0a128839faa6283f60f0bc",
+    "semantic_hash": "b03b93b68d0a128839faa6283f60f0bc"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\changelog.lua": {
+    "mtime": 1780034807.930498,
+    "ast_hash": "e794c3d7dd69d66a9cbbf28f81d44769",
+    "semantic_hash": "e794c3d7dd69d66a9cbbf28f81d44769"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\compatibility.lua": {
+    "mtime": 1778334524.3306084,
+    "ast_hash": "6cac4af2db6d5fe1e45a44a26c185990",
+    "semantic_hash": "6cac4af2db6d5fe1e45a44a26c185990"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\core.lua": {
+    "mtime": 1780576377.5295339,
+    "ast_hash": "a7fff034019d2850d2582fdaa1e8bfe5",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\debugger.lua": {
+    "mtime": 1783036288.451466,
+    "ast_hash": "1bc51707fc261476381fa8c2a6960f08",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\dropdown.lua": {
+    "mtime": 1778334524.3366919,
+    "ast_hash": "6d4ad3cb95118ac1b983311ff7cd26bb",
+    "semantic_hash": "6d4ad3cb95118ac1b983311ff7cd26bb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\dropmenu.lua": {
+    "mtime": 1778334524.3399663,
+    "ast_hash": "99e245d023dde4c3bde897aa281fa087",
+    "semantic_hash": "99e245d023dde4c3bde897aa281fa087"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\gameMenu.lua": {
+    "mtime": 1778334524.3421166,
+    "ast_hash": "54f1c90501958d7fc4f4358d0ad378c5",
+    "semantic_hash": "54f1c90501958d7fc4f4358d0ad378c5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\install.lua": {
+    "mtime": 1778334524.3446698,
+    "ast_hash": "d59dc9fde467bbd2f23478cf212712af",
+    "semantic_hash": "d59dc9fde467bbd2f23478cf212712af"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\minimapbutton.lua": {
+    "mtime": 1778334524.3510604,
+    "ast_hash": "cb163d271671d1bfd247ef8c395c6507",
+    "semantic_hash": "cb163d271671d1bfd247ef8c395c6507"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\options.lua": {
+    "mtime": 1778334524.3535697,
+    "ast_hash": "3261e7bf0610314c43ff8c37e2324ec0",
+    "semantic_hash": "3261e7bf0610314c43ff8c37e2324ec0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\splashScreen.lua": {
+    "mtime": 1778334524.356113,
+    "ast_hash": "53368d5a054e3afd21f41d0963104ca7",
+    "semantic_hash": "53368d5a054e3afd21f41d0963104ca7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\staticpopup.lua": {
+    "mtime": 1778334524.3581731,
+    "ast_hash": "3efd70f2667dbfde4fea135db6ef0154",
+    "semantic_hash": "3efd70f2667dbfde4fea135db6ef0154"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\toolkit.lua": {
+    "mtime": 1782600402.0661628,
+    "ast_hash": "36984aee3d800fa0052912083dc28e21",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\AddOnSkins.lua": {
+    "mtime": 1778334524.363211,
+    "ast_hash": "7a427f4a5a87e852e2ee90581c20a2e9",
+    "semantic_hash": "7a427f4a5a87e852e2ee90581c20a2e9"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\BigWigs.lua": {
+    "mtime": 1778334524.3657722,
+    "ast_hash": "dfc7d6d0501657ee823fc01c5aa41de2",
+    "semantic_hash": "dfc7d6d0501657ee823fc01c5aa41de2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\DeadlyBossMods.lua": {
+    "mtime": 1778334524.368303,
+    "ast_hash": "1230b3ebd71773b6f880c265a8300191",
+    "semantic_hash": "1230b3ebd71773b6f880c265a8300191"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\Details.lua": {
+    "mtime": 1778334524.3713715,
+    "ast_hash": "c285204123fd1cdfe5160fc7173eb788",
+    "semantic_hash": "c285204123fd1cdfe5160fc7173eb788"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\ls_Toasts.lua": {
+    "mtime": 1778334524.3865142,
+    "ast_hash": "880d87f84eddac29370d83c9e8227247",
+    "semantic_hash": "880d87f84eddac29370d83c9e8227247"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\Masque.lua": {
+    "mtime": 1778334524.372878,
+    "ast_hash": "360c394d0cbead7c576316af06a89acb",
+    "semantic_hash": "360c394d0cbead7c576316af06a89acb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\ProjectAzilroka.lua": {
+    "mtime": 1778334524.3755088,
+    "ast_hash": "adf11cc7d4105d392ff9c6761f6d1eb3",
+    "semantic_hash": "adf11cc7d4105d392ff9c6761f6d1eb3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\ShadowandLight.lua": {
+    "mtime": 1778334524.3786204,
+    "ast_hash": "33f6664c18df6456a6961e834ff0b2c6",
+    "semantic_hash": "33f6664c18df6456a6961e834ff0b2c6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\core\\addonProfiles\\XIVDatabar.lua": {
+    "mtime": 1778334524.3806744,
+    "ast_hash": "cff16d08bf085d9ce888620b73e4b30d",
+    "semantic_hash": "cff16d08bf085d9ce888620b73e4b30d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\defaults\\global.lua": {
+    "mtime": 1778334524.3890347,
+    "ast_hash": "1c2ef30fc16a4b228eff825f41051b15",
+    "semantic_hash": "1c2ef30fc16a4b228eff825f41051b15"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\defaults\\private.lua": {
+    "mtime": 1778334524.3940942,
+    "ast_hash": "c5fec1c3c0ca5b87dec799512e060321",
+    "semantic_hash": "c5fec1c3c0ca5b87dec799512e060321"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\defaults\\profile.lua": {
+    "mtime": 1778334524.3966033,
+    "ast_hash": "673bcdb923f73872d0288d69ec72f5c3",
+    "semantic_hash": "673bcdb923f73872d0288d69ec72f5c3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\defaults\\filters\\Dimishing.lua": {
+    "mtime": 1778334524.4001825,
+    "ast_hash": "0b5d7d981ce36edc28b9014c341f9122",
+    "semantic_hash": "0b5d7d981ce36edc28b9014c341f9122"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\defaults\\filters\\Reminder.lua": {
+    "mtime": 1778334524.4020903,
+    "ast_hash": "d7555df185c61fe9e2bbad66e450544b",
+    "semantic_hash": "d7555df185c61fe9e2bbad66e450544b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\layout\\layout.lua": {
+    "mtime": 1778359981.972771,
+    "ast_hash": "001fceefb3512dc05911b9dea03ed0d7",
+    "semantic_hash": "001fceefb3512dc05911b9dea03ed0d7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\AceBucket-3.0\\AceBucket-3.0.lua": {
+    "mtime": 1778334522.3039916,
+    "ast_hash": "7f6fcde6809b4e732f0f8a2d50c8cc7e",
+    "semantic_hash": "7f6fcde6809b4e732f0f8a2d50c8cc7e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\HereBeDragons-2.0.lua": {
+    "mtime": 1778334522.3125973,
+    "ast_hash": "e83342deb6864589b2e31e741c41bbc8",
+    "semantic_hash": "e83342deb6864589b2e31e741c41bbc8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\HereBeDragons-Migrate.lua": {
+    "mtime": 1778334522.3151302,
+    "ast_hash": "675907829e075cfcd1852c86ffbd38db",
+    "semantic_hash": "675907829e075cfcd1852c86ffbd38db"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\HereBeDragons-Pins-2.0.lua": {
+    "mtime": 1778334522.3187075,
+    "ast_hash": "b90977f88a075e8f2336863e795817d5",
+    "semantic_hash": "b90977f88a075e8f2336863e795817d5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\HereBeDragons.toc": {
+    "mtime": 1778334522.3202188,
+    "ast_hash": "ded676f3df3888a03bc262a26a285edc",
+    "semantic_hash": "ded676f3df3888a03bc262a26a285edc"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\CallbackHandler-1.0\\CallbackHandler-1.0.lua": {
+    "mtime": 1778334522.3237734,
+    "ast_hash": "50496f83bd1d6ab099fde2cd0fb3b933",
+    "semantic_hash": "50496f83bd1d6ab099fde2cd0fb3b933"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.329835,
+    "ast_hash": "93abc8a68c559035f6aae51eed7ff89a",
+    "semantic_hash": "93abc8a68c559035f6aae51eed7ff89a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\LibStub\\LibStub.toc": {
+    "mtime": 1778334522.332379,
+    "ast_hash": "8269b35e3dbe3ca7b94f9c674fa2bde5",
+    "semantic_hash": "8269b35e3dbe3ca7b94f9c674fa2bde5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibCustomGlow-1.0\\LibCustomGlow-1.0.lua": {
+    "mtime": 1778334522.3349419,
+    "ast_hash": "64adc7b85067f8066f0ba196a65ebf1f",
+    "semantic_hash": "64adc7b85067f8066f0ba196a65ebf1f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibDataBroker-1.1\\LibDataBroker-1.1.lua": {
+    "mtime": 1778334522.3437421,
+    "ast_hash": "06cfccd8556a94f2927b75440e4138e1",
+    "semantic_hash": "06cfccd8556a94f2927b75440e4138e1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibDBIcon-1.0\\LibDBIcon-1.0.lua": {
+    "mtime": 1778334522.3376362,
+    "ast_hash": "b91bd3c509bf87007237f6a03ec29683",
+    "semantic_hash": "b91bd3c509bf87007237f6a03ec29683"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibEasing\\LibEasing.lua": {
+    "mtime": 1778334522.350803,
+    "ast_hash": "6a4d3e947e2e79d3f0bd124ec0412bd5",
+    "semantic_hash": "6a4d3e947e2e79d3f0bd124ec0412bd5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibEasing\\LibEasing.toc": {
+    "mtime": 1778334522.3542633,
+    "ast_hash": "a200067510bb10ea3d1c7e14ac150c7d",
+    "semantic_hash": "a200067510bb10ea3d1c7e14ac150c7d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibElv-GameMenu-1.0\\LibElv-GameMenu-1.0.lua": {
+    "mtime": 1780537711.426393,
+    "ast_hash": "04d6148497e7f0111ddddc7ad10cf9e6",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibElv-GameMenu-1.0\\LibElv-GameMenu-1.0.toc": {
+    "mtime": 1778334522.3623707,
+    "ast_hash": "8443c276703ac80243d8180c955dfba6",
+    "semantic_hash": "8443c276703ac80243d8180c955dfba6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibFishing-1.0\\LibFishing-1.0.lua": {
+    "mtime": 1778334522.3638763,
+    "ast_hash": "e77478ee40ea8b914fdaefc423c4054f",
+    "semantic_hash": "e77478ee40ea8b914fdaefc423c4054f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibInspectLess-1.0\\LibInspectLess-1.0.lua": {
+    "mtime": 1778334522.371303,
+    "ast_hash": "03f87ab9770e3b99451c9a0a42c52cce",
+    "semantic_hash": "03f87ab9770e3b99451c9a0a42c52cce"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibItemUpgradeInfo-1.0\\Core.lua": {
+    "mtime": 1778334522.374324,
+    "ast_hash": "2103fe3fa9383012b2aa8da2d4db5b4f",
+    "semantic_hash": "2103fe3fa9383012b2aa8da2d4db5b4f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibObjectiveProgress-1.0\\LibObjectiveProgress-1.0.lua": {
+    "mtime": 1778334522.3768337,
+    "ast_hash": "cb694c833376ecbc08bb3cf18322114e",
+    "semantic_hash": "cb694c833376ecbc08bb3cf18322114e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibObjectiveProgress-1.0\\LibObjectiveProgress-1.0.toc": {
+    "mtime": 1778334522.37835,
+    "ast_hash": "98e6b775935724fa3aabd560aeeeeeeb",
+    "semantic_hash": "98e6b775935724fa3aabd560aeeeeeeb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibObjectiveProgress-1.0\\ProgressWeightData.lua": {
+    "mtime": 1778334522.3828888,
+    "ast_hash": "ed924b52d8300860af89099c0a4a6123",
+    "semantic_hash": "ed924b52d8300860af89099c0a4a6123"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\LibProcessable.lua": {
+    "mtime": 1778334522.4020882,
+    "ast_hash": "c5c26567b42faad025ade4d55ac50d7c",
+    "semantic_hash": "c5c26567b42faad025ade4d55ac50d7c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\LibProcessable.toc": {
+    "mtime": 1778334522.4035935,
+    "ast_hash": "0bbb1485552cfca0fe1626b89b68b576",
+    "semantic_hash": "0bbb1485552cfca0fe1626b89b68b576"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.409844,
+    "ast_hash": "93abc8a68c559035f6aae51eed7ff89a",
+    "semantic_hash": "93abc8a68c559035f6aae51eed7ff89a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\LibStub\\LibStub.toc": {
+    "mtime": 1778334522.4134343,
+    "ast_hash": "8269b35e3dbe3ca7b94f9c674fa2bde5",
+    "semantic_hash": "8269b35e3dbe3ca7b94f9c674fa2bde5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibRealmInfo\\LibRealmInfo.lua": {
+    "mtime": 1778334522.419708,
+    "ast_hash": "484424515acb949f7e66213003cdd211",
+    "semantic_hash": "484424515acb949f7e66213003cdd211"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibTourist-3.0.lua": {
+    "mtime": 1778334522.4309826,
+    "ast_hash": "045de1b2d8f7d4771f97b314cc3c6d06",
+    "semantic_hash": "045de1b2d8f7d4771f97b314cc3c6d06"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibTourist-3.0.toc": {
+    "mtime": 1778334522.4319868,
+    "ast_hash": "84d29d021e3b3471d5542ad4a3cca521",
+    "semantic_hash": "84d29d021e3b3471d5542ad4a3cca521"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\CallbackHandler-1.0\\CallbackHandler-1.0.toc": {
+    "mtime": 1778334522.4390283,
+    "ast_hash": "8b851b8becdf0ef5f8a23d425c248255",
+    "semantic_hash": "8b851b8becdf0ef5f8a23d425c248255"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\CallbackHandler-1.0\\CallbackHandler-1.0\\CallbackHandler-1.0.lua": {
+    "mtime": 1778334522.442052,
+    "ast_hash": "b5d0b8198b1dee8c30fcdfbe4ced6880",
+    "semantic_hash": "b5d0b8198b1dee8c30fcdfbe4ced6880"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\CallbackHandler-1.0\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.4482043,
+    "ast_hash": "93abc8a68c559035f6aae51eed7ff89a",
+    "semantic_hash": "93abc8a68c559035f6aae51eed7ff89a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons-1.0.lua": {
+    "mtime": 1778334522.45123,
+    "ast_hash": "9904ffc3c6ec589c81b7dca21cae019f",
+    "semantic_hash": "9904ffc3c6ec589c81b7dca21cae019f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons-2.0.lua": {
+    "mtime": 1778334522.453801,
+    "ast_hash": "c897f0361044bc798bfe2d97ec13b454",
+    "semantic_hash": "c897f0361044bc798bfe2d97ec13b454"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons-Migrate.lua": {
+    "mtime": 1778334522.455336,
+    "ast_hash": "d97ec77a347ae6e16819943d8c3400f8",
+    "semantic_hash": "d97ec77a347ae6e16819943d8c3400f8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons-Pins-1.0.lua": {
+    "mtime": 1778334522.4583757,
+    "ast_hash": "4eb408d6f5598160b6cacb0acb42d944",
+    "semantic_hash": "4eb408d6f5598160b6cacb0acb42d944"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons-Pins-2.0.lua": {
+    "mtime": 1778334522.4618897,
+    "ast_hash": "26f4c1bc8b227f6df22cdd402f55e1c5",
+    "semantic_hash": "26f4c1bc8b227f6df22cdd402f55e1c5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\HereBeDragons.toc": {
+    "mtime": 1778334522.4638987,
+    "ast_hash": "137df10439d0e3bbbff469b914e7e3b9",
+    "semantic_hash": "137df10439d0e3bbbff469b914e7e3b9"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\HereBeDragons\\1.0-compat\\HereBeDragons-1.0.toc": {
+    "mtime": 1778334522.4664369,
+    "ast_hash": "34dd5ba9ea78fa689ea72b6536b200b3",
+    "semantic_hash": "34dd5ba9ea78fa689ea72b6536b200b3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.4694943,
+    "ast_hash": "e42e08dc905c3720208b6c12341240c4",
+    "semantic_hash": "e42e08dc905c3720208b6c12341240c4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\LibStub.toc": {
+    "mtime": 1778334522.4720042,
+    "ast_hash": "b5e0ca4a1f436527cdc01aeba78f0384",
+    "semantic_hash": "b5e0ca4a1f436527cdc01aeba78f0384"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\tests\\test.lua": {
+    "mtime": 1778334522.4735112,
+    "ast_hash": "5b23c624ed3e201b41a1137f657c58b7",
+    "semantic_hash": "5b23c624ed3e201b41a1137f657c58b7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\tests\\test2.lua": {
+    "mtime": 1778334522.476774,
+    "ast_hash": "64ee25029adae5a801c405b32bb2607e",
+    "semantic_hash": "64ee25029adae5a801c405b32bb2607e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\tests\\test3.lua": {
+    "mtime": 1778334522.4799137,
+    "ast_hash": "5700d5bfedbcc876b7311105e1fb7e6e",
+    "semantic_hash": "5700d5bfedbcc876b7311105e1fb7e6e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LibStub\\tests\\test4.lua": {
+    "mtime": 1778334522.4828093,
+    "ast_hash": "3eb5d940d87d13ac13c3d45ef8dfec2c",
+    "semantic_hash": "3eb5d940d87d13ac13c3d45ef8dfec2c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\LibTouristClassic-1.0.lua": {
+    "mtime": 1778334522.4931178,
+    "ast_hash": "67099e458ac481ec62d422065c192920",
+    "semantic_hash": "67099e458ac481ec62d422065c192920"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\LibTouristClassic-1.0.toc": {
+    "mtime": 1778334522.4946902,
+    "ast_hash": "0c7c20a94128ce762bc0ca24bd8dcabf",
+    "semantic_hash": "0c7c20a94128ce762bc0ca24bd8dcabf"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\CallbackHandler-1.0\\CallbackHandler-1.0.lua": {
+    "mtime": 1778334522.5011513,
+    "ast_hash": "50496f83bd1d6ab099fde2cd0fb3b933",
+    "semantic_hash": "50496f83bd1d6ab099fde2cd0fb3b933"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\HereBeDragons-2.0.lua": {
+    "mtime": 1778334522.5077927,
+    "ast_hash": "90b9049453e76aa04eabd2ba19c7c85b",
+    "semantic_hash": "90b9049453e76aa04eabd2ba19c7c85b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\HereBeDragons-Migrate.lua": {
+    "mtime": 1778334522.5107207,
+    "ast_hash": "675907829e075cfcd1852c86ffbd38db",
+    "semantic_hash": "675907829e075cfcd1852c86ffbd38db"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\HereBeDragons-Pins-2.0.lua": {
+    "mtime": 1778334522.5132587,
+    "ast_hash": "28c4f92c7f7290481f4f8d9a073393d2",
+    "semantic_hash": "28c4f92c7f7290481f4f8d9a073393d2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\HereBeDragons.toc": {
+    "mtime": 1778334522.5153418,
+    "ast_hash": "501d9f431ce84e5a522b8af5fcb170c8",
+    "semantic_hash": "501d9f431ce84e5a522b8af5fcb170c8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\CallbackHandler-1.0\\CallbackHandler-1.0.lua": {
+    "mtime": 1778334522.5183883,
+    "ast_hash": "50496f83bd1d6ab099fde2cd0fb3b933",
+    "semantic_hash": "50496f83bd1d6ab099fde2cd0fb3b933"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.5244813,
+    "ast_hash": "e42e08dc905c3720208b6c12341240c4",
+    "semantic_hash": "e42e08dc905c3720208b6c12341240c4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\LibStub.toc": {
+    "mtime": 1778334522.5274124,
+    "ast_hash": "b5e0ca4a1f436527cdc01aeba78f0384",
+    "semantic_hash": "b5e0ca4a1f436527cdc01aeba78f0384"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\tests\\test.lua": {
+    "mtime": 1778334522.528933,
+    "ast_hash": "5b23c624ed3e201b41a1137f657c58b7",
+    "semantic_hash": "5b23c624ed3e201b41a1137f657c58b7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\tests\\test2.lua": {
+    "mtime": 1778334522.5325813,
+    "ast_hash": "64ee25029adae5a801c405b32bb2607e",
+    "semantic_hash": "64ee25029adae5a801c405b32bb2607e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\tests\\test3.lua": {
+    "mtime": 1778334522.5346434,
+    "ast_hash": "5700d5bfedbcc876b7311105e1fb7e6e",
+    "semantic_hash": "5700d5bfedbcc876b7311105e1fb7e6e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\HereBeDragons\\LibStub\\tests\\test4.lua": {
+    "mtime": 1778334522.5382247,
+    "ast_hash": "3eb5d940d87d13ac13c3d45ef8dfec2c",
+    "semantic_hash": "3eb5d940d87d13ac13c3d45ef8dfec2c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\LibStub\\LibStub.lua": {
+    "mtime": 1778334522.540735,
+    "ast_hash": "e42e08dc905c3720208b6c12341240c4",
+    "semantic_hash": "e42e08dc905c3720208b6c12341240c4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\LibStub\\LibStub.toc": {
+    "mtime": 1778334522.5422456,
+    "ast_hash": "b5e0ca4a1f436527cdc01aeba78f0384",
+    "semantic_hash": "b5e0ca4a1f436527cdc01aeba78f0384"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\UTF8\\utf8.lua": {
+    "mtime": 1778334522.5453305,
+    "ast_hash": "fbaacd74decd7465b94961f6bd969f37",
+    "semantic_hash": "fbaacd74decd7465b94961f6bd969f37"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\UTF8\\utf8data.lua": {
+    "mtime": 1778334522.5484715,
+    "ast_hash": "3ae95a812fcc39b6473584464ebb09a5",
+    "semantic_hash": "3ae95a812fcc39b6473584464ebb09a5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\chinese.lua": {
+    "mtime": 1778334522.550542,
+    "ast_hash": "018de729cce90e7c6abfac8db93fd2b6",
+    "semantic_hash": "018de729cce90e7c6abfac8db93fd2b6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\english.lua": {
+    "mtime": 1778334522.5541973,
+    "ast_hash": "f6382209e614e8a9f03443267c235b20",
+    "semantic_hash": "f6382209e614e8a9f03443267c235b20"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\french.lua": {
+    "mtime": 1778334522.5572543,
+    "ast_hash": "2e9187f8270832b131843aafcfa612ad",
+    "semantic_hash": "2e9187f8270832b131843aafcfa612ad"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\german.lua": {
+    "mtime": 1778334522.5597625,
+    "ast_hash": "b84cdc4ea54d92be7e28c601b35d83ee",
+    "semantic_hash": "b84cdc4ea54d92be7e28c601b35d83ee"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\italian.lua": {
+    "mtime": 1778334522.5627842,
+    "ast_hash": "82f995181390acfe94205aa0fb50f85a",
+    "semantic_hash": "82f995181390acfe94205aa0fb50f85a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\korean.lua": {
+    "mtime": 1778334522.5648527,
+    "ast_hash": "c190240c4a724f45debb54d6116ec3ae",
+    "semantic_hash": "c190240c4a724f45debb54d6116ec3ae"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\portuguese.lua": {
+    "mtime": 1778334522.570712,
+    "ast_hash": "0c2e2e9f3e8d6ebbb2b09ee56ea7ca96",
+    "semantic_hash": "0c2e2e9f3e8d6ebbb2b09ee56ea7ca96"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\russian.lua": {
+    "mtime": 1778334522.5749643,
+    "ast_hash": "33ac2b4ed4aee940078a13933c2f9972",
+    "semantic_hash": "33ac2b4ed4aee940078a13933c2f9972"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\spanish.lua": {
+    "mtime": 1778334522.577018,
+    "ast_hash": "22cb6fb7b1b966d8fb2d45873516a816",
+    "semantic_hash": "22cb6fb7b1b966d8fb2d45873516a816"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\locales\\taiwanese.lua": {
+    "mtime": 1778334522.5805328,
+    "ast_hash": "cf9ae09fd1cd079a023bed6e179b006f",
+    "semantic_hash": "cf9ae09fd1cd079a023bed6e179b006f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\media.lua": {
+    "mtime": 1780538078.890506,
+    "ast_hash": "d60b229ab43bb22ae44da6f322b46f56",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\options.lua": {
+    "mtime": 1778334522.5881116,
+    "ast_hash": "3800e20b29cbf395750f3823ce6e6751",
+    "semantic_hash": "3800e20b29cbf395750f3823ce6e6751"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sharedmedia.lua": {
+    "mtime": 1778334522.5906243,
+    "ast_hash": "3cfb5111bfcf138eb904e89cd19780bd",
+    "semantic_hash": "3cfb5111bfcf138eb904e89cd19780bd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\actionbars\\actionbars.lua": {
+    "mtime": 1782600436.2943852,
+    "ast_hash": "a61a29bb2d49cd7d1c31db2bdba8796f",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\actionbars\\autoButtons.lua": {
+    "mtime": 1783199178.3068411,
+    "ast_hash": "9d9f480d5cdaecd827f7773db434bee6",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\actionbars\\microBar.lua": {
+    "mtime": 1778556494.3053968,
+    "ast_hash": "a6eb4bab766e505ba781d50f550ec6cb",
+    "semantic_hash": "a6eb4bab766e505ba781d50f550ec6cb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\actionbars\\options.lua": {
+    "mtime": 1778334523.5229142,
+    "ast_hash": "3c2de13f50be7fd7261d016b8b4c45c1",
+    "semantic_hash": "3c2de13f50be7fd7261d016b8b4c45c1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\actionbars\\specandequipBar.lua": {
+    "mtime": 1780537709.4584029,
+    "ast_hash": "a665f3713700897a22483d1789a6d06a",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\addonpanel\\addonpanel.lua": {
+    "mtime": 1780538813.0888326,
+    "ast_hash": "fbf271b9025f2525be4e9354a9b6f251",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\addonpanel\\options.lua": {
+    "mtime": 1778334523.534118,
+    "ast_hash": "7787f989834eaeb61ef99e55e702e745",
+    "semantic_hash": "7787f989834eaeb61ef99e55e702e745"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\announcement\\announcement.lua": {
+    "mtime": 1778334523.5366676,
+    "ast_hash": "48b1689472739c39a928f180f2707d15",
+    "semantic_hash": "48b1689472739c39a928f180f2707d15"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\announcement\\options.lua": {
+    "mtime": 1778334523.5433328,
+    "ast_hash": "3c1ab4db28c4924ddfea447ca1c38d8b",
+    "semantic_hash": "3c1ab4db28c4924ddfea447ca1c38d8b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\armory\\armory.lua": {
+    "mtime": 1778386680.071736,
+    "ast_hash": "46784fd8d56ab174a7b6d170fe793218",
+    "semantic_hash": "46784fd8d56ab174a7b6d170fe793218"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\armory\\azeritebuttons.lua": {
+    "mtime": 1778334523.5484328,
+    "ast_hash": "e993d31c46e83618f647b4a02f50e5bf",
+    "semantic_hash": "e993d31c46e83618f647b4a02f50e5bf"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\armory\\icystats.lua": {
+    "mtime": 1778334523.5509584,
+    "ast_hash": "84a6c280340639902f4a9454fb2e4761",
+    "semantic_hash": "84a6c280340639902f4a9454fb2e4761"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\armory\\options.lua": {
+    "mtime": 1778334523.5565107,
+    "ast_hash": "57c76119e743528189113c17cb218867",
+    "semantic_hash": "57c76119e743528189113c17cb218867"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\armory\\stats.lua": {
+    "mtime": 1778334523.5580227,
+    "ast_hash": "8371da314ac8b47cb060128b01a72d54",
+    "semantic_hash": "8371da314ac8b47cb060128b01a72d54"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\bags\\autoopen.lua": {
+    "mtime": 1778334523.5620697,
+    "ast_hash": "5809f0389487a2494d4c636e24934709",
+    "semantic_hash": "5809f0389487a2494d4c636e24934709"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\bags\\bagfilter.lua": {
+    "mtime": 1778334523.563576,
+    "ast_hash": "49f06bf2bdde1d59418edcc20028c1a3",
+    "semantic_hash": "49f06bf2bdde1d59418edcc20028c1a3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\bags\\bags.lua": {
+    "mtime": 1778334523.5666447,
+    "ast_hash": "290e3dcc8b98bedd59c27eea9617a9b5",
+    "semantic_hash": "290e3dcc8b98bedd59c27eea9617a9b5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\bags\\itemselect.lua": {
+    "mtime": 1778334523.568158,
+    "ast_hash": "b4c8c1f725c3c9353e306ee30647e514",
+    "semantic_hash": "b4c8c1f725c3c9353e306ee30647e514"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\bags\\options.lua": {
+    "mtime": 1778334523.5747814,
+    "ast_hash": "91182a5c5bbcaf58259fbe299fa43bab",
+    "semantic_hash": "91182a5c5bbcaf58259fbe299fa43bab"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\blizzard\\blizzard.lua": {
+    "mtime": 1778334523.5778177,
+    "ast_hash": "8bf25327d42d1ceb7a4f3cace52a37a2",
+    "semantic_hash": "8bf25327d42d1ceb7a4f3cace52a37a2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\blizzard\\options.lua": {
+    "mtime": 1778334523.583915,
+    "ast_hash": "ade06ecb0549af494df4a1abf801e461",
+    "semantic_hash": "ade06ecb0549af494df4a1abf801e461"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\chat.lua": {
+    "mtime": 1780537706.0053587,
+    "ast_hash": "3a6e55143c57e83d1267b328d473e31b",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\ChatFade.lua": {
+    "mtime": 1778334523.585451,
+    "ast_hash": "a58113c78328387429fd99166617a93b",
+    "semantic_hash": "a58113c78328387429fd99166617a93b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\DamageMeterFilter.lua": {
+    "mtime": 1778334523.5884933,
+    "ast_hash": "36977fdf9eb08bc84330e947f0087c98",
+    "semantic_hash": "36977fdf9eb08bc84330e947f0087c98"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\EasyChannel.lua": {
+    "mtime": 1778355494.5967586,
+    "ast_hash": "c4141e9302cb5636e9a11db8ef00e291",
+    "semantic_hash": "c4141e9302cb5636e9a11db8ef00e291"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\emotes.lua": {
+    "mtime": 1778334523.5982168,
+    "ast_hash": "c0436b5a4608054f596337701348be99",
+    "semantic_hash": "c0436b5a4608054f596337701348be99"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\Filters.lua": {
+    "mtime": 1780576439.4247143,
+    "ast_hash": "fb746308aa143af82adbc1d0bfe8ee21",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\options.lua": {
+    "mtime": 1778334523.603832,
+    "ast_hash": "819dc55b194508a89b57c244ccc57517",
+    "semantic_hash": "819dc55b194508a89b57c244ccc57517"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\chat\\rightclickmenu.lua": {
+    "mtime": 1778334523.606369,
+    "ast_hash": "e050144077845be27f3c41fcb55c94f0",
+    "semantic_hash": "e050144077845be27f3c41fcb55c94f0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\combattext\\combattext.lua": {
+    "mtime": 1778334523.6089191,
+    "ast_hash": "dbac5de96c38c0e30e9338fedbd37dfa",
+    "semantic_hash": "dbac5de96c38c0e30e9338fedbd37dfa"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\combattext\\options.lua": {
+    "mtime": 1780576421.3621774,
+    "ast_hash": "2465365b073adf2b07cca9c81f503c43",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\cooldowns\\dimishingCD.lua": {
+    "mtime": 1778334523.6165886,
+    "ast_hash": "39074310ab06e60416a3bd8ccf4afd84",
+    "semantic_hash": "39074310ab06e60416a3bd8ccf4afd84"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\cooldowns\\enemyCD.lua": {
+    "mtime": 1778334523.6190975,
+    "ast_hash": "58daf91eb65f060835f036679f92d29a",
+    "semantic_hash": "58daf91eb65f060835f036679f92d29a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\cooldowns\\options.lua": {
+    "mtime": 1778334523.6246731,
+    "ast_hash": "6b52253fa32f7366943dd24d7e8fee3a",
+    "semantic_hash": "6b52253fa32f7366943dd24d7e8fee3a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\cooldowns\\pulseCD.lua": {
+    "mtime": 1778334523.6262553,
+    "ast_hash": "3c17bd650c95ee9adee50a18ddde98b8",
+    "semantic_hash": "3c17bd650c95ee9adee50a18ddde98b8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\cooldowns\\raidCD.lua": {
+    "mtime": 1778355516.3689432,
+    "ast_hash": "edc3a84ecbea6056597ff0ca58b2187a",
+    "semantic_hash": "edc3a84ecbea6056597ff0ca58b2187a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\azerite.lua": {
+    "mtime": 1778334523.6323197,
+    "ast_hash": "e5c3e7f3d465fb1f04685217b6da0f37",
+    "semantic_hash": "e5c3e7f3d465fb1f04685217b6da0f37"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\databars.lua": {
+    "mtime": 1778334523.634828,
+    "ast_hash": "16d88c6e66b8b43bac96b69256d2ff33",
+    "semantic_hash": "16d88c6e66b8b43bac96b69256d2ff33"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\experience.lua": {
+    "mtime": 1778334523.636335,
+    "ast_hash": "5fc0ee4004410ec376b44d603efff98e",
+    "semantic_hash": "5fc0ee4004410ec376b44d603efff98e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\honor.lua": {
+    "mtime": 1778334523.6394844,
+    "ast_hash": "717c4aa65acb3b83760e72fbf023a8a3",
+    "semantic_hash": "717c4aa65acb3b83760e72fbf023a8a3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\options.lua": {
+    "mtime": 1778334523.6453714,
+    "ast_hash": "a9fdde8bb6336ea5c18fd86b8046f886",
+    "semantic_hash": "a9fdde8bb6336ea5c18fd86b8046f886"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\paragonRep.lua": {
+    "mtime": 1778334523.6479285,
+    "ast_hash": "dbbf8a95104390e56d58c912a952b378",
+    "semantic_hash": "dbbf8a95104390e56d58c912a952b378"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\questXP.lua": {
+    "mtime": 1778334523.6499798,
+    "ast_hash": "890b576df1702186f8cd262c1f624ea4",
+    "semantic_hash": "890b576df1702186f8cd262c1f624ea4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\databars\\reputation.lua": {
+    "mtime": 1778334523.6520236,
+    "ast_hash": "570dd23c7db5631a2df638b2ea22252b",
+    "semantic_hash": "570dd23c7db5631a2df638b2ea22252b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\classhall.lua": {
+    "mtime": 1778334523.6545475,
+    "ast_hash": "f001b730c6428d5efb7fb3d538468a41",
+    "semantic_hash": "f001b730c6428d5efb7fb3d538468a41"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\datatexts.lua": {
+    "mtime": 1778334523.6570847,
+    "ast_hash": "39400081194a6626780d0dda677aa300",
+    "semantic_hash": "39400081194a6626780d0dda677aa300"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\dtcolors.lua": {
+    "mtime": 1778334523.6597123,
+    "ast_hash": "e9fdfdb8791b1f8a167eefd301257891",
+    "semantic_hash": "e9fdfdb8791b1f8a167eefd301257891"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\itemlevel.lua": {
+    "mtime": 1778334523.662278,
+    "ast_hash": "4c2cb40dfa5ab7adc1536bce75b4fb80",
+    "semantic_hash": "4c2cb40dfa5ab7adc1536bce75b4fb80"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\mail.lua": {
+    "mtime": 1778334523.6673737,
+    "ast_hash": "d731eca09e8bed398a616e3e8939b5ea",
+    "semantic_hash": "d731eca09e8bed398a616e3e8939b5ea"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\missions.lua": {
+    "mtime": 1778334523.6704547,
+    "ast_hash": "5f4bbea5e363b0cb427a76ea138cba74",
+    "semantic_hash": "5f4bbea5e363b0cb427a76ea138cba74"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\options.lua": {
+    "mtime": 1778334523.6724892,
+    "ast_hash": "ea9ee77223708898971778bd9378f152",
+    "semantic_hash": "ea9ee77223708898971778bd9378f152"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\professions.lua": {
+    "mtime": 1778334523.6750212,
+    "ast_hash": "79d7d5f6e823f18262f392f906e1efb2",
+    "semantic_hash": "79d7d5f6e823f18262f392f906e1efb2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\specswitch.lua": {
+    "mtime": 1778334523.6771884,
+    "ast_hash": "f0aaa72848fb6f2daf3223b074170be1",
+    "semantic_hash": "f0aaa72848fb6f2daf3223b074170be1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\system.lua": {
+    "mtime": 1778388614.081791,
+    "ast_hash": "53d20484e5e9b09e1c183b77472bc307",
+    "semantic_hash": "53d20484e5e9b09e1c183b77472bc307"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\time.lua": {
+    "mtime": 1778334523.6823692,
+    "ast_hash": "2b24f067383be9dd6c8ba678a8375d80",
+    "semantic_hash": "2b24f067383be9dd6c8ba678a8375d80"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\datatexts\\titles.lua": {
+    "mtime": 1778334523.6839018,
+    "ast_hash": "b3aee4349040f958a29e614c27f1be09",
+    "semantic_hash": "b3aee4349040f958a29e614c27f1be09"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\efl\\efl.lua": {
+    "mtime": 1778334523.6869755,
+    "ast_hash": "46fd180b85e1903bf08de8b5410ba8fe",
+    "semantic_hash": "46fd180b85e1903bf08de8b5410ba8fe"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\efl\\options.lua": {
+    "mtime": 1778334523.6922598,
+    "ast_hash": "c343e2bedbe3f6548ea79867813c6b02",
+    "semantic_hash": "c343e2bedbe3f6548ea79867813c6b02"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\locpanel\\locpanel.lua": {
+    "mtime": 1778334523.698185,
+    "ast_hash": "0737cc463174ad686f5a7b7d9348b42f",
+    "semantic_hash": "0737cc463174ad686f5a7b7d9348b42f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\locpanel\\options.lua": {
+    "mtime": 1778334523.7011957,
+    "ast_hash": "ff63fb5034274fd2fa87202173b77f4e",
+    "semantic_hash": "ff63fb5034274fd2fa87202173b77f4e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\locpanel\\tooltip.lua": {
+    "mtime": 1778334523.7036226,
+    "ast_hash": "2a126ed805dc943d3296feefdc9d6d34",
+    "semantic_hash": "2a126ed805dc943d3296feefdc9d6d34"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\loot\\bonusFilter.lua": {
+    "mtime": 1778334523.7066343,
+    "ast_hash": "1679cc84ee3fa89dbe676347879c4db3",
+    "semantic_hash": "1679cc84ee3fa89dbe676347879c4db3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\flightq.lua": {
+    "mtime": 1778334523.7126572,
+    "ast_hash": "911b5444b6eefa2d5291a87b091e72bf",
+    "semantic_hash": "911b5444b6eefa2d5291a87b091e72bf"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\mail.lua": {
+    "mtime": 1778334523.7186804,
+    "ast_hash": "1fd521833eef9419ff722a74816993f6",
+    "semantic_hash": "1fd521833eef9419ff722a74816993f6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\minimap.lua": {
+    "mtime": 1778334523.7211895,
+    "ast_hash": "0f096e4d82810f878858f509a219fa10",
+    "semantic_hash": "0f096e4d82810f878858f509a219fa10"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\minimapbuttons.lua": {
+    "mtime": 1783025840.4207506,
+    "ast_hash": "8556c7868cd9ea5283aae18c51cfb480",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\minimaplocation.lua": {
+    "mtime": 1778334523.729328,
+    "ast_hash": "6b4c28b9b4aa829d4bb9a22ed6fcb135",
+    "semantic_hash": "6b4c28b9b4aa829d4bb9a22ed6fcb135"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\options.lua": {
+    "mtime": 1778334523.7313387,
+    "ast_hash": "d2882869fbdac10edd94fca3ae28ce9b",
+    "semantic_hash": "d2882869fbdac10edd94fca3ae28ce9b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\PinProvider.lua": {
+    "mtime": 1778334523.7373672,
+    "ast_hash": "56d7027abd5500c7b47fcfa513e7aec4",
+    "semantic_hash": "56d7027abd5500c7b47fcfa513e7aec4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Bounty.lua": {
+    "mtime": 1778334523.7440767,
+    "ast_hash": "a3b4ef19daed319c3100b6dec402eed5",
+    "semantic_hash": "a3b4ef19daed319c3100b6dec402eed5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Highlight.lua": {
+    "mtime": 1778334523.746682,
+    "ast_hash": "70b4299b7538f1eecd35dafdbe8db877",
+    "semantic_hash": "70b4299b7538f1eecd35dafdbe8db877"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Map.lua": {
+    "mtime": 1778334523.7486982,
+    "ast_hash": "f08a70a514eeadeb4c1891e2ec6504ec",
+    "semantic_hash": "f08a70a514eeadeb4c1891e2ec6504ec"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Navigate.lua": {
+    "mtime": 1778334523.7517104,
+    "ast_hash": "99f88a4ceb60127e2cd901e489d2dff1",
+    "semantic_hash": "99f88a4ceb60127e2cd901e489d2dff1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Players.lua": {
+    "mtime": 1778334523.7542722,
+    "ast_hash": "f2a0086af9b60b57be931b77587e6cab",
+    "semantic_hash": "f2a0086af9b60b57be931b77587e6cab"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Rifts.lua": {
+    "mtime": 1778334523.7567818,
+    "ast_hash": "ca47ab974ebc0e97d28130b70c74b63a",
+    "semantic_hash": "ca47ab974ebc0e97d28130b70c74b63a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Title.lua": {
+    "mtime": 1778334523.7587905,
+    "ast_hash": "844a84c920275cc91ccd4ad169e9aa37",
+    "semantic_hash": "844a84c920275cc91ccd4ad169e9aa37"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\Vindicaar.lua": {
+    "mtime": 1778334523.7618032,
+    "ast_hash": "23606f9c156cc8c6fd006611954ae6ea",
+    "semantic_hash": "23606f9c156cc8c6fd006611954ae6ea"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\WorldFlightMap.lua": {
+    "mtime": 1778334523.7638874,
+    "ast_hash": "a055ee66e3e9f457404b7671d05792bd",
+    "semantic_hash": "a055ee66e3e9f457404b7671d05792bd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Argus\\ZoneInfo.lua": {
+    "mtime": 1778334523.7669096,
+    "ast_hash": "14e6ec1bad323800e99b9d00aeb2634a",
+    "semantic_hash": "14e6ec1bad323800e99b9d00aeb2634a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Helpers\\Barrels.lua": {
+    "mtime": 1778334523.7680051,
+    "ast_hash": "50471589afbcf06ae96a6037ba2b09c6",
+    "semantic_hash": "50471589afbcf06ae96a6037ba2b09c6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Helpers\\Boggarts.lua": {
+    "mtime": 1778334523.7720757,
+    "ast_hash": "194b3fb36757a1f2f10fa8f52ec3331f",
+    "semantic_hash": "194b3fb36757a1f2f10fa8f52ec3331f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Helpers\\Chores.lua": {
+    "mtime": 1778334523.774645,
+    "ast_hash": "e15008f66f7b900b1b8c072ed0a870b6",
+    "semantic_hash": "e15008f66f7b900b1b8c072ed0a870b6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Helpers\\Loh.lua": {
+    "mtime": 1778334523.7761612,
+    "ast_hash": "cd2de0fa678025eaa790ca045dd9c6df",
+    "semantic_hash": "cd2de0fa678025eaa790ca045dd9c6df"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\maps\\worldquests\\Helpers\\Training.lua": {
+    "mtime": 1778334523.7797973,
+    "ast_hash": "c2a268202521f1b0cff62593087af939",
+    "semantic_hash": "c2a268202521f1b0cff62593087af939"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\afk.lua": {
+    "mtime": 1778334523.7823071,
+    "ast_hash": "4ec6502f0e45187febf8f368ace83be4",
+    "semantic_hash": "4ec6502f0e45187febf8f368ace83be4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\alreadyknown.lua": {
+    "mtime": 1778334523.784854,
+    "ast_hash": "b50b4a559870d0314f15d8393c210578",
+    "semantic_hash": "b50b4a559870d0314f15d8393c210578"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\announce.lua": {
+    "mtime": 1778334523.786873,
+    "ast_hash": "a209edc674834aa3d0f280ec42b8fd9c",
+    "semantic_hash": "a209edc674834aa3d0f280ec42b8fd9c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\auras.lua": {
+    "mtime": 1778334523.7883902,
+    "ast_hash": "0755ae7d56e803892e9cf86a77569605",
+    "semantic_hash": "0755ae7d56e803892e9cf86a77569605"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\autolog.lua": {
+    "mtime": 1778334523.7914457,
+    "ast_hash": "a6e3f2ad6e339c54994f067f5ae4d2f3",
+    "semantic_hash": "a6e3f2ad6e339c54994f067f5ae4d2f3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\bloodlust.lua": {
+    "mtime": 1778334523.7934608,
+    "ast_hash": "ff1b23f44c0a996f0af01eaec8e8d832",
+    "semantic_hash": "ff1b23f44c0a996f0af01eaec8e8d832"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\confirmSP.lua": {
+    "mtime": 1778334523.7959702,
+    "ast_hash": "97ed6ab976037c9f42eae1d605c26e89",
+    "semantic_hash": "97ed6ab976037c9f42eae1d605c26e89"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\corruptedAsh.lua": {
+    "mtime": 1778334523.798022,
+    "ast_hash": "9a2f740bd26afdebcaddc08d7b00a5ea",
+    "semantic_hash": "9a2f740bd26afdebcaddc08d7b00a5ea"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\cursor.lua": {
+    "mtime": 1778334523.8011198,
+    "ast_hash": "f6da4f44f3b776fdd8e142f9ad2d5ccd",
+    "semantic_hash": "f6da4f44f3b776fdd8e142f9ad2d5ccd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\easyCurve.lua": {
+    "mtime": 1778334523.8021996,
+    "ast_hash": "356bb755940ea1bdc434b0c27d5da697",
+    "semantic_hash": "356bb755940ea1bdc434b0c27d5da697"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\gamemenu.lua": {
+    "mtime": 1778334523.8052912,
+    "ast_hash": "1d8e244e6a78f118ca3dca9f00897145",
+    "semantic_hash": "1d8e244e6a78f118ca3dca9f00897145"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\gmotd.lua": {
+    "mtime": 1778334523.8068266,
+    "ast_hash": "367d1cfbef4269e7fe989f505dbe1200",
+    "semantic_hash": "367d1cfbef4269e7fe989f505dbe1200"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\invite.lua": {
+    "mtime": 1778334523.8103745,
+    "ast_hash": "47daf7c1f4137f2f0af8392250a59d29",
+    "semantic_hash": "47daf7c1f4137f2f0af8392250a59d29"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\merchant.lua": {
+    "mtime": 1780537703.4690557,
+    "ast_hash": "7c3bba26549fa7b159aad5d52e2b7bd0",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\misc.lua": {
+    "mtime": 1780537907.7296722,
+    "ast_hash": "914a8499e3e96edf2ea50875c1e9fd62",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\movers.lua": {
+    "mtime": 1778334523.8213937,
+    "ast_hash": "9a67b524a259b591acf4f1685f28f215",
+    "semantic_hash": "9a67b524a259b591acf4f1685f28f215"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\namehover.lua": {
+    "mtime": 1778334523.8239362,
+    "ast_hash": "086040a6c1e647052f345532be07be9e",
+    "semantic_hash": "086040a6c1e647052f345532be07be9e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\options.lua": {
+    "mtime": 1778334523.8254511,
+    "ast_hash": "a1456915d8dde88a4a1a9e4a107f4f41",
+    "semantic_hash": "a1456915d8dde88a4a1a9e4a107f4f41"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\pvpsound.lua": {
+    "mtime": 1778334523.828313,
+    "ast_hash": "08fcf6d7e052a4eb4a14771e364b167e",
+    "semantic_hash": "08fcf6d7e052a4eb4a14771e364b167e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\scrapper.lua": {
+    "mtime": 1778334523.8311844,
+    "ast_hash": "1963549ae12a37d4839f3f0a1ee31164",
+    "semantic_hash": "1963549ae12a37d4839f3f0a1ee31164"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\skipAA.lua": {
+    "mtime": 1778334523.8332374,
+    "ast_hash": "0f37ea5b7050a0762ed877b807f784f8",
+    "semantic_hash": "0f37ea5b7050a0762ed877b807f784f8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\talkingheadframe.lua": {
+    "mtime": 1778334523.835779,
+    "ast_hash": "6d7b7f7d72db675f9d936580ce1f3982",
+    "semantic_hash": "6d7b7f7d72db675f9d936580ce1f3982"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\teleportation.lua": {
+    "mtime": 1778334523.8372858,
+    "ast_hash": "9635a7dbbbfae9f887390c6158b94429",
+    "semantic_hash": "9635a7dbbbfae9f887390c6158b94429"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\whistle.lua": {
+    "mtime": 1778334523.8398132,
+    "ast_hash": "f13e14e455839ccdf62d8dd3c98a142a",
+    "semantic_hash": "f13e14e455839ccdf62d8dd3c98a142a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\misc\\zoom.lua": {
+    "mtime": 1778334523.8423586,
+    "ast_hash": "a7d7887c8269e17b969dc21229896472",
+    "semantic_hash": "a7d7887c8269e17b969dc21229896472"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\notification\\notification.lua": {
+    "mtime": 1778334523.8482666,
+    "ast_hash": "b555171ca90bced8ab0d4cef8aea67f1",
+    "semantic_hash": "b555171ca90bced8ab0d4cef8aea67f1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\notification\\options.lua": {
+    "mtime": 1778334523.850358,
+    "ast_hash": "a5d5bed94f8ed62a52f638b5596117fa",
+    "semantic_hash": "a5d5bed94f8ed62a52f638b5596117fa"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\objectiveprogress.lua": {
+    "mtime": 1778334523.8569484,
+    "ast_hash": "30798bed83d949ad6597c131af23b65d",
+    "semantic_hash": "30798bed83d949ad6597c131af23b65d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\options.lua": {
+    "mtime": 1778334523.8579519,
+    "ast_hash": "02439df356b59e59b14b417f7d8b24a8",
+    "semantic_hash": "02439df356b59e59b14b417f7d8b24a8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\questannounce.lua": {
+    "mtime": 1778334523.8612604,
+    "ast_hash": "22705f899b6aaee45a71347e4fc039ff",
+    "semantic_hash": "22705f899b6aaee45a71347e4fc039ff"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\questauto.lua": {
+    "mtime": 1778334523.8637931,
+    "ast_hash": "5223da3ca3e57c5b965a610674d29034",
+    "semantic_hash": "5223da3ca3e57c5b965a610674d29034"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\questtracker.lua": {
+    "mtime": 1778334523.865827,
+    "ast_hash": "933c49a77790b601830bc3005f09168d",
+    "semantic_hash": "933c49a77790b601830bc3005f09168d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\quest\\smartquest.lua": {
+    "mtime": 1778334523.8683746,
+    "ast_hash": "3847a67a2463da86250a8ff0f94d5bff",
+    "semantic_hash": "3847a67a2463da86250a8ff0f94d5bff"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\raidmarkers\\options.lua": {
+    "mtime": 1778334523.8736136,
+    "ast_hash": "96c6d330bc2e94aea4fa37c965666c59",
+    "semantic_hash": "96c6d330bc2e94aea4fa37c965666c59"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\raidmarkers\\quickmark.lua": {
+    "mtime": 1778334523.8769076,
+    "ast_hash": "465b19ace4ef2152d97697102f2053f1",
+    "semantic_hash": "465b19ace4ef2152d97697102f2053f1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\raidmarkers\\raidmarkers.lua": {
+    "mtime": 1778334523.8784127,
+    "ast_hash": "e43fba77db4814c670fe027e04d7d81e",
+    "semantic_hash": "e43fba77db4814c670fe027e04d7d81e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\reminder\\options.lua": {
+    "mtime": 1778334523.884975,
+    "ast_hash": "351bda8ac2984dfcab6acbc768ac50fb",
+    "semantic_hash": "351bda8ac2984dfcab6acbc768ac50fb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\reminder\\raid.lua": {
+    "mtime": 1780570899.1243255,
+    "ast_hash": "760be979699ea7474bd726ee6f662992",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\reminder\\solo.lua": {
+    "mtime": 1780569527.8950348,
+    "ast_hash": "7d22211647a86159e48ac7ff38a72d9a",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\ElvUI_OptionsUI.lua": {
+    "mtime": 1778334523.8920817,
+    "ast_hash": "9f75538284fd8eefb86df5e23afa023b",
+    "semantic_hash": "9f75538284fd8eefb86df5e23afa023b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\options.lua": {
+    "mtime": 1778334523.896633,
+    "ast_hash": "18fc75d133837f6bdca5fbb249b950a0",
+    "semantic_hash": "18fc75d133837f6bdca5fbb249b950a0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\skins.lua": {
+    "mtime": 1778334523.8998778,
+    "ast_hash": "53fed6f89239b881797c3c278a0be1f1",
+    "semantic_hash": "53fed6f89239b881797c3c278a0be1f1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\ActionBarProfiles.lua": {
+    "mtime": 1778334523.9029536,
+    "ast_hash": "bc9c59a32338b5527477a76fe7170ff3",
+    "semantic_hash": "bc9c59a32338b5527477a76fe7170ff3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\Baggins.lua": {
+    "mtime": 1778334523.9054635,
+    "ast_hash": "65a4f349483f03ba1e4ddb15e8d395d3",
+    "semantic_hash": "65a4f349483f03ba1e4ddb15e8d395d3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\BigWigs.lua": {
+    "mtime": 1778334523.9079723,
+    "ast_hash": "ecdf7947d7919b948fce29a125ff908d",
+    "semantic_hash": "ecdf7947d7919b948fce29a125ff908d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\BugSack.lua": {
+    "mtime": 1778334523.9097135,
+    "ast_hash": "b4340d668cccb31dba76d4b9c59d6ba9",
+    "semantic_hash": "b4340d668cccb31dba76d4b9c59d6ba9"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\cargBags_Nivaya.lua": {
+    "mtime": 1778334523.9354951,
+    "ast_hash": "3e3dfdcb8178e0d831a5ea5e8c87bc16",
+    "semantic_hash": "3e3dfdcb8178e0d831a5ea5e8c87bc16"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\Clique.lua": {
+    "mtime": 1778334523.9132783,
+    "ast_hash": "b9830cbb0de59f2d3fcd272f9d2cf9f6",
+    "semantic_hash": "b9830cbb0de59f2d3fcd272f9d2cf9f6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\DeadlyBossMods.lua": {
+    "mtime": 1778334523.9147842,
+    "ast_hash": "b713f97c6fa13fccbef8e0f5934ace12",
+    "semantic_hash": "b713f97c6fa13fccbef8e0f5934ace12"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\EventTracker.lua": {
+    "mtime": 1778334523.9172938,
+    "ast_hash": "416146ce43c46bd4da717aa225777b48",
+    "semantic_hash": "416146ce43c46bd4da717aa225777b48"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\Hekili.lua": {
+    "mtime": 1778334523.920329,
+    "ast_hash": "79bac47e4c77d1436275d652b8f9d8d9",
+    "semantic_hash": "79bac47e4c77d1436275d652b8f9d8d9"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\ls_Toasts.lua": {
+    "mtime": 1778334523.9412727,
+    "ast_hash": "997029d3b9588062e14069656ff061c7",
+    "semantic_hash": "997029d3b9588062e14069656ff061c7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\stAddOnManager.lua": {
+    "mtime": 1778334523.9436185,
+    "ast_hash": "5bee36e2a51bbf72367dad825dca2b59",
+    "semantic_hash": "5bee36e2a51bbf72367dad825dca2b59"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\TextureBrowser.lua": {
+    "mtime": 1778334523.922852,
+    "ast_hash": "5240856144cfef8fcc08c16392005f6f",
+    "semantic_hash": "5240856144cfef8fcc08c16392005f6f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\TrinketMenu.lua": {
+    "mtime": 1778334523.9253666,
+    "ast_hash": "0c2f7c775353ff473c6debfab4fc2f35",
+    "semantic_hash": "0c2f7c775353ff473c6debfab4fc2f35"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\WeakAuras.lua": {
+    "mtime": 1778334523.927396,
+    "ast_hash": "5d51f02efb6ac7c1ef62cd0226678de2",
+    "semantic_hash": "5d51f02efb6ac7c1ef62cd0226678de2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\WeakAurasOptions.lua": {
+    "mtime": 1778334523.9299066,
+    "ast_hash": "132bfc0118869eec0f61b735fc15b337",
+    "semantic_hash": "132bfc0118869eec0f61b735fc15b337"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\addons\\XIV_Databar.lua": {
+    "mtime": 1778334523.932966,
+    "ast_hash": "b2f433da443d39a5899ca2d07bee6f78",
+    "semantic_hash": "b2f433da443d39a5899ca2d07bee6f78"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\achievement.lua": {
+    "mtime": 1778334523.9582777,
+    "ast_hash": "0e99fc3684cb1350b637a4fd49940340",
+    "semantic_hash": "0e99fc3684cb1350b637a4fd49940340"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\addonmanager.lua": {
+    "mtime": 1778334523.960345,
+    "ast_hash": "478b64dce486f8cc7d68c372c468cd14",
+    "semantic_hash": "478b64dce486f8cc7d68c372c468cd14"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\adventuremap.lua": {
+    "mtime": 1778334523.9633832,
+    "ast_hash": "3acc897215876ec321548354ef6e1041",
+    "semantic_hash": "3acc897215876ec321548354ef6e1041"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\alliedraces.lua": {
+    "mtime": 1778334523.9661877,
+    "ast_hash": "ab1383c2755d57b543c381a6bcc24c9a",
+    "semantic_hash": "ab1383c2755d57b543c381a6bcc24c9a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\AnimaDiversionUI.lua": {
+    "mtime": 1778334523.945151,
+    "ast_hash": "5278578df136c7fc728e9ec608151389",
+    "semantic_hash": "5278578df136c7fc728e9ec608151389"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\archaeology.lua": {
+    "mtime": 1778334523.9687607,
+    "ast_hash": "d5fa5d6c2d81243e392e128413b8f846",
+    "semantic_hash": "d5fa5d6c2d81243e392e128413b8f846"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\artifact.lua": {
+    "mtime": 1778334523.9704325,
+    "ast_hash": "43af68ab488d6e5dc7e57e401a5f6073",
+    "semantic_hash": "43af68ab488d6e5dc7e57e401a5f6073"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\auctionhouse.lua": {
+    "mtime": 1778334523.973449,
+    "ast_hash": "31618f473d3ec0386c2bd7c723f420bd",
+    "semantic_hash": "31618f473d3ec0386c2bd7c723f420bd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\azerite.lua": {
+    "mtime": 1778334523.9744525,
+    "ast_hash": "312b970955064bb7c362576391f31b2f",
+    "semantic_hash": "312b970955064bb7c362576391f31b2f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\azeriteessence.lua": {
+    "mtime": 1778334523.9784398,
+    "ast_hash": "75fec14f715ba88dc0d7d11053d92081",
+    "semantic_hash": "75fec14f715ba88dc0d7d11053d92081"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\azeriterespec.lua": {
+    "mtime": 1778334523.980464,
+    "ast_hash": "ab0ddf3b70113d02c8f6e6e764ab614f",
+    "semantic_hash": "ab0ddf3b70113d02c8f6e6e764ab614f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\barber.lua": {
+    "mtime": 1778334523.9829872,
+    "ast_hash": "0799b5a4e7a9c97fc9ea77efaa0b72b1",
+    "semantic_hash": "0799b5a4e7a9c97fc9ea77efaa0b72b1"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\binding.lua": {
+    "mtime": 1778334523.9855077,
+    "ast_hash": "d46b285eae8ef0d7b6c159baec93dfe2",
+    "semantic_hash": "d46b285eae8ef0d7b6c159baec93dfe2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\blackmarket.lua": {
+    "mtime": 1778334523.988024,
+    "ast_hash": "2bcff20b7054b4cf649d790c08256151",
+    "semantic_hash": "2bcff20b7054b4cf649d790c08256151"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\BNet.lua": {
+    "mtime": 1778334523.9482093,
+    "ast_hash": "78573c28e08d559a2f42ab66a76c9127",
+    "semantic_hash": "78573c28e08d559a2f42ab66a76c9127"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\calendar.lua": {
+    "mtime": 1778334523.9901755,
+    "ast_hash": "58c4091a09cd36ad3f88c0c8f94629bc",
+    "semantic_hash": "58c4091a09cd36ad3f88c0c8f94629bc"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\challenges.lua": {
+    "mtime": 1778334523.9921942,
+    "ast_hash": "93b7728fdc26b22cc2cbe9b9fe5b49bb",
+    "semantic_hash": "93b7728fdc26b22cc2cbe9b9fe5b49bb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\channels.lua": {
+    "mtime": 1778334523.9947033,
+    "ast_hash": "f47c28acce6415c4306e26bf3db05d94",
+    "semantic_hash": "f47c28acce6415c4306e26bf3db05d94"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\character.lua": {
+    "mtime": 1778334523.9972303,
+    "ast_hash": "5357d37a24aea1983952e930c091bd45",
+    "semantic_hash": "5357d37a24aea1983952e930c091bd45"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\chatFrame.lua": {
+    "mtime": 1778334523.9997394,
+    "ast_hash": "c355e0f31a3bdfa51f8331c0278a009f",
+    "semantic_hash": "c355e0f31a3bdfa51f8331c0278a009f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\collectables.lua": {
+    "mtime": 1778334524.0022779,
+    "ast_hash": "eeacfbf9dd3c82e485de383dcb443043",
+    "semantic_hash": "eeacfbf9dd3c82e485de383dcb443043"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\communities.lua": {
+    "mtime": 1778334524.0045147,
+    "ast_hash": "996b9ae8f176b8d03e63249206b4b5ed",
+    "semantic_hash": "996b9ae8f176b8d03e63249206b4b5ed"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\contribution.lua": {
+    "mtime": 1778334524.0075877,
+    "ast_hash": "06fb994f9bbe38a16ac633f92dc86cbd",
+    "semantic_hash": "06fb994f9bbe38a16ac633f92dc86cbd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\covenantpreviewui.lua": {
+    "mtime": 1778334524.0096405,
+    "ast_hash": "a5233615e667a9021ac8e8551ff6f567",
+    "semantic_hash": "a5233615e667a9021ac8e8551ff6f567"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\covenantsanctum.lua": {
+    "mtime": 1778334524.0121489,
+    "ast_hash": "37feb517b146b0fa5c1940482f95d05e",
+    "semantic_hash": "37feb517b146b0fa5c1940482f95d05e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\deathRecap.lua": {
+    "mtime": 1778334524.0136852,
+    "ast_hash": "0c3a4690df738f5df4c1618c4e059228",
+    "semantic_hash": "0c3a4690df738f5df4c1618c4e059228"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\debug.lua": {
+    "mtime": 1778334524.0167558,
+    "ast_hash": "44828e05dcba0270d081aba17db1cf19",
+    "semantic_hash": "44828e05dcba0270d081aba17db1cf19"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\dressingroom.lua": {
+    "mtime": 1778334524.0197675,
+    "ast_hash": "a4a80a7964fcb64079972041cd4c825c",
+    "semantic_hash": "a4a80a7964fcb64079972041cd4c825c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\dropdown.lua": {
+    "mtime": 1778334524.0223196,
+    "ast_hash": "238f9bf1efbf3e43902bcf017835dba6",
+    "semantic_hash": "238f9bf1efbf3e43902bcf017835dba6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\encounterjournal.lua": {
+    "mtime": 1778334524.024829,
+    "ast_hash": "541c1d1c22c6b7395b540348c15b8f88",
+    "semantic_hash": "541c1d1c22c6b7395b540348c15b8f88"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\flightmap.lua": {
+    "mtime": 1778334524.0263853,
+    "ast_hash": "a3f83527e24813c4754f35f7e7e5813d",
+    "semantic_hash": "a3f83527e24813c4754f35f7e7e5813d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\friends.lua": {
+    "mtime": 1778334524.0289652,
+    "ast_hash": "38d9e1cc108e8c25255d32d1e3e9ff6d",
+    "semantic_hash": "38d9e1cc108e8c25255d32d1e3e9ff6d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\GameTooltip.lua": {
+    "mtime": 1778334523.949715,
+    "ast_hash": "c1f917bcd0ab9607a303df11bc2b1f3f",
+    "semantic_hash": "c1f917bcd0ab9607a303df11bc2b1f3f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\garrison.lua": {
+    "mtime": 1778334524.0321517,
+    "ast_hash": "c4db80eb1d39d000407b8459c5fce479",
+    "semantic_hash": "c4db80eb1d39d000407b8459c5fce479"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\garrisonTemplate.lua": {
+    "mtime": 1778334524.0336576,
+    "ast_hash": "06f59f78c112f4881934ea48253ca806",
+    "semantic_hash": "06f59f78c112f4881934ea48253ca806"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\gbank.lua": {
+    "mtime": 1778334524.035757,
+    "ast_hash": "ddd13480f8b4d223d9ce4e6676c57db0",
+    "semantic_hash": "ddd13480f8b4d223d9ce4e6676c57db0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\gmchatUI.lua": {
+    "mtime": 1778334524.038295,
+    "ast_hash": "a39a09bdeb2e16e643cf1b6af72178db",
+    "semantic_hash": "a39a09bdeb2e16e643cf1b6af72178db"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\gossip.lua": {
+    "mtime": 1778334524.041703,
+    "ast_hash": "aad505d50558002a1c7d2f0b848409f9",
+    "semantic_hash": "aad505d50558002a1c7d2f0b848409f9"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\guild.lua": {
+    "mtime": 1780576471.5599027,
+    "ast_hash": "10a8d8c953e3121820c1471130e86b14",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\guildcontrol.lua": {
+    "mtime": 1778334524.0462284,
+    "ast_hash": "ee761e8fea2a1073e2a7b64ddff5591a",
+    "semantic_hash": "ee761e8fea2a1073e2a7b64ddff5591a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\guildrecruitmentUI.lua": {
+    "mtime": 1778334524.0482798,
+    "ast_hash": "94c1eb419023bc909472454537c50d12",
+    "semantic_hash": "94c1eb419023bc909472454537c50d12"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\help.lua": {
+    "mtime": 1778334524.0511057,
+    "ast_hash": "a237959ed5724a9c80ddf4fa1d1e3c6b",
+    "semantic_hash": "a237959ed5724a9c80ddf4fa1d1e3c6b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\inspect.lua": {
+    "mtime": 1778334524.0536447,
+    "ast_hash": "4d8707463524e782316027a39a96c6b5",
+    "semantic_hash": "4d8707463524e782316027a39a96c6b5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\islandsPartyPose.lua": {
+    "mtime": 1778334524.056155,
+    "ast_hash": "ffec4dcfea32e87d7f256ce770bae931",
+    "semantic_hash": "ffec4dcfea32e87d7f256ce770bae931"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\islandsQueue.lua": {
+    "mtime": 1778334524.0581782,
+    "ast_hash": "8de1ec490949562a3ad910cb58b3cbf8",
+    "semantic_hash": "8de1ec490949562a3ad910cb58b3cbf8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\iteminteraction.lua": {
+    "mtime": 1778334524.0635502,
+    "ast_hash": "798e8806a2acdbdcde7630905d995531",
+    "semantic_hash": "798e8806a2acdbdcde7630905d995531"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\itemText.lua": {
+    "mtime": 1778334524.0610378,
+    "ast_hash": "891418680707eb842889323a2adc56e2",
+    "semantic_hash": "891418680707eb842889323a2adc56e2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\itemupgrade.lua": {
+    "mtime": 1778334524.0655825,
+    "ast_hash": "d341d6eb798271212a46926ad1c26cc3",
+    "semantic_hash": "d341d6eb798271212a46926ad1c26cc3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\lfgFrame.lua": {
+    "mtime": 1778334524.0680916,
+    "ast_hash": "abbb8000d3edf84f760e43ca516ef615",
+    "semantic_hash": "abbb8000d3edf84f760e43ca516ef615"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\lfgList.lua": {
+    "mtime": 1778334524.069627,
+    "ast_hash": "fa22c9045df5da98cc6d7168160e4cca",
+    "semantic_hash": "fa22c9045df5da98cc6d7168160e4cca"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\lfguild.lua": {
+    "mtime": 1778334524.0726817,
+    "ast_hash": "0a18d5b435a9341c60228d74dc47ee26",
+    "semantic_hash": "0a18d5b435a9341c60228d74dc47ee26"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\lookingforguildUI.lua": {
+    "mtime": 1778334524.0782235,
+    "ast_hash": "89ec67e569c6785f5a6e37bf399f57d4",
+    "semantic_hash": "89ec67e569c6785f5a6e37bf399f57d4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\loot.lua": {
+    "mtime": 1778334524.080258,
+    "ast_hash": "226b3f12287243f4a2ddb3a4669b8158",
+    "semantic_hash": "226b3f12287243f4a2ddb3a4669b8158"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\macro.lua": {
+    "mtime": 1778334524.0836165,
+    "ast_hash": "530c6a9d83924e872b4364be2bb4eea5",
+    "semantic_hash": "530c6a9d83924e872b4364be2bb4eea5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\mail.lua": {
+    "mtime": 1780537707.5099416,
+    "ast_hash": "7e5d36ae4936a4c896a8ff4d0684183e",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\mapCanvas.lua": {
+    "mtime": 1778334524.0881345,
+    "ast_hash": "d2d98c4e6d5df0dd15a067987662a47d",
+    "semantic_hash": "d2d98c4e6d5df0dd15a067987662a47d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\merchant.lua": {
+    "mtime": 1778334524.090177,
+    "ast_hash": "a2498cfe958431835da631d27b2562f6",
+    "semantic_hash": "a2498cfe958431835da631d27b2562f6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\minimap.lua": {
+    "mtime": 1778334524.0927231,
+    "ast_hash": "524025f1e13884671c7e348369196941",
+    "semantic_hash": "524025f1e13884671c7e348369196941"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\misc.lua": {
+    "mtime": 1778334524.095413,
+    "ast_hash": "4a97773b48e1959e1dd98113336632d4",
+    "semantic_hash": "4a97773b48e1959e1dd98113336632d4"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\objectivetracker.lua": {
+    "mtime": 1780538071.3531885,
+    "ast_hash": "96f89d3b1085eba3530c67ba64b6d8cb",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\obliterum.lua": {
+    "mtime": 1778334524.1005068,
+    "ast_hash": "e75372755299b2e7f14eb36d351015be",
+    "semantic_hash": "e75372755299b2e7f14eb36d351015be"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\orderhall.lua": {
+    "mtime": 1778334524.1020572,
+    "ast_hash": "554e2a3c405adc3fc2a33a70129ef2ab",
+    "semantic_hash": "554e2a3c405adc3fc2a33a70129ef2ab"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\paperdollFrame.lua": {
+    "mtime": 1778334524.1051736,
+    "ast_hash": "9c3cf556a303b72147741ec45d6cda87",
+    "semantic_hash": "9c3cf556a303b72147741ec45d6cda87"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\playerchoiceui.lua": {
+    "mtime": 1778334524.1092134,
+    "ast_hash": "61d04df3b632ae3bcf63d219853583e8",
+    "semantic_hash": "61d04df3b632ae3bcf63d219853583e8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\pveFrame.lua": {
+    "mtime": 1778334524.1114933,
+    "ast_hash": "46cba6cd566258402045724715b05290",
+    "semantic_hash": "46cba6cd566258402045724715b05290"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\pvp.lua": {
+    "mtime": 1778334524.1135218,
+    "ast_hash": "12e30f806019752fd46deab06192f6c5",
+    "semantic_hash": "12e30f806019752fd46deab06192f6c5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\questchoice.lua": {
+    "mtime": 1778334524.118106,
+    "ast_hash": "9ec3362c5594a08c85194be0ab3ad287",
+    "semantic_hash": "9ec3362c5594a08c85194be0ab3ad287"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\questframe.lua": {
+    "mtime": 1778334524.12115,
+    "ast_hash": "618cb51daee065a9418626b83bcf8fc0",
+    "semantic_hash": "618cb51daee065a9418626b83bcf8fc0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\questinfo.lua": {
+    "mtime": 1778334524.1237006,
+    "ast_hash": "243c8cb2583c5e3e6546284cfc7b2413",
+    "semantic_hash": "243c8cb2583c5e3e6546284cfc7b2413"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\questmapframe.lua": {
+    "mtime": 1778334524.125238,
+    "ast_hash": "11d88e84c878f1a9fb6d787e4a58e311",
+    "semantic_hash": "11d88e84c878f1a9fb6d787e4a58e311"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\questPOI.lua": {
+    "mtime": 1778334524.1150556,
+    "ast_hash": "eef7abb7095e7ebc0d3eb10d8e943c37",
+    "semantic_hash": "eef7abb7095e7ebc0d3eb10d8e943c37"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\raid.lua": {
+    "mtime": 1778334524.1282785,
+    "ast_hash": "c77a6e9e971ee0ad48158801ceeaca85",
+    "semantic_hash": "c77a6e9e971ee0ad48158801ceeaca85"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\raidframe.lua": {
+    "mtime": 1778334524.1303105,
+    "ast_hash": "f1b9afbf03b2baffe94fccbaf7171e28",
+    "semantic_hash": "f1b9afbf03b2baffe94fccbaf7171e28"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\scrappingmachine.lua": {
+    "mtime": 1778334524.1328382,
+    "ast_hash": "7a8218d6ba90ae181e98dd06360f8cd8",
+    "semantic_hash": "7a8218d6ba90ae181e98dd06360f8cd8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\socket.lua": {
+    "mtime": 1778334524.1348715,
+    "ast_hash": "64cd67469e8a630bc4ea0f3f75eeb8a0",
+    "semantic_hash": "64cd67469e8a630bc4ea0f3f75eeb8a0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\soulbinds.lua": {
+    "mtime": 1778334524.1368914,
+    "ast_hash": "9113fe042131af92ebdcd043f5c52bda",
+    "semantic_hash": "9113fe042131af92ebdcd043f5c52bda"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\spellbook.lua": {
+    "mtime": 1778334524.1400006,
+    "ast_hash": "ab483b04a3d716950ae47a193e5354df",
+    "semantic_hash": "ab483b04a3d716950ae47a193e5354df"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\stacksplit.lua": {
+    "mtime": 1778334524.1420424,
+    "ast_hash": "0c7b1f9ea2dfab8cc8f1c0a2459b077e",
+    "semantic_hash": "0c7b1f9ea2dfab8cc8f1c0a2459b077e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\talent.lua": {
+    "mtime": 1778334524.1450565,
+    "ast_hash": "c763336fe86a57b2965d6ea3bf4eb5ee",
+    "semantic_hash": "c763336fe86a57b2965d6ea3bf4eb5ee"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\talkinghead.lua": {
+    "mtime": 1778334524.1475658,
+    "ast_hash": "11c0bf01c680227d877300fcb1384a51",
+    "semantic_hash": "11c0bf01c680227d877300fcb1384a51"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\taxi.lua": {
+    "mtime": 1778334524.1495752,
+    "ast_hash": "89c44b24359c9714c067ad05cc576e94",
+    "semantic_hash": "89c44b24359c9714c067ad05cc576e94"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\timemanager.lua": {
+    "mtime": 1778334524.1520853,
+    "ast_hash": "cf1c682d6cf45f8faba85d1da7298158",
+    "semantic_hash": "cf1c682d6cf45f8faba85d1da7298158"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\trade.lua": {
+    "mtime": 1778334524.1546395,
+    "ast_hash": "b4740edf7910c7f6bd6a9afa50833bcf",
+    "semantic_hash": "b4740edf7910c7f6bd6a9afa50833bcf"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\tradeskill.lua": {
+    "mtime": 1778334524.1556804,
+    "ast_hash": "5d5b9add6c06755a7ab6fed76c2e874e",
+    "semantic_hash": "5d5b9add6c06755a7ab6fed76c2e874e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\trainer.lua": {
+    "mtime": 1778334524.1582515,
+    "ast_hash": "14076ff7f7b6b552333fc4731abc42dd",
+    "semantic_hash": "14076ff7f7b6b552333fc4731abc42dd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\UIWidget.lua": {
+    "mtime": 1778334523.9527433,
+    "ast_hash": "96adddbb721a20caae668e7a554f9b88",
+    "semantic_hash": "96adddbb721a20caae668e7a554f9b88"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\voidstorage.lua": {
+    "mtime": 1778334524.1618438,
+    "ast_hash": "6acdd69f471614817f66dd1fb905c546",
+    "semantic_hash": "6acdd69f471614817f66dd1fb905c546"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\warboard.lua": {
+    "mtime": 1778334524.164451,
+    "ast_hash": "2127c0da51042cf069ed445e577a2103",
+    "semantic_hash": "2127c0da51042cf069ed445e577a2103"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\warfrontPartyPose.lua": {
+    "mtime": 1778334524.1670165,
+    "ast_hash": "a92b5fccbea721c95c3fe5ea90880e57",
+    "semantic_hash": "a92b5fccbea721c95c3fe5ea90880e57"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\WeeklyRewards.lua": {
+    "mtime": 1778334523.9552522,
+    "ast_hash": "93bda8e15ae332d77adce11f2e7f993c",
+    "semantic_hash": "93bda8e15ae332d77adce11f2e7f993c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\skins\\blizzard\\worldmap.lua": {
+    "mtime": 1778334524.1695268,
+    "ast_hash": "81663a2f9729d7f8ec7c1c63ee920591",
+    "semantic_hash": "81663a2f9729d7f8ec7c1c63ee920591"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\talents\\options.lua": {
+    "mtime": 1778334524.175668,
+    "ast_hash": "1ffbf6750183d1c57715a7e98d3e4505",
+    "semantic_hash": "1ffbf6750183d1c57715a7e98d3e4505"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\talents\\profiles.lua": {
+    "mtime": 1778334524.176713,
+    "ast_hash": "ec7c489ad29e04a65aa3f59535644833",
+    "semantic_hash": "ec7c489ad29e04a65aa3f59535644833"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\talents\\talents.lua": {
+    "mtime": 1778334524.1808243,
+    "ast_hash": "432d7e9d86326ab7d339376237942ddd",
+    "semantic_hash": "432d7e9d86326ab7d339376237942ddd"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\teamstats\\teamstats.lua": {
+    "mtime": 1778334524.188478,
+    "ast_hash": "ae6917df4a76df5b3f27157a9d1c21a0",
+    "semantic_hash": "ae6917df4a76df5b3f27157a9d1c21a0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\teamstats\\teamstatsTABS.lua": {
+    "mtime": 1778334524.1910467,
+    "ast_hash": "5c25d25d1025cded31aceffffde5ae89",
+    "semantic_hash": "5c25d25d1025cded31aceffffde5ae89"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\teamstats\\teamstatsUI.lua": {
+    "mtime": 1780576482.3879094,
+    "ast_hash": "724452ee219232c8a4ce960bda4b102d",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\teamstats\\TSCore.lua": {
+    "mtime": 1778334524.1833332,
+    "ast_hash": "337f7ceeffea9f2c9f74887fe60b7477",
+    "semantic_hash": "337f7ceeffea9f2c9f74887fe60b7477"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\toasts\\options.lua": {
+    "mtime": 1778334524.1989186,
+    "ast_hash": "31595f3f3a6a52f9f4c5a8ec6f6021c6",
+    "semantic_hash": "31595f3f3a6a52f9f4c5a8ec6f6021c6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\toasts\\skintoasts.lua": {
+    "mtime": 1778334524.201932,
+    "ast_hash": "366138e8e9af19ad139c72d183e924d3",
+    "semantic_hash": "366138e8e9af19ad139c72d183e924d3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\toasts\\toasts.lua": {
+    "mtime": 1778334524.204533,
+    "ast_hash": "9d4e8b8e549ec72d13416083958c2678",
+    "semantic_hash": "9d4e8b8e549ec72d13416083958c2678"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\achievement.lua": {
+    "mtime": 1778334524.2070422,
+    "ast_hash": "0c8c136376ce93d8795f6875fd8b0e4b",
+    "semantic_hash": "0c8c136376ce93d8795f6875fd8b0e4b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\azerite.lua": {
+    "mtime": 1778334524.2080543,
+    "ast_hash": "005039f639fec3d9c8dbb5c87c156201",
+    "semantic_hash": "005039f639fec3d9c8dbb5c87c156201"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\corruption.lua": {
+    "mtime": 1780576449.9967096,
+    "ast_hash": "36baf2f7eb3a4ae05ae8bd1fb2d90237",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\keystone.lua": {
+    "mtime": 1778334524.2138665,
+    "ast_hash": "bb1f19b25664caa7564be49bd22ee64e",
+    "semantic_hash": "bb1f19b25664caa7564be49bd22ee64e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\options.lua": {
+    "mtime": 1778334524.218887,
+    "ast_hash": "88c7734df1933bc5278c2fc42ed44d97",
+    "semantic_hash": "88c7734df1933bc5278c2fc42ed44d97"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\progression.lua": {
+    "mtime": 1778334524.221969,
+    "ast_hash": "24bf3517f22af44ad5786ab992c86777",
+    "semantic_hash": "24bf3517f22af44ad5786ab992c86777"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\realm.lua": {
+    "mtime": 1778334524.2240317,
+    "ast_hash": "6f9ff81d5c88437d40b9078576e2f3be",
+    "semantic_hash": "6f9ff81d5c88437d40b9078576e2f3be"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tooltip\\tooltip.lua": {
+    "mtime": 1778334524.2266698,
+    "ast_hash": "00b7f5ed8ee24b7f4aa5839e14b8a202",
+    "semantic_hash": "00b7f5ed8ee24b7f4aa5839e14b8a202"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tweaks\\cinematic.lua": {
+    "mtime": 1778334524.229219,
+    "ast_hash": "6ebd7d3142317499b88de09fd900cc1f",
+    "semantic_hash": "6ebd7d3142317499b88de09fd900cc1f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tweaks\\compactraidfix.lua": {
+    "mtime": 1780254376.9493957,
+    "ast_hash": "579324adab5da65e1c6bf9703caf00b5",
+    "semantic_hash": ""
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tweaks\\countdown.lua": {
+    "mtime": 1778334524.2312462,
+    "ast_hash": "056ef9bd82690a8874791adb502e2eb5",
+    "semantic_hash": "056ef9bd82690a8874791adb502e2eb5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tweaks\\easydelete.lua": {
+    "mtime": 1778334524.233755,
+    "ast_hash": "67fb994c737665a0ea959224fac592ee",
+    "semantic_hash": "67fb994c737665a0ea959224fac592ee"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\tweaks\\speedyloot.lua": {
+    "mtime": 1778334524.2383535,
+    "ast_hash": "da1ca5a6d22f90e5cf0103e3e506a380",
+    "semantic_hash": "da1ca5a6d22f90e5cf0103e3e506a380"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\options.lua": {
+    "mtime": 1778334524.2449288,
+    "ast_hash": "d070b686b364bf6c5b10c63e8b96de62",
+    "semantic_hash": "d070b686b364bf6c5b10c63e8b96de62"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\tags.lua": {
+    "mtime": 1778334524.2485352,
+    "ast_hash": "49b923a727d0ec517f5b6074f7347a7b",
+    "semantic_hash": "49b923a727d0ec517f5b6074f7347a7b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\unitframes.lua": {
+    "mtime": 1778334524.2513416,
+    "ast_hash": "f46a46349993c2019c4eceae9177a93e",
+    "semantic_hash": "f46a46349993c2019c4eceae9177a93e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\auraIconSpacing.lua": {
+    "mtime": 1778334524.2538514,
+    "ast_hash": "d8413d50ed1d0600a03364d26ebf9e5c",
+    "semantic_hash": "d8413d50ed1d0600a03364d26ebf9e5c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\castbar.lua": {
+    "mtime": 1778334524.2563632,
+    "ast_hash": "169f9915d86d1175b75a4e0f496ba321",
+    "semantic_hash": "169f9915d86d1175b75a4e0f496ba321"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\eliteIcon.lua": {
+    "mtime": 1778334524.2583845,
+    "ast_hash": "b02ad6a944068568ec695b6c779fe43f",
+    "semantic_hash": "b02ad6a944068568ec695b6c779fe43f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\focusKey.lua": {
+    "mtime": 1778334524.2608933,
+    "ast_hash": "04f8edecb1d0186a029ca3f2becfcd84",
+    "semantic_hash": "04f8edecb1d0186a029ca3f2becfcd84"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\healerMana.lua": {
+    "mtime": 1778334524.263765,
+    "ast_hash": "667218645f65b227fc9f3aa5bdd647da",
+    "semantic_hash": "667218645f65b227fc9f3aa5bdd647da"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\health.lua": {
+    "mtime": 1778334524.266324,
+    "ast_hash": "1315a8f696f0d9093643527b9f9e3977",
+    "semantic_hash": "1315a8f696f0d9093643527b9f9e3977"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\power.lua": {
+    "mtime": 1778334524.2728887,
+    "ast_hash": "d05b97012f2eb49f685c01e4adafec00",
+    "semantic_hash": "d05b97012f2eb49f685c01e4adafec00"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\powerbar.lua": {
+    "mtime": 1778334524.2754207,
+    "ast_hash": "e6773f0037d56ce952fd16d398a68ac0",
+    "semantic_hash": "e6773f0037d56ce952fd16d398a68ac0"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\elements\\roleIcons.lua": {
+    "mtime": 1778334524.2783923,
+    "ast_hash": "b6c769090cc4a1e9167537672f8846e2",
+    "semantic_hash": "b6c769090cc4a1e9167537672f8846e2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\groups\\boss.lua": {
+    "mtime": 1778334524.2799215,
+    "ast_hash": "fb6a5a515c3d4cdeb791bd4785eb6cc8",
+    "semantic_hash": "fb6a5a515c3d4cdeb791bd4785eb6cc8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\groups\\party.lua": {
+    "mtime": 1778334524.287287,
+    "ast_hash": "96e86cb14cadb93f049127b75d9f686b",
+    "semantic_hash": "96e86cb14cadb93f049127b75d9f686b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\groups\\raid.lua": {
+    "mtime": 1778334524.2898223,
+    "ast_hash": "7b9eddc49a419bba9944fff179b57e0c",
+    "semantic_hash": "7b9eddc49a419bba9944fff179b57e0c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\groups\\raid40.lua": {
+    "mtime": 1778334524.292864,
+    "ast_hash": "e3058013a0c9e131f9f4033695396d81",
+    "semantic_hash": "e3058013a0c9e131f9f4033695396d81"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\focus.lua": {
+    "mtime": 1778334524.295692,
+    "ast_hash": "05f66b7bd5251b29d7a464947872cc1d",
+    "semantic_hash": "05f66b7bd5251b29d7a464947872cc1d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\focustarget.lua": {
+    "mtime": 1778334524.2982388,
+    "ast_hash": "8ad3c94f5da2410856a70556b00b0b86",
+    "semantic_hash": "8ad3c94f5da2410856a70556b00b0b86"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\pet.lua": {
+    "mtime": 1778334524.3033874,
+    "ast_hash": "def47443a8af8ca29af1a253d5932f1f",
+    "semantic_hash": "def47443a8af8ca29af1a253d5932f1f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\player.lua": {
+    "mtime": 1778334524.306992,
+    "ast_hash": "1874163e6d09d682f39f00fb3387e94e",
+    "semantic_hash": "1874163e6d09d682f39f00fb3387e94e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\target.lua": {
+    "mtime": 1778334524.3090477,
+    "ast_hash": "aaa8cefc51b2e61b66a29cbde4a5fcab",
+    "semantic_hash": "aaa8cefc51b2e61b66a29cbde4a5fcab"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\modules\\unitframes\\units\\targettarget.lua": {
+    "mtime": 1778334524.3123598,
+    "ast_hash": "0d79f59e3c73147a365b356f1b11f749",
+    "semantic_hash": "0d79f59e3c73147a365b356f1b11f749"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\changelog.md": {
+    "mtime": 1780036260.6040213,
+    "ast_hash": "f4a0626b0fc2ccac5bc3f9fd72fc5c62",
+    "semantic_hash": "f4a0626b0fc2ccac5bc3f9fd72fc5c62"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\CLAUDE.md": {
+    "mtime": 1780155691.6848826,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": "8a6643a420fdad6bfb583523bc6cef16"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\README.md": {
+    "mtime": 1778334524.3235042,
+    "ast_hash": "a122e05353aa795500a75da49f958171",
+    "semantic_hash": "a122e05353aa795500a75da49f958171"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\HereBeDragons\\CHANGELOG.md": {
+    "mtime": 1778334522.3095481,
+    "ast_hash": "5dba52260eef0515ef3f5689e24215d6",
+    "semantic_hash": "5dba52260eef0515ef3f5689e24215d6"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibEasing\\LICENSE.md": {
+    "mtime": 1778334522.3497987,
+    "ast_hash": "8770c5693bf008dbf5c1a532a145379a",
+    "semantic_hash": "8770c5693bf008dbf5c1a532a145379a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibEasing\\README.md": {
+    "mtime": 1778334522.3573503,
+    "ast_hash": "14fb6d5eff4a7ac42547cfc492a99723",
+    "semantic_hash": "14fb6d5eff4a7ac42547cfc492a99723"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\Changelog-LibProcessable-13.txt": {
+    "mtime": 1778334522.3950634,
+    "ast_hash": "4d21e47bad618068d6045cb00aaf370e",
+    "semantic_hash": "4d21e47bad618068d6045cb00aaf370e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\CHANGELOG.md": {
+    "mtime": 1778334522.3879623,
+    "ast_hash": "e4f03e8a8405f3f425d66014cdc2352a",
+    "semantic_hash": "e4f03e8a8405f3f425d66014cdc2352a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\CHANGES.txt": {
+    "mtime": 1778334522.3925302,
+    "ast_hash": "5b0a84a37757ca9491288eeb71cd7c96",
+    "semantic_hash": "5b0a84a37757ca9491288eeb71cd7c96"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibProcessable\\LICENSE.txt": {
+    "mtime": 1778334522.399124,
+    "ast_hash": "3a76c8532a644cbb7e39d595975225aa",
+    "semantic_hash": "3a76c8532a644cbb7e39d595975225aa"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibRealmInfo\\LICENSE.txt": {
+    "mtime": 1778334522.4169729,
+    "ast_hash": "0883550059546aec594246637774b122",
+    "semantic_hash": "0883550059546aec594246637774b122"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\CHANGES.txt": {
+    "mtime": 1778334522.4222858,
+    "ast_hash": "b171a6725af9c979d8206103cfb80541",
+    "semantic_hash": "b171a6725af9c979d8206103cfb80541"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTourist-3.0\\LICENSE.txt": {
+    "mtime": 1778334522.4268754,
+    "ast_hash": "901666621ad85002782957d4159343b7",
+    "semantic_hash": "901666621ad85002782957d4159343b7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\CHANGES.txt": {
+    "mtime": 1778334522.4864032,
+    "ast_hash": "0adde0e423d9ca0992ff74134bfd14b5",
+    "semantic_hash": "0adde0e423d9ca0992ff74134bfd14b5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\libs\\LibTouristClassic-1.0\\LICENSE.txt": {
+    "mtime": 1778334522.4889245,
+    "ast_hash": "901666621ad85002782957d4159343b7",
+    "semantic_hash": "901666621ad85002782957d4159343b7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\textures\\classIcons\\credit.txt": {
+    "mtime": 1778334523.2041621,
+    "ast_hash": "cc9582d0b270f2b9f94ee8157a01a235",
+    "semantic_hash": "cc9582d0b270f2b9f94ee8157a01a235"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\bloodlust.mp3": {
+    "mtime": 1778334522.6219516,
+    "ast_hash": "6715b452b623f8369ed22e38aff44edc",
+    "semantic_hash": "6715b452b623f8369ed22e38aff44edc"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\blowmywhistle.mp3": {
+    "mtime": 1778334522.6244614,
+    "ast_hash": "ea7d6e1580b75d6f686c4f5f85ef0fcb",
+    "semantic_hash": "ea7d6e1580b75d6f686c4f5f85ef0fcb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\heroism.mp3": {
+    "mtime": 1778334522.629433,
+    "ast_hash": "d109bad006b93806702568dc49bdc26f",
+    "semantic_hash": "d109bad006b93806702568dc49bdc26f"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\illidan.mp3": {
+    "mtime": 1778334522.633473,
+    "ast_hash": "799a38f404f623503d21d8db4ce034f2",
+    "semantic_hash": "799a38f404f623503d21d8db4ce034f2"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Install.ogg": {
+    "mtime": 1778334522.6168563,
+    "ast_hash": "0b27075c372f2aecb3b9b9caf27ee86a",
+    "semantic_hash": "0b27075c372f2aecb3b9b9caf27ee86a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\leader.ogg": {
+    "mtime": 1778334522.6360512,
+    "ast_hash": "6fb891c7647d5533bcc6b29283856d9d",
+    "semantic_hash": "6fb891c7647d5533bcc6b29283856d9d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\mail.mp3": {
+    "mtime": 1778334522.6397438,
+    "ast_hash": "b992e16d9a38eec014383f7e81d136fb",
+    "semantic_hash": "b992e16d9a38eec014383f7e81d136fb"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\warning.mp3": {
+    "mtime": 1778334522.644111,
+    "ast_hash": "375e548859ce27e0d37a98decdb87a64",
+    "semantic_hash": "375e548859ce27e0d37a98decdb87a64"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\yoda_message.mp3": {
+    "mtime": 1778334522.6485293,
+    "ast_hash": "b0ca698fbe7d763845ee7771de247067",
+    "semantic_hash": "b0ca698fbe7d763845ee7771de247067"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Owen\\Kachow .mp3": {
+    "mtime": 1778334522.6520422,
+    "ast_hash": "5cc1240521e0d98a3126a368b68720f7",
+    "semantic_hash": "5cc1240521e0d98a3126a368b68720f7"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Owen\\wow1.mp3": {
+    "mtime": 1778334522.655082,
+    "ast_hash": "2b50e77040887dd5b1e37c868e687048",
+    "semantic_hash": "2b50e77040887dd5b1e37c868e687048"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Owen\\wow2.mp3": {
+    "mtime": 1778334522.6586962,
+    "ast_hash": "7661e1e4792d7484177e1d9ba3dae91c",
+    "semantic_hash": "7661e1e4792d7484177e1d9ba3dae91c"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_1.ogg": {
+    "mtime": 1778334522.6619945,
+    "ast_hash": "5712134e9e97e0194d89bcce69e59164",
+    "semantic_hash": "5712134e9e97e0194d89bcce69e59164"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_10.ogg": {
+    "mtime": 1778334522.6635,
+    "ast_hash": "86a9fa08721016f8c1fabdd10c7185ca",
+    "semantic_hash": "86a9fa08721016f8c1fabdd10c7185ca"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_2.ogg": {
+    "mtime": 1778334522.667106,
+    "ast_hash": "7d939f09706d753e06fedf6a1261cbb8",
+    "semantic_hash": "7d939f09706d753e06fedf6a1261cbb8"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_3.ogg": {
+    "mtime": 1778334522.66917,
+    "ast_hash": "72bf4b81adaed29bf4d748c0b0e3c74e",
+    "semantic_hash": "72bf4b81adaed29bf4d748c0b0e3c74e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_4.ogg": {
+    "mtime": 1778334522.67295,
+    "ast_hash": "ea9892adcca20e9bdbf8e7c2cd73453e",
+    "semantic_hash": "ea9892adcca20e9bdbf8e7c2cd73453e"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_5.ogg": {
+    "mtime": 1778334522.6754599,
+    "ast_hash": "00f8b3a94adc9ea969f4dd0a675a97c3",
+    "semantic_hash": "00f8b3a94adc9ea969f4dd0a675a97c3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_6.ogg": {
+    "mtime": 1778334522.6786945,
+    "ast_hash": "a6bd3b30be521da202ddabf473cad879",
+    "semantic_hash": "a6bd3b30be521da202ddabf473cad879"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_7.ogg": {
+    "mtime": 1778334522.6812248,
+    "ast_hash": "3496b4ef08416585c9c33b65d419aacf",
+    "semantic_hash": "3496b4ef08416585c9c33b65d419aacf"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_8.ogg": {
+    "mtime": 1778334522.6837726,
+    "ast_hash": "536660c5479e6397a889a126db41126b",
+    "semantic_hash": "536660c5479e6397a889a126db41126b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Classic2003\\UT2003_9.ogg": {
+    "mtime": 1778334522.6867948,
+    "ast_hash": "689d61a38c507614e358ae3ace3fa4c5",
+    "semantic_hash": "689d61a38c507614e358ae3ace3fa4c5"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\dominating.ogg": {
+    "mtime": 1778334522.6888587,
+    "ast_hash": "eacdb4a3ab47ab21f742edacf8870281",
+    "semantic_hash": "eacdb4a3ab47ab21f742edacf8870281"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\doublekill.ogg": {
+    "mtime": 1778334522.6923714,
+    "ast_hash": "ad620ff19c3738678544c1f1fbf29996",
+    "semantic_hash": "ad620ff19c3738678544c1f1fbf29996"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\firstblood.ogg": {
+    "mtime": 1778334522.6953838,
+    "ast_hash": "6d1d2486f7874dffb27f2639804d3012",
+    "semantic_hash": "6d1d2486f7874dffb27f2639804d3012"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\godlike.ogg": {
+    "mtime": 1778334522.6979587,
+    "ast_hash": "63b53e2dfd212bbbbc8da96352cbf97d",
+    "semantic_hash": "63b53e2dfd212bbbbc8da96352cbf97d"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\holyshit.ogg": {
+    "mtime": 1778334522.7000167,
+    "ast_hash": "218d69b4de4a29f2dfcb4cd44de9cc79",
+    "semantic_hash": "218d69b4de4a29f2dfcb4cd44de9cc79"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\killingspree.ogg": {
+    "mtime": 1778334522.7036421,
+    "ast_hash": "3d54b119b365221dcb333c524b136998",
+    "semantic_hash": "3d54b119b365221dcb333c524b136998"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\megakill.ogg": {
+    "mtime": 1778334522.7056603,
+    "ast_hash": "eab6390f0354877c7c528360f509605a",
+    "semantic_hash": "eab6390f0354877c7c528360f509605a"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\monsterkill.ogg": {
+    "mtime": 1778334522.7092817,
+    "ast_hash": "e60eb6f9ab5770e5fc82308724013e6b",
+    "semantic_hash": "e60eb6f9ab5770e5fc82308724013e6b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\rampage.ogg": {
+    "mtime": 1778334522.7123947,
+    "ast_hash": "f643b68e54a594fcf8f94ac7621db82b",
+    "semantic_hash": "f643b68e54a594fcf8f94ac7621db82b"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\triplekill.ogg": {
+    "mtime": 1778334522.7144165,
+    "ast_hash": "8cb905c844717beb21f54729e7ac80ae",
+    "semantic_hash": "8cb905c844717beb21f54729e7ac80ae"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\ultrakill.ogg": {
+    "mtime": 1778334522.7174408,
+    "ast_hash": "14dba6e469b6ef7ad96a4d8027f22ff3",
+    "semantic_hash": "14dba6e469b6ef7ad96a4d8027f22ff3"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\unstoppable.ogg": {
+    "mtime": 1778334522.7205608,
+    "ast_hash": "1d18a6da1b0716ec1f4d102f36dfd442",
+    "semantic_hash": "1d18a6da1b0716ec1f4d102f36dfd442"
+  },
+  "Z:\\World of Warcraft\\_classic_\\Interface\\AddOns\\ElvUI_KlixUI\\media\\sounds\\Unreal_Tournament\\Killstreaks\\wickedsick.ogg": {
+    "mtime": 1778334522.7220807,
+    "ast_hash": "65dfd102685b6342b761ff5b44e7c705",
+    "semantic_hash": "65dfd102685b6342b761ff5b44e7c705"
+  }
+}

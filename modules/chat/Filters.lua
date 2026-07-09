@@ -8,8 +8,6 @@ local split, strfind, strmatch, gmatch, gsub, sub = string.split, string.find, s
 local pairs, ipairs, tonumber = pairs, ipairs, tonumber
 local min, max, tremove = math.min, math.max, table.remove
 -- WoW API / Variable
-local GetCVarBool = GetCVarBool
-local SetCVar = SetCVar
 local GetInstanceInfo = GetInstanceInfo
 local IsGuildMember = IsGuildMember
 local IsInInstance = IsInInstance
@@ -128,12 +126,12 @@ local addonBlockList = {
 local cvar
 local function toggleCVar(value)
 	value = tonumber(value) or 1
-	SetCVar(cvar, value)
+	T.SetCVar(cvar, value)
 end
 
 function KC:ToggleChatBubble(party)
 	cvar = 'chatBubbles'..(party and 'Party' or '')
-	if not GetCVarBool(cvar) then return end
+	if not T.GetCVarBool(cvar) then return end
 	toggleCVar(0)
 	C_Timer_After(.01, toggleCVar)
 end

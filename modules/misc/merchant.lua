@@ -5,7 +5,7 @@ local S = E:GetModule('Skins')
 local RETRIEVING_ITEM_INFO, MOUNT, ITEM_SPELL_KNOWN, SEARCH, MISCELLANEOUS = RETRIEVING_ITEM_INFO, MOUNT, ITEM_SPELL_KNOWN, SEARCH, MISCELLANEOUS
 local MAX_MONEY_DISPLAY_WIDTH = 120
 
-local RECIPE = T.GetItemClassInfo(_G.LE_ITEM_CLASS_RECIPE)
+local RECIPE = T.GetItemClassInfo(_G.LE_ITEM_CLASS_RECIPE or (Enum and Enum.ItemClass and Enum.ItemClass.Recipe) or 9)
 local searchBox
 local searching = ""
 

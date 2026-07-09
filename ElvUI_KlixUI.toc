@@ -1,4 +1,4 @@
-## Interface: 50503
+## Interface: 50504
 ## Author: Klix
 ## Version: 1.83
 ## Title: |cff1784d1ElvUI|r |cfff960d9KlixUI|r

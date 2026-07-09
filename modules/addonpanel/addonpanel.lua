@@ -279,7 +279,9 @@ function AP:BuildFrame()
 
 	T.table_insert(UISpecialFrames, self.Frame:GetName())
 
-	GameMenuButtonAddons:SetScript("OnClick", function() self.Frame:Show() T.HideUIPanel(GameMenuFrame) end)
+	if GameMenuButtonAddons then
+		GameMenuButtonAddons:SetScript("OnClick", function() self.Frame:Show() T.HideUIPanel(GameMenuFrame) end)
+	end
 end
 
 function AP:NewAddOnProfile(name, overwrite)

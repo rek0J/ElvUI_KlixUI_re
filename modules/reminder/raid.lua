@@ -75,122 +75,72 @@ local attackpowerbuffs = KRR.ReminderBuffs["AttackPower"]
 local r, g, b = T.unpack(E["media"].rgbvaluecolor)
 local color = {r, g, b, 1}
 
+-- Returns true if the player currently has the given spell ID as a HELPFUL aura.
+-- Prefers the direct GetPlayerAuraBySpellID API; falls back to an index scan.
+local function PlayerHasAura(spellID)
+	if C_UnitAuras then
+		if C_UnitAuras.GetPlayerAuraBySpellID then
+			return C_UnitAuras.GetPlayerAuraBySpellID(spellID) ~= nil
+		end
+		if C_UnitAuras.GetAuraDataByIndex then
+			local i = 1
+			while true do
+				local aura = C_UnitAuras.GetAuraDataByIndex("player", i, "HELPFUL")
+				if not aura then break end
+				if aura.spellId == spellID then return true end
+				i = i + 1
+			end
+			return false
+		end
+	end
+	return false
+end
+
+-- Returns the icon texture for a spell ID, compatible with both old and new GetSpellInfo.
+local function SpellIcon(spellID)
+	if C_Spell and C_Spell.GetSpellInfo then
+		local info = C_Spell.GetSpellInfo(spellID)
+		if info then return info.iconID or info.originalIconID end
+	end
+	return T.select(3, T.GetSpellInfo(spellID))
+end
+
+-- Applies buff-found or buff-missing state to a frame.
+local function ApplyBuffState(frame, spellID, found)
+	if found then
+		frame.t:SetTexture(SpellIcon(spellID))
+		frame:SetAlpha(KRR.db.alpha or 0.3)
+		LCG.PixelGlow_Stop(frame)
+	else
+		if KRR.db.glow then LCG.PixelGlow_Start(frame, color, nil, -0.25, nil, 1) end
+		frame:SetAlpha(1)
+	end
+end
+
+-- Checks a buff list against the player's current auras and updates the frame.
+local function CheckBuffList(frame, buffList)
+	if not (buffList and buffList[1]) then return end
+	frame.t:SetTexture(SpellIcon(buffList[1]))
+	for _, spellID in T.pairs(buffList) do
+		if PlayerHasAura(spellID) then
+			ApplyBuffState(frame, spellID, true)
+			return
+		end
+	end
+	ApplyBuffState(frame, buffList[1], false)
+end
+
 local function OnAuraChange(self, event, arg1, unit)
 	if (event == "UNIT_AURA" and arg1 ~= "player") then return end
 
-	if (flaskbuffs and flaskbuffs[1]) then
-		FlaskFrame.t:SetTexture(T.select(3, T.GetSpellInfo(flaskbuffs[1])))
-		for i, flaskbuffs in T.pairs(flaskbuffs) do
-			local spellname = T.select(1, T.GetSpellInfo(flaskbuffs))
-			if T.AuraUtil_FindAuraByName(spellname, "player") then
-				FlaskFrame.t:SetTexture(T.select(3, T.GetSpellInfo(flaskbuffs)))
-				FlaskFrame:SetAlpha(KRR.db.alpha or 0.3)
-				LCG.PixelGlow_Stop(FlaskFrame)
-				break
-			else
-				if KRR.db.glow then
-					LCG.PixelGlow_Start(FlaskFrame, color, nil, -0.25, nil, 1)
-				end
-				FlaskFrame:SetAlpha(1)
-				FlaskFrame.t:SetTexture(T.select(3, T.GetSpellInfo(flaskbuffs)))
-			end
-		end
-	end
+	CheckBuffList(FlaskFrame,       flaskbuffs)
+	CheckBuffList(FoodFrame,        foodbuffs)
+	CheckBuffList(DARuneFrame,      darunebuffs)
 
-	if (foodbuffs and foodbuffs[1]) then
-		FoodFrame.t:SetTexture(T.select(3, T.GetSpellInfo(foodbuffs[1])))
-		for i, foodbuffs in T.pairs(foodbuffs) do
-			local spellname = T.select(1, T.GetSpellInfo(foodbuffs))
-			if T.AuraUtil_FindAuraByName(spellname, "player") then
-				FoodFrame.t:SetTexture(T.select(3, T.GetSpellInfo(foodbuffs)))
-				FoodFrame:SetAlpha(KRR.db.alpha or 0.3)
-				LCG.PixelGlow_Stop(FoodFrame)
-				break
-			else
-				if KRR.db.glow then
-					LCG.PixelGlow_Start(FoodFrame, color, nil, -0.25, nil, 1)
-				end
-				FoodFrame:SetAlpha(1)
-				FoodFrame.t:SetTexture(T.select(3, T.GetSpellInfo(foodbuffs)))
-			end
-		end
-	end
-
-	if (darunebuffs and darunebuffs[1]) then
-	DARuneFrame.t:SetTexture(T.select(3, T.GetSpellInfo(darunebuffs[1])))
-		for i, darunebuffs in T.pairs(darunebuffs) do
-			local spellname = T.select(1, T.GetSpellInfo(darunebuffs))
-			if T.AuraUtil_FindAuraByName(spellname, "player") then
-				DARuneFrame.t:SetTexture(T.select(3, T.GetSpellInfo(darunebuffs)))
-				DARuneFrame:SetAlpha(KRR.db.alpha or 0.3)
-				LCG.PixelGlow_Stop(DARuneFrame)
-				break
-			else
-				if KRR.db.glow then
-					LCG.PixelGlow_Start(DARuneFrame, color, nil, -0.25, nil, 1)
-				end
-				DARuneFrame:SetAlpha(1)
-				DARuneFrame.t:SetTexture(T.select(3, T.GetSpellInfo(darunebuffs)))
-			end
-		end
-	end
 	if KRR.db.class then
-		if (intellectbuffs and intellectbuffs[1]) then
-		IntellectFrame.t:SetTexture(T.select(3, T.GetSpellInfo(intellectbuffs[1])))
-			for i, intellectbuffs in T.pairs(intellectbuffs) do
-				local spellname = T.select(1, T.GetSpellInfo(intellectbuffs))
-				if T.AuraUtil_FindAuraByName(spellname, "player") then
-					IntellectFrame.t:SetTexture(T.select(3, T.GetSpellInfo(intellectbuffs)))
-					IntellectFrame:SetAlpha(KRR.db.alpha or 0.3)
-					LCG.PixelGlow_Stop(IntellectFrame)
-					break
-				else
-					if KRR.db.glow then
-						LCG.PixelGlow_Start(IntellectFrame, color, nil, -0.25, nil, 1)
-					end
-					IntellectFrame:SetAlpha(1)
-					IntellectFrame.t:SetTexture(T.select(3, T.GetSpellInfo(intellectbuffs)))
-				end
-			end
-		end
-
-		if (staminabuffs and staminabuffs[1]) then
-		StaminaFrame.t:SetTexture(T.select(3, T.GetSpellInfo(staminabuffs[1])))
-			for i, staminabuffs in T.pairs(staminabuffs) do
-				local spellname = T.select(1, T.GetSpellInfo(staminabuffs))
-				if T.AuraUtil_FindAuraByName(spellname, "player") then
-					StaminaFrame.t:SetTexture(T.select(3, T.GetSpellInfo(staminabuffs)))
-					StaminaFrame:SetAlpha(KRR.db.alpha or 0.3)
-					LCG.PixelGlow_Stop(StaminaFrame)
-					break
-				else
-					if KRR.db.glow then
-						LCG.PixelGlow_Start(StaminaFrame, color, nil, -0.25, nil, 1)
-					end
-					StaminaFrame:SetAlpha(1)
-					StaminaFrame.t:SetTexture(T.select(3, T.GetSpellInfo(staminabuffs)))
-				end
-			end
-		end
-
-		if (attackpowerbuffs and attackpowerbuffs[1]) then
-		AttackPowerFrame.t:SetTexture(T.select(3, T.GetSpellInfo(attackpowerbuffs[1])))
-			for i, attackpowerbuffs in T.pairs(attackpowerbuffs) do
-				local spellname = T.select(1, T.GetSpellInfo(attackpowerbuffs))
-				if T.AuraUtil_FindAuraByName(spellname, "player") then
-					AttackPowerFrame.t:SetTexture(T.select(3, T.GetSpellInfo(attackpowerbuffs)))
-					AttackPowerFrame:SetAlpha(KRR.db.alpha or 0.3)
-					LCG.PixelGlow_Stop(AttackPowerFrame)
-					break
-				else
-					if KRR.db.glow then
-						LCG.PixelGlow_Start(AttackPowerFrame, color, nil, -0.25, nil, 1)
-					end
-					AttackPowerFrame:SetAlpha(1)
-					AttackPowerFrame.t:SetTexture(T.select(3, T.GetSpellInfo(attackpowerbuffs)))
-				end
-			end
-		end
+		CheckBuffList(IntellectFrame,   intellectbuffs)
+		CheckBuffList(StaminaFrame,     staminabuffs)
+		CheckBuffList(AttackPowerFrame, attackpowerbuffs)
 	end
 end
 

@@ -26,7 +26,8 @@ function KSR:PlayerHasFilteredBuff(frame, db, checkPersonal)
 	for buff, value in T.pairs(db) do
 		if value == true then
 			local name = T.GetSpellInfo(buff)
-			local _, icon, _, _, _, _, unitCaster, _, _, _ = T.AuraUtil_FindAuraByName(name, "player", "HELPFUL")
+			local _, icon, _, _, _, _, unitCaster
+			if name then _, icon, _, _, _, _, unitCaster = T.AuraUtil_FindAuraByName(name, "player", "HELPFUL") end
 
 			if checkPersonal then
 				if (name and icon and unitCaster == "player") then
@@ -46,7 +47,8 @@ function KSR:PlayerHasFilteredDebuff(frame, db)
 	for debuff, value in T.pairs(db) do
 		if value == true then
 			local name = T.GetSpellInfo(debuff)
-			local _, icon, _, _, _, _, unitCaster, _, _, _ = T.AuraUtil_FindAuraByName(name, "player", "HAKSRFUL")
+			local _, icon
+			if name then _, icon = T.AuraUtil_FindAuraByName(name, "player", "HARMFUL") end
 
 			if (name and icon) then
 				return true

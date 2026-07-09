@@ -287,7 +287,7 @@ function TS.CreateButtons(f)
             end
         end
         
-        local chatFrame = GetCVar("chatStyle") == "im" and SELECTED_CHAT_FRAME or DEFAULT_CHAT_FRAME
+        local chatFrame = T.GetCVar("chatStyle") == "im" and SELECTED_CHAT_FRAME or DEFAULT_CHAT_FRAME
         local eb = chatFrame and chatFrame.editBox
         if eb and eb:IsVisible() and count == 1 then
             for i = 1, #names do

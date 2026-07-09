@@ -22,7 +22,9 @@ local spaceCount = {
 	[22] = 16,
 }
 
-local width, height = _G["GameMenuButtonHelp"]:GetWidth(), _G["GameMenuButtonHelp"]:GetHeight()
+local _gmBtn = _G["GameMenuButtonHelp"] or _G["GameMenuButtonLogout"] or _G["GameMenuButtonOptions"]
+local width = _gmBtn and _gmBtn:GetWidth() or 143
+local height = _gmBtn and _gmBtn:GetHeight() or 22
 local LibHolder = CreateFrame("Frame", "LibGameMenuHolder", _G["GameMenuFrame"])
 LibHolder:SetSize(width, 1)
 LibHolder:SetPoint("TOP", _G["GameMenuFrame"].ElvUI, "BOTTOM", 0, 0)

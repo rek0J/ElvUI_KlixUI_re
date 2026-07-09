@@ -59,12 +59,12 @@ local function CombatTextTable()
 				type = "toggle",
 				name = L["Disable Blizzard FCT"],
 				desc = "",
-				get = function(info) return GetCVar("floatingCombatTextCombatDamage") == "0" end,
+				get = function(info) return T.GetCVar("floatingCombatTextCombatDamage") == "0" end,
 				set = function(info, value)
 					if (value) then
-						SetCVar("floatingCombatTextCombatDamage", "0");
+						T.SetCVar("floatingCombatTextCombatDamage", "0");
 					else
-						SetCVar("floatingCombatTextCombatDamage", "1");
+						T.SetCVar("floatingCombatTextCombatDamage", "1");
 					end
 				end,
 			},

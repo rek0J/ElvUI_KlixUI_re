@@ -3,10 +3,13 @@ local ABS = KUI:NewModule("AutoButtons", "AceEvent-3.0")
 local LSM = E.LSM or E.Libs.LSM
 
 local C_QuestLog = rawget(_G, "C_QuestLog")
-local C_QuestLog_GetInfo = C_QuestLog and C_QuestLog.GetInfo
-local C_QuestLog_GetNumQuestWatches = C_QuestLog and C_QuestLog.GetNumQuestWatches
+-- C_QuestLog.GetInfo takes a QUEST LOG index, not a watch index.
+-- Never use it here; always go through GetQuestIndexForWatch to translate watch→log.
+local C_QuestLog_GetNumQuestWatches = C_QuestLog and rawget(C_QuestLog, "GetNumQuestWatches")
 local GetNumQuestWatches = T.GetNumQuestWatches or _G.GetNumQuestWatches
+-- Phase 5 may have moved GetQuestIndexForWatch into C_QuestLog namespace.
 local GetQuestIndexForWatch = _G.GetQuestIndexForWatch
+	or (C_QuestLog and rawget(C_QuestLog, "GetQuestIndexForWatch"))
 local ITEMQUALITY = _G.Enum and _G.Enum.ItemQuality
 local ITEMQUALITY_COMMON = ITEMQUALITY and (ITEMQUALITY.Common or ITEMQUALITY.Standard) or 1
 
@@ -43,23 +46,27 @@ local function SafeIsItemInRange(itemID, unit)
 end
 
 local function GetWatchedQuestCount()
+	-- Prefer the classic global; fall back to C_QuestLog namespace if moved in a later build.
+	if GetNumQuestWatches then
+		return GetNumQuestWatches()
+	end
 	if C_QuestLog_GetNumQuestWatches then
 		return C_QuestLog_GetNumQuestWatches()
 	end
-
-	return GetNumQuestWatches and GetNumQuestWatches() or 0
+	return 0
 end
 
 local function GetWatchedQuestData(index)
-	if C_QuestLog_GetInfo and C_QuestLog_GetNumQuestWatches then
-		local info = C_QuestLog_GetInfo(index)
-		if type(info) == "table" then
-			return info.questID, info.title, info.questLogIndex or index, info.isComplete
-		end
-	end
-
+	-- GetQuestIndexForWatch translates watch-slot → quest-log-index (classic MoP API).
+	-- C_QuestLog.GetInfo takes a quest-log-index, NOT a watch-index, so we never use it
+	-- here. Using it with a watch-index would return data for the wrong quest.
 	local questLogIndex = GetQuestIndexForWatch and GetQuestIndexForWatch(index)
-	if not questLogIndex then return end
+	if not questLogIndex then
+		if KUI.AutoButtonClickDebug then
+			KUI:Print(string.format("|cfff960d9[AB-DBG]|r Watch[%d]: GetQuestIndexForWatch=nil (API missing?)", index))
+		end
+		return
+	end
 
 	local title, _, _, isHeader, _, isComplete, _, questID = T.GetQuestLogTitle(questLogIndex)
 	if isHeader then return end
@@ -78,21 +85,32 @@ end
 
 local function GetQuestItemList()
     T.table_wipe(QuestItemList)
-    for i = 1, GetWatchedQuestCount() do
+    local watchCount = GetWatchedQuestCount()
+    for i = 1, watchCount do
 		local questID, title, questLogIndex, isComplete = GetWatchedQuestData(i)
         if questLogIndex then
             local link, item, charges, showItemWhenComplete = T.GetQuestLogSpecialItemInfo(questLogIndex)
             if link then
                 local itemID = T.tonumber(link:match(":(%d+):"))
-                QuestItemList[itemID] = {
-                    ["isComplete"] = isComplete,
-                    ["showItemWhenComplete"] = showItemWhenComplete,
-                    ["questLogIndex"] = questLogIndex,
-                }
+                if itemID then
+                    QuestItemList[itemID] = {
+                        ["isComplete"] = isComplete,
+                        ["showItemWhenComplete"] = showItemWhenComplete,
+                        ["questLogIndex"] = questLogIndex,
+                        ["itemLink"] = link,  -- kept for reliable SetAttribute("item")
+                    }
+                end
             end
         end
     end
-    
+
+    if KUI.AutoButtonClickDebug then
+        local count = 0
+        for _ in T.pairs(QuestItemList) do count = count + 1 end
+        KUI:Print(string.format("|cfff960d9[AB-DBG]|r QuestItemList: %d items | watched: %d | GetQuestIndexForWatch=%s",
+            count, watchCount, tostring(GetQuestIndexForWatch ~= nil)))
+    end
+
     ABS:ScanItem("QUEST")
 end
 
@@ -188,6 +206,60 @@ local function HideAllButton(event)
     end
 end
 
+-- type1="item" and type1="click"+clickbutton=ContainerFrameItemButton were both tested
+-- in isolation via /run and BOTH silently no-op on this client: ContainerFrame*Item*
+-- globals exist but IsShown()==false even with bags open (this client's bag UI doesn't
+-- populate those legacy per-slot globals the way older clients did), and the native
+-- "item" attribute dispatch does nothing either. The only mechanism confirmed to
+-- actually execute for every case (equip slot AND bag item) is type1="macro" +
+-- macrotext="/use ..." — same as Blizzard's own paperdoll slot buttons internally,
+-- extended here to bag items via "/use item:<id>" (identical to a hand-typed macro).
+local function AutoButtonApplyAttributes(btn)
+    local spellName, spellID
+    local invLink
+
+    if btn.slotID then
+        invLink = GetInventoryItemLink("player", btn.slotID)
+        if invLink then
+            spellName, spellID = T.GetItemSpell and T.GetItemSpell(invLink)
+        end
+        if not spellName and btn.itemID then
+            spellName, spellID = T.GetItemSpell and T.GetItemSpell(btn.itemID)
+        end
+
+        btn:SetAttribute("type1",     "macro")
+        btn:SetAttribute("macrotext", "/use " .. btn.slotID)
+    elseif btn.itemID then
+        invLink = btn.itemLink
+        if invLink then
+            spellName, spellID = T.GetItemSpell and T.GetItemSpell(invLink)
+        end
+        if not spellName then
+            spellName, spellID = T.GetItemSpell and T.GetItemSpell(btn.itemID)
+        end
+
+        btn:SetAttribute("type1",     "macro")
+        btn:SetAttribute("macrotext", "/use item:" .. btn.itemID)
+    end
+
+    if KUI.AutoButtonClickDebug then
+        local cbName = btn:GetAttribute("clickbutton") and btn:GetAttribute("clickbutton"):GetName() or nil
+        KUI:Print(string.format(
+            "|cfff960d9[AB-DBG]|r ApplyAttr %s | link=%s | slotID=%s | spellName=%s | spellID=%s | type=%s | macrotext=%s | spell=%s | item=%s | clickbtn=%s | combat=%s",
+            tostring(btn:GetName()),
+            tostring(invLink),
+            tostring(btn.slotID),
+            tostring(spellName),
+            tostring(spellID),
+            tostring(btn:GetAttribute("type1")),
+            tostring(btn:GetAttribute("macrotext")),
+            tostring(btn:GetAttribute("spell")),
+            tostring(btn:GetAttribute("item")),
+            tostring(cbName),
+            tostring(T.InCombatLockdown())))
+    end
+end
+
 local function AutoButtonShow(AutoButton)
     if not AutoButton then return end
 
@@ -203,8 +275,9 @@ local function AutoButtonShow(AutoButton)
 	_G.GameTooltip:ClearLines()
         if self.slotID then
 			_G.GameTooltip:SetInventoryItem("player", self.slotID)
-        else
-			_G.GameTooltip:SetItemByID(self.itemID)
+        elseif self.itemID then
+            -- SetItemByID is Dragonflight+; use SetHyperlink for MoP Classic compat.
+            _G.GameTooltip:SetHyperlink("item:" .. self.itemID)
         end
 		_G.GameTooltip:Show()
     end)
@@ -219,25 +292,13 @@ local function AutoButtonShow(AutoButton)
     
     if not T.InCombatLockdown() then
         AutoButton:EnableMouse(true)
-        if AutoButton.slotID then
-            AutoButton:SetAttribute("type", "macro")
-            AutoButton:SetAttribute("macrotext", "/use " .. AutoButton.slotID)
-        elseif AutoButton.itemName then
-            AutoButton:SetAttribute("type", "item")
-            AutoButton:SetAttribute("item", AutoButton.itemName)
-        end
+        AutoButtonApplyAttributes(AutoButton)
     else
         AutoButton:RegisterEvent("PLAYER_REGEN_ENABLED")
         AutoButton:SetScript("OnEvent", function(self, event)
             if event == "PLAYER_REGEN_ENABLED" then
                 self:EnableMouse(true)
-                if self.slotID then
-                    self:SetAttribute("type", "macro")
-                    self:SetAttribute("macrotext", "/use " .. self.slotID)
-                elseif self.itemName then
-                    self:SetAttribute("type", "item")
-                    self:SetAttribute("item", self.itemName)
-                end
+                AutoButtonApplyAttributes(self)
                 self:UnregisterEvent("PLAYER_REGEN_ENABLED")
             end
         end)
@@ -253,21 +314,35 @@ local function CreateButton(name, size)
 		return _G[name]
     end
     
+    -- Generic "type" attribute + RegisterForClicks("AnyUp") silently no-ops on this
+    -- client for both macro and click-forward dispatch: PreClick/PostClick still
+    -- fire (they're plain Lua script hooks), but the underlying protected action
+    -- never actually runs. Confirmed via isolated /run testing that the fix is the
+    -- per-mouse-button "type1" attribute (not generic "type") combined with
+    -- RegisterForClicks("AnyDown") (not "AnyUp") on a bare SecureActionButtonTemplate.
+    -- ActionButtonTemplate was tried too but is NOT required for dispatch, and for
+    -- type1="click" it actively breaks things: its built-in pickup/drag handling
+    -- hijacks the click, turning it into "pick up this icon" instead of forwarding.
     local AutoButton = T.CreateFrame("Button", name, E.UIParent, "SecureActionButtonTemplate")
     AutoButton:SetSize(size, size)
     AutoButton:CreateBackdrop("Default")
+    if AutoButton.backdrop then AutoButton.backdrop:EnableMouse(false) end
     AutoButton:StyleButton()
     AutoButton:SetClampedToScreen(true)
-    AutoButton:SetAttribute("type", "item")
     AutoButton:SetAlpha(0)
     AutoButton:EnableMouse(false)
-    AutoButton:RegisterForClicks("AnyUp")
-    
-	-- Used for Glow
-	AutoButton.Overlay = T.CreateFrame("Button", nil, AutoButton)
+    AutoButton:RegisterForClicks("AnyDown")
+    AutoButton:SetFrameStrata("MEDIUM")
+    AutoButton:SetFrameLevel(E.UIParent:GetFrameLevel() + 10)
+
+	-- Frame (not Button) so it never intercepts mouse clicks from its parent.
+	-- Explicit EnableMouse(false) because CooldownFrameTemplate and some ElvUI versions
+	-- can leave child frames mouse-enabled, silently absorbing clicks before they reach
+	-- the SecureActionButton.
+	AutoButton.Overlay = T.CreateFrame("Frame", nil, AutoButton)
+	AutoButton.Overlay:EnableMouse(false)
 	AutoButton.Overlay:CreateIconShadow()
 	AutoButton.Overlay:SetOutside(AutoButton, 0, 0)
-	AutoButton.Overlay:EnableMouse(false)
 	
     AutoButton.Texture = AutoButton:CreateTexture(nil, "OVERLAY", nil)
 	AutoButton.Texture:SetPoint("TOPLEFT", AutoButton, "TOPLEFT", 2, -2)
@@ -291,10 +366,66 @@ local function CreateButton(name, size)
     AutoButton.Cooldown:SetPoint("BOTTOMRIGHT", AutoButton, "BOTTOMRIGHT", -2, 2)
     AutoButton.Cooldown:SetSwipeColor(1, 1, 1, 1)
     AutoButton.Cooldown:SetDrawBling(false)
+    AutoButton.Cooldown:EnableMouse(false)  -- must not absorb clicks destined for the button
     
-    AutoButton.Cooldown.CooldownOverride = 'actionbar'
-    E:RegisterCooldown(AutoButton.Cooldown)
-    E.FrameLocks[name] = true
+    -- E:RegisterCooldown(cooldown, which) reads "which" from the 2nd call argument,
+    -- NOT from a cooldown.CooldownOverride field (that field doesn't exist in ElvUI's
+    -- Cooldowns.lua) - pass it directly or this silently registers as 'global' instead.
+    E:RegisterCooldown(AutoButton.Cooldown, 'actionbar')
+
+    -- Shrink just this button's cooldown countdown text by 1px, without touching
+    -- E.db.cooldown.actionbar (that's shared by every real actionbar/petbar cooldown).
+    if AutoButton.Cooldown.Text then
+        local font, size, outline = AutoButton.Cooldown.Text:GetFont()
+        if size then
+            AutoButton.Cooldown.Text:FontTemplate(font, size - 1, outline)
+        end
+    end
+
+    if E.FrameLocks then E.FrameLocks[AutoButton] = true end
+
+    -- Click debugger – toggle with /kuidbg abclick
+    -- PreClick fires if the click reaches this button; PostClick fires after secure action.
+    -- If neither fires the button is covered by another frame intercepting the click.
+    -- OnMouseDown fires on press (before click registration); useful to confirm mouse events reach button.
+    local function ClickDebugDump(self, tag, btn)
+        if not KUI.AutoButtonClickDebug then return end
+        local cb = self:GetAttribute("clickbutton")
+        print(string.format(
+            "|cfff960d9[ClickDBG]|r %s %s | click=%s | obj=%s | type=%s | spell=%s | item=%s | macrotext=%s | clickbtn=%s | mouse=%s | hasOnClick=%s | mouseOver=%s | combat=%s",
+            tag,
+            self:GetName() or "?",
+            tostring(btn),
+            tostring(self:GetObjectType()),
+            tostring(self:GetAttribute("type1")),
+            tostring(self:GetAttribute("spell")),
+            tostring(self:GetAttribute("item")),
+            tostring(self:GetAttribute("macrotext")),
+            tostring(cb and cb:GetName() or nil),
+            tostring(self:IsMouseEnabled()),
+            tostring(self:GetScript("OnClick") ~= nil),
+            tostring(MouseIsOver(self)),
+            tostring(T.InCombatLockdown())))
+    end
+
+    AutoButton:HookScript("OnMouseDown", function(self, btn)
+        ClickDebugDump(self, "|cff55ccffMDOWN|r", btn)
+    end)
+    AutoButton:HookScript("OnMouseUp", function(self, btn)
+        if not KUI.AutoButtonClickDebug then return end
+        print(string.format(
+            "|cfff960d9[ClickDBG]|r MUP   %s | click=%s | combat=%s",
+            self:GetName() or "?",
+            tostring(btn),
+            tostring(T.InCombatLockdown())))
+    end)
+    AutoButton:SetScript("PreClick", function(self, btn, down)
+        ClickDebugDump(self, "|cffff8800PRE |r", btn)
+    end)
+    AutoButton:SetScript("PostClick", function(self, btn, down)
+        ClickDebugDump(self, "|cff00ff00POST|r", btn)
+    end)
+
     return AutoButton
 end
 
@@ -381,6 +512,8 @@ function ABS:ScanItem(event)
             AutoButton.Texture:SetTexture(itemIcon)
             AutoButton.itemName = itemName
             AutoButton.itemID = itemID
+            AutoButton.itemLink = QuestItemList[itemID] and QuestItemList[itemID].itemLink
+            AutoButton.slotID = nil  -- clear any stale slot from previous use
             AutoButton.ap = false
             AutoButton.questLogIndex = QuestItemList[itemID] and QuestItemList[itemID].questLogIndex or -1
             AutoButton.spellName = IsUsableItem(itemID)
@@ -414,11 +547,12 @@ function ABS:ScanItem(event)
                 local start, duration, enable
                 if self.questLogIndex and self.questLogIndex > 0 then
                     start, duration, enable = T.GetQuestLogSpecialItemCooldown(self.questLogIndex)
-                else
+                end
+                if not start then
                     start, duration, enable = T.GetItemCooldown(self.itemID)
                 end
 
-                T.CooldownFrame_Set(self.Cooldown, start, duration, enable)
+                T.CooldownFrame_Set(self.Cooldown, start or 0, duration or 0, enable or 0)
 
                 if duration and duration > 0 and enable and enable == 0 then
                     self.Texture:SetVertexColor(0.4, 0.4, 0.4)
@@ -472,6 +606,8 @@ function ABS:ScanItem(event)
                 AutoButton.Count:SetText("")
                 AutoButton.slotID = w
                 AutoButton.itemID = slotID
+                AutoButton.itemLink = nil  -- slot buttons use slotID path, no link needed
+                AutoButton.itemName = nil
                 AutoButton.spellName = IsUsableItem(slotID)
                 
                 -- FIX [P-AB]: Throttle fuer Inventar-Cooldown-Anzeige. Ohne Throttle:
@@ -558,9 +694,12 @@ function ABS:ToggleAutoButton()
         self:RegisterEvent("UNIT_INVENTORY_CHANGED", "ScanItem")
         self:RegisterEvent("ZONE_CHANGED", "ScanItem")
         self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ScanItem")
+        self:RegisterEvent("BAG_UPDATE_DELAYED", "ScanItem")
         self:RegisterEvent("UPDATE_BINDINGS", "UpdateBind")
         self:RegisterEvent("QUEST_WATCH_LIST_CHANGED", GetQuestItemList)
         self:RegisterEvent("QUEST_LOG_UPDATE", GetQuestItemList)
+        -- Ensure quest items appear on fresh login/reload before QUEST_LOG_UPDATE fires.
+        self:RegisterEvent("PLAYER_ENTERING_WORLD", GetQuestItemList)
         --self:RegisterEvent("QUEST_ACCEPTED", GetWorldQuestItemList)
         --self:RegisterEvent("QUEST_TURNED_IN", GetWorldQuestItemList)
 
@@ -574,9 +713,11 @@ function ABS:ToggleAutoButton()
         self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
         self:UnregisterEvent("ZONE_CHANGED")
         self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
+        self:UnregisterEvent("BAG_UPDATE_DELAYED")
         self:UnregisterEvent("UPDATE_BINDINGS")
         self:UnregisterEvent("QUEST_WATCH_LIST_CHANGED")
         self:UnregisterEvent("QUEST_LOG_UPDATE")
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
         if self.Update then self.Update:SetScript("OnUpdate", nil) end
     end
 end

@@ -460,6 +460,7 @@ end
 function MI:HivemindMountSeatIndicator()
 	if not E.db.KlixUI.misc.vehicleSeat.missing then return end
 	
+	if not _G.VehicleSeatIndicator_SetUpVehicle then return end
 	hooksecurefunc("VehicleSeatIndicator_SetUpVehicle", function (vehicleIndicatorID)
 		if (vehicleIndicatorID == 0) then
 			vehicleIndicatorID = ({224, 226, 222, 223})[(T.IsMounted() or T.GetShapeshiftForm() ~= 0) and T.UnitVehicleSeatCount("player") or T.UnitIsPlayer("vehicle") and T.UnitVehicleSeatCount("vehicle")]

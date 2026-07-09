@@ -65,7 +65,7 @@ function M:SetBlizzFonts()
 		if _G["QuestFont_Enormous"] then SetBlizzFont(_G["QuestFont_Enormous"], E.LSM:Fetch('font', db.questFontSuperHuge.font), db.questFontSuperHuge.size, FontFlags(db.questFontSuperHuge.outline)) end
 		if _G["NumberFont_Shadow_Med"] then SetBlizzFont(_G["NumberFont_Shadow_Med"], E.LSM:Fetch('font', db.editbox.font), db.editbox.size, FontFlags(db.editbox.outline)) end --Chat editbox
 		--Objective Frame
-		if _G["ObjectiveTrackerFrame"] and not _G["ObjectiveTrackerFrame"].KUIHookedFonts then
+		if _G["ObjectiveTrackerFrame"] and _G["ObjectiveTracker_Update"] and not _G["ObjectiveTrackerFrame"].KUIHookedFonts then
 			hooksecurefunc("ObjectiveTracker_Update", function(reason, id)
 				if _G["ObjectiveTrackerBlocksFrame"] and _G["ObjectiveTrackerBlocksFrame"].QuestHeader and _G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text then
 					SetBlizzFont(_G["ObjectiveTrackerBlocksFrame"].QuestHeader.Text, E.LSM:Fetch('font', E.db.KlixUI.media.fonts.objectiveHeader.font), E.db.KlixUI.media.fonts.objectiveHeader.size, FontFlags(E.db.KlixUI.media.fonts.objectiveHeader.outline))

@@ -18,6 +18,7 @@ Diese Session fokussiert sich auf drei separate Problembereiche: einen Performan
 - **Richtiger Fix:** `CompactRaidFrameManager_UpdateShown` und `CompactRaidFrameManager_UpdateContainerVisibility` werden durch No-Ops ersetzt, da ElvUI diese Frames durch sein eigenes Raid-Frame-System verwaltet. `RegisterStateDriver("hide")` bleibt als sicherer Fallback.
 - Der Override läuft beim Load, bei `ADDON_LOADED` für `Blizzard_CompactRaidFrames`, bei `PLAYER_ENTERING_WORLD` und `PLAYER_REGEN_ENABLED` — damit werden Late-Loading und ElvUI-Re-Hooks nach Zone-Wechseln abgedeckt.
 - ElvUI's `OnShow`/`OnHide`-Hooks auf den Frames werden entfernt und Frames über das sichere Attribut-System ausgeblendet.
+- Zweiter Block-Pfad gefixt: `CompactUnitFrame_UpdateVisible` wird jetzt für `CompactRaidFrame*`-Unit-Frames per Wrapper unterdrückt — verhindert `CompactRaidFrame1:Show()` aus dem `CompactUnitFrame_UpdateAll`-Pfad. Der Wrapper wird nur einmal installiert und erhält das Original-Verhalten für alle anderen Compact-Frame-Typen.
 
 ### SyncConfiguredLists Aufräumen
 

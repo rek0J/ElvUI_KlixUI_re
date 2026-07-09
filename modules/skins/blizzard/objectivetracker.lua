@@ -51,6 +51,7 @@ local function styleObjectiveTracker()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.objectiveTracker ~= true or E.private.KlixUI.skins.blizzard.objectiveTracker ~= true then return end
 
 	-- Add Panels
+	if not _G.ObjectiveTracker_Update then return end
 	hooksecurefunc("ObjectiveTracker_Update", function()
 		local Frame = _G.ObjectiveTrackerFrame.MODULES
 
