@@ -157,7 +157,7 @@ local OnEvent = function(self, event)
 
 		if eventType == "SPELL_CAST_SUCCESS" and T.bit_band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) == COMBATLOG_OBJECT_REACTION_HOSTILE then
 			if sourceName ~= T.UnitName("player") then
-				if enemy_spells[spellID] and ((EC.db.show_always and type == "none") or (EC.db.show_inpvpshow and type == "pvp") or (EC.db.show_inarena and type == "arena")) then
+				if enemy_spells[spellID] and ((EC.db.show_always and type == "none") or (EC.db.show_inpvp and type == "pvp") or (EC.db.show_inarena and type == "arena")) then
 					StartTimer(sourceName, spellID)
 				end
 			end

@@ -150,6 +150,8 @@ local function Core()
 						type = "toggle",
 						name = L["Game Menu Button"],
 						desc = L["Show/Hide the |cfff960d9KlixUI|r Game Menu button"],
+						disabled = function() return not E.Retail and not E.TBC end,
+						hidden = function() return not E.Retail and not E.TBC end,
 					},
 					minimap = {
 						order = 7,

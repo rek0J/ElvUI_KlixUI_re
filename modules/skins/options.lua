@@ -197,7 +197,8 @@ local function SkinsTable()
 			character = {
 				type = "toggle",
 				name = L["Character Frame"],
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.character end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.character end,
+				hidden = function() return E.Mists end,
 			},
 			gossip = {
 				type = "toggle",
@@ -229,12 +230,14 @@ local function SkinsTable()
 			talent = {
 				type = "toggle",
 				name = _G.TALENTS,
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.talent end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.talent end,
+				hidden = function() return E.Mists end,
 			},
 			auctionhouse = {
 				type = "toggle",
 				name = _G.AUCTIONS,
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.auctionhouse end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.auctionhouse end,
+				hidden = function() return E.Mists end,
 			},
 			friends = {
 				type = "toggle",
@@ -329,7 +332,8 @@ local function SkinsTable()
 			raid = {
 				type = "toggle",
 				name = L["Raid Frame"],
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.raid end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.raid end,
+				hidden = function() return E.Mists end,
 			},
 			dressingroom = {
 				type = "toggle",
@@ -436,7 +440,8 @@ local function SkinsTable()
 			minimap = {
 				type = "toggle",
 				name = L["Minimap"],
-				disabled = function() return not E.private.skins.blizzard.enable end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable end,
+				hidden = function() return E.Mists end,
 			},
 			Scrapping = {
 				type = "toggle",
@@ -447,7 +452,8 @@ local function SkinsTable()
 			trainer = {
 				type = "toggle",
 				name = L["Trainer Frame"],
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.trainer end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.trainer end,
+				hidden = function() return E.Mists end,
 			},
 			debug = {
 				type = "toggle",
@@ -472,7 +478,8 @@ local function SkinsTable()
 			trade = {
 				type = "toggle",
 				name = L["Trade"],
-				disabled = function() return not E.private.skins.blizzard.enable or not E.private.skins.blizzard.trade end,
+				disabled = function() return E.Mists or not E.private.skins.blizzard.enable or not E.private.skins.blizzard.trade end,
+				hidden = function() return E.Mists end,
 			},
 			voidstorage = {
 				type = "toggle",

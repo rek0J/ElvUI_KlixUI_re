@@ -157,6 +157,8 @@ local function ToastTable()
 						order = 3,
 						type = "group",
 						name = L["Garrison"],
+						disabled = function() return not E.Retail end,
+						hidden = function() return not E.Retail end,
 						args = {
 							garrison_6_0_enabled = {
 								order = 1,
@@ -179,6 +181,8 @@ local function ToastTable()
 						order = 4,
 						type = "group",
 						name = L["Class Hall"],
+						disabled = function() return not E.Retail end,
+						hidden = function() return not E.Retail end,
 						args = {
 							garrison_7_0_enabled = {
 								order = 1,
@@ -201,6 +205,8 @@ local function ToastTable()
 						order = 5,
 						type = "group",
 						name = L["War Effort"],
+						disabled = function() return not E.Retail end,
+						hidden = function() return not E.Retail end,
 						args = {
 							garrison_8_0_enabled = {
 								order = 1,
@@ -405,6 +411,8 @@ local function ToastTable()
 						order = 13,
 						type = "group",
 						name = L["World Quest"],
+						disabled = function() return not E.Retail end,
+						hidden = function() return not E.Retail end,
 						args = {
 							world_enabled = {
 								order = 1,

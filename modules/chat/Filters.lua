@@ -11,8 +11,8 @@ local min, max, tremove = math.min, math.max, table.remove
 local GetInstanceInfo = GetInstanceInfo
 local IsGuildMember = IsGuildMember
 local IsInInstance = IsInInstance
-local C_FriendList_IsFriend = C_FriendList.IsFriend
-local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = _G.C_FriendList and _G.C_FriendList.IsFriend
+local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet and _G.C_BattleNet.GetGameAccountInfoByGUID
 local IsGUIDInGroup = IsGUIDInGroup
 local C_Timer_After = C_Timer.After
 local Ambiguate = Ambiguate
@@ -54,7 +54,7 @@ local chatLines, prevLineID, filterResult = {}, 0, false
 function KC:GetFilterResult(event, msg, name, flag, guid)
 	if name == E.myname or (event == 'CHAT_MSG_WHISPER' and flag == 'GM') or flag == 'DEV' then
 		return
-	elseif guid and (IsGuildMember(guid) or C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or (IsInInstance() and IsGUIDInGroup(guid))) then
+	elseif guid and (IsGuildMember(guid) or (C_BattleNet_GetGameAccountInfoByGUID and C_BattleNet_GetGameAccountInfoByGUID(guid)) or (C_FriendList_IsFriend and C_FriendList_IsFriend(guid)) or (IsInInstance() and IsGUIDInGroup(guid))) then
 		return
 	end
 

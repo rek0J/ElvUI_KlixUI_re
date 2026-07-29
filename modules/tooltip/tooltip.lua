@@ -237,7 +237,11 @@ function KTT_LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOpti
 
 	tooltip:Show()
 end
-hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", KTT_LFGListUtil_SetSearchEntryTooltip)
+-- MoP Classic: Premade Groups (LFGList) is Legion+ retail content; the target function
+-- may not exist here, and hooksecurefunc on a nonexistent global errors immediately.
+if _G.LFGListUtil_SetSearchEntryTooltip then
+	hooksecurefunc("LFGListUtil_SetSearchEntryTooltip", KTT_LFGListUtil_SetSearchEntryTooltip)
+end
 
 function KTT:Initialize()
 	if E.private.tooltip.enable ~= true or E.db.KlixUI.tooltip.tooltip ~= true then return end

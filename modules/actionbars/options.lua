@@ -45,6 +45,7 @@ local function abTable()
 								type = "toggle",
 								name = L["Delete Hearthstone"],
 								desc = L['Automatically delete the classic hearthstone, you receive, when you change hearth location.'],
+								set = function(info, value) E.db.KlixUI.actionbars.hearthstone.delete = value end,
 							},
 							CreateRHS = {
 								order = 4,
@@ -84,7 +85,7 @@ local function abTable()
 						name = L["Finishing Move Glow"],
 						desc = L["This will display glow, when reaching 5 combopoints, on spells which utilize 1-5 combopoints."],
 						disabled = function() return not E.db.KlixUI.actionbars.glow.enable or not E.myclass == "ROGUE" or not E.myclass == "DRUID" end,
-						set = function(info, value) E.db.KlixUI.actionbars.glow[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.actionbars.glow[ info[#info] ] = value; KAB:SpellActivationGlow() end,
 					},
 					color = {
 						order = 3,
@@ -179,13 +180,14 @@ local function abTable()
 						name = L["Border Glow"],
 						desc = L["Shows an animated border glow for the currently active specialization and loot specialization."],
 						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
-						
+						set = function(info, value) E.db.KlixUI.actionbars.SEBar.borderGlow = value end,
 					},
 					mouseover = {
 						order = 5,
 						type = "toggle",
 						name = L["Mouseover"],
 						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
+						set = function(info, value) E.db.KlixUI.actionbars.SEBar.mouseover = value end,
 					},
 					malpha = {
 						order = 6,
@@ -194,6 +196,7 @@ local function abTable()
 						desc = L["Change the alpha level of the frame."],
 						min = 0, max = 1, step = 0.1,
 						disabled = function() return not E.db.KlixUI.actionbars.SEBar.mouseover or not E.db.KlixUI.actionbars.SEBar.enable end,
+						set = function(info, value) E.db.KlixUI.actionbars.SEBar.malpha = value end,
 					},
 					hideInCombat = {
 						order = 7,
@@ -201,6 +204,7 @@ local function abTable()
 						name = L["Hide In Combat"],
 						desc = L['Show/Hide the |cfff960d9KlixUI|r Spec & EquipBar in combat.'],
 						disabled = function() return not E.db.KlixUI.actionbars.SEBar.enable end,
+						set = function(info, value) E.db.KlixUI.actionbars.SEBar.hideInCombat = value; SEB:UpdateVisibility() end,
 					},
 					hideInOrderHall = {
 						order = 8,
@@ -209,6 +213,7 @@ local function abTable()
 						desc = L['Show/Hide the |cfff960d9KlixUI|r Spec & Equip Bar in the class hall.'],
 						disabled = function() return E.Mists or not E.db.KlixUI.actionbars.SEBar.enable end,
 						hidden = function() return E.Mists end,
+						set = function(info, value) E.db.KlixUI.actionbars.SEBar.hideInOrderHall = value; SEB:UpdateVisibility() end,
 					},
 				},
 			},
@@ -251,6 +256,7 @@ local function abTable()
 						desc = L['Show/Hide the |cfff960d9KlixUI|r MicroBar in combat.'],
 						disabled = function() return not E.db.KlixUI.microBar.enable end,
 						hidden = function() return not E.db.KlixUI.microBar.enable end,
+						set = function(info, value) E.db.KlixUI.microBar.hideInCombat = value end,
 					},
 					hideInOrderHall = {
 						order = 6,
@@ -259,6 +265,7 @@ local function abTable()
 						desc = L['Show/Hide the |cfff960d9KlixUI|r MicroBar in the class hall.'],
 						disabled = function() return E.Mists or not E.db.KlixUI.microBar.enable end,
 						hidden = function() return E.Mists or not E.db.KlixUI.microBar.enable end,
+						set = function(info, value) E.db.KlixUI.microBar.hideInOrderHall = value; MB:UNIT_AURA(nil, "player") end,
 					},
 					highlight = {
 						order = 7,
@@ -267,7 +274,7 @@ local function abTable()
 						disabled = function() return not E.db.KlixUI.microBar.enable end,
 						hidden = function() return not E.db.KlixUI.microBar.enable end,
 						get = function(info) return E.db.KlixUI.microBar.highlight[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.microBar.highlight[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.microBar.highlight[ info[#info] ] = value end,
 						args = {
 							enable = {		
 								order = 1,

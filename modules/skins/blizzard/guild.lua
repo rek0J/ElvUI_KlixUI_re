@@ -40,7 +40,7 @@ local function styleGuild()
 	hooksecurefunc("GuildRoster_UpdateTradeSkills", function()
 		local buttons = _G.GuildRosterContainer.buttons
 		for i = 1, #buttons do
-			local index = T._G.HybridScrollFrame_GetOffset(_G.GuildRosterContainer) + i
+			local index = T.HybridScrollFrame_GetOffset(_G.GuildRosterContainer) + i
 			local str1 = _G["GuildRosterContainerButton"..i.."String1"]
 			local str3 = _G["GuildRosterContainerButton"..i.."String3"]
 			local header = _G["GuildRosterContainerButton"..i.."HeaderButton"]

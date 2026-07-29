@@ -8,7 +8,7 @@ local addon, Engine = ...
 if C_AddOns then
 	GetAddOnMetadata        = C_AddOns.GetAddOnMetadata        or GetAddOnMetadata
 	IsAddOnLoaded           = C_AddOns.IsAddOnLoaded           or IsAddOnLoaded
-	do -- arg order changed: old (character, name) → new (name [, character])
+	if C_AddOns.GetAddOnEnableState then -- arg order changed: old (character, name) → new (name [, character])
 		local _orig = C_AddOns.GetAddOnEnableState
 		GetAddOnEnableState = function(character, addon) return _orig(addon, character) end
 	end
@@ -32,9 +32,8 @@ end
 
 local KUI = E.Libs.AceAddon:NewAddon(addon, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
--- TEST
-
-KUI.IsMoP = true -- oder aus toc/build sauber ableiten
+-- ElvUI itself already exposes the canonical client flag (used ~40x across this addon); don't duplicate the check.
+KUI.IsMoP = E.Mists
 KUI.Features = KUI.Features or {}
 
 KUI.Features.ScrappingMachine = _G.C_ScrappingMachineUI ~= nil

@@ -118,7 +118,7 @@ local function AddonPanelTable()
 						set = function(info, r, g, b)
 							E.db.KlixUI.addonpanel[ info[#info] ] = {}
 							local t = E.db.KlixUI.addonpanel[ info[#info] ]
-							t.r, t.g, t.b, t.a = r, g, b, a
+							t.r, t.g, t.b = r, g, b
 							AP:Update()
 						end,
 					},

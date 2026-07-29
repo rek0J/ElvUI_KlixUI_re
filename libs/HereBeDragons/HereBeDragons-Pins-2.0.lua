@@ -333,7 +333,11 @@ local function UpdateMinimapIconPosition()
 end
 
 local function UpdateMinimapZoom()
-    if not MinimapRadiusAPI then
+    -- KlixUI: the SetZoom double-toggle below can run in the same insecure UI-update tick
+    -- as CompactRaidFrame layout updates, blocking protected Show()/Hide() calls on those
+    -- frames during combat (ADDON_ACTION_BLOCKED). Indoor/outdoor detection isn't needed
+    -- mid-combat, so skip it there; it re-runs on the next MINIMAP_UPDATE_ZOOM/zone change.
+    if not MinimapRadiusAPI and not InCombatLockdown() then
         local zoom = pins.Minimap:GetZoom()
         if GetCVar("minimapZoom") == GetCVar("minimapInsideZoom") then
             pins.Minimap:SetZoom(zoom < 2 and zoom + 1 or zoom - 1)

@@ -8,8 +8,8 @@ local _G = _G
 local unpack = unpack
 -- WoW API / Variables
 local hooksecurefunc = hooksecurefunc
-local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = C_FriendList.IsFriend
+local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet and _G.C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = _G.C_FriendList and _G.C_FriendList.IsFriend
 local IsGuildMember = IsGuildMember
 local UnitGUID = UnitGUID
 -- GLOBALS:
@@ -59,7 +59,7 @@ local function styleTradeFrame()
 		if not guid then return end
 		local text = "|cffff0000"..L["Stranger"]
 
-		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
+		if (C_BattleNet_GetGameAccountInfoByGUID and C_BattleNet_GetGameAccountInfoByGUID(guid)) or (C_FriendList_IsFriend and C_FriendList_IsFriend(guid)) then
 			text = "|cffffff00".._G.FRIEND
 		elseif IsGuildMember(guid) then
 			text = "|cff00ff00".._G.GUILD

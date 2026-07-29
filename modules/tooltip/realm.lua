@@ -353,16 +353,20 @@ hooksecurefunc("FriendsFrameTooltip_SetLine", function(line, anchor, text, yOffs
 end)
 
 -- Groupfinder applicants (only country flags in scroll frame)
-hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", function(member, id, index)
-	if not E.db.KlixUI.tooltip.realmInfo.enable or not E.db.KlixUI.tooltip.realmInfo.finder_counryflag then return end
-	local name, _, _, _, _, _, _, _, _, _, relationship = T.C_LFGList_GetApplicantMemberInfo(id, index)
-	if name then
-		local realm = GetRealmInfo(name)
-		if realm and #realm > 0 then
-			member.Name:SetText(realm[iconstr]..member.Name:GetText())
+-- MoP Classic: Premade Groups (LFGList) is Legion+ retail content; the target function
+-- may not exist here, and hooksecurefunc on a nonexistent global errors immediately.
+if _G.LFGListApplicationViewer_UpdateApplicantMember then
+	hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", function(member, id, index)
+		if not E.db.KlixUI.tooltip.realmInfo.enable or not E.db.KlixUI.tooltip.realmInfo.finder_counryflag then return end
+		local name, _, _, _, _, _, _, _, _, _, relationship = T.C_LFGList_GetApplicantMemberInfo(id, index)
+		if name then
+			local realm = GetRealmInfo(name)
+			if realm and #realm > 0 then
+				member.Name:SetText(realm[iconstr]..member.Name:GetText())
+			end
 		end
-	end
-end)
+	end)
+end
 
 -- Communities members - add country flags
 local function CommunitiesMemberList_RefreshListDisplay_Hook(self)

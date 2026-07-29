@@ -220,6 +220,9 @@ function SEB:CreateEquipBar()
 	EquipmentSets.Flyout:Size(23, 11)
 	EquipmentSets.Flyout.Arrow = EquipmentSets.Flyout:CreateTexture(nil, "OVERLAY")
 	EquipmentSets.Flyout.Arrow:SetAllPoints()
+	-- SetAtlas instead of the old CreateTexture(..., "ActionBarFlyoutButton-ArrowUp") template arg,
+	-- which is an atlas name, not a valid inherited texture template, and could error on load.
+	pcall(EquipmentSets.Flyout.Arrow.SetAtlas, EquipmentSets.Flyout.Arrow, "ActionBarFlyoutButton-ArrowUp", false)
 	EquipmentSets.Flyout:SetScript("OnEnter", function(self)
 		_G.GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		_G.GameTooltip:ClearLines()

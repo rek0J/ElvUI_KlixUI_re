@@ -4,6 +4,30 @@ local KSR = KUI:GetModule("KuiSoloReminder")
 
 local DEFAULT, CUSTOM, AGGRO_WARNING_IN_PARTY = DEFAULT, CUSTOM, AGGRO_WARNING_IN_PARTY
 
+-- 5 item-name input fields for a click-to-use slot list (dbKey = "flaskItems"/"foodItems").
+-- Slots are tried in order on click; the first one found in the player's bags gets used.
+local function ItemSlotGroup(order, name, dbKey)
+	local group = {
+		order = order,
+		type = "group",
+		name = name,
+		guiInline = true,
+		disabled = function() return not E.db.KlixUI.reminder.raid.enable end,
+		args = {},
+	}
+	for i = 1, 5 do
+		group.args["slot"..i] = {
+			order = i,
+			type = 'input',
+			name = L["Item"].." "..i,
+			desc = i == 1 and L["Exact item name. Tried first; if it's not in your bags, the next slot is tried."] or nil,
+			get = function() return E.db.KlixUI.reminder.raid[dbKey][i] end,
+			set = function(info, value) E.db.KlixUI.reminder.raid[dbKey][i] = value; KRR:UpdateClickActions() end,
+		}
+	end
+	return group
+end
+
 local function Reminder()
 	E.Options.args.KlixUI.args.modules.args.reminder = {
 		type = "group",
@@ -66,6 +90,7 @@ local function Reminder()
 						name = L["Glow"],
 						desc = L["Shows the pixel glow on missing buffs."],
 						disabled = function() return not E.db.KlixUI.reminder.solo.enable end,
+						set = function(info, value) E.db.KlixUI.reminder.solo.glow = value end,
 					},
 				},
 			},
@@ -117,6 +142,7 @@ local function Reminder()
 						desc = L["Change the alpha level of the icons."],
 						min = 0, max = 1, step = 0.1,
 						disabled = function() return not E.db.KlixUI.reminder.raid.enable end,
+						set = function(info, value) E.db.KlixUI.reminder.raid.alpha = value end,
 					},
 					class = {
 						order = 7,
@@ -131,6 +157,7 @@ local function Reminder()
 						name = L["Glow"],
 						desc = L["Shows the pixel glow on missing raidbuffs."],
 						disabled = function() return not E.db.KlixUI.reminder.raid.enable end,
+						set = function(info, value) E.db.KlixUI.reminder.raid.glow = value end,
 					},
 					visibility = {
 						type = 'select',
@@ -153,6 +180,18 @@ local function Reminder()
 						disabled = function() return E.db.KlixUI.reminder.raid.visibility ~= "CUSTOM" or not E.db.KlixUI.reminder.raid.enable end,
 						set = function(info, value) E.db.KlixUI.reminder.raid.customVisibility = value; KRR:Visibility() end,
 					},
+					space3 = {
+						order = 16,
+						type = 'description',
+						name = "",
+					},
+					clickDesc = {
+						order = 17,
+						type = 'description',
+						name = L["Left-click the Flask/Food icon to use the first available item below from your bags (up to 5 fallback slots each). The class buff icons (Intellect/Stamina/Attack Power) cast your own buff when your class provides it."],
+					},
+					flaskItems = ItemSlotGroup(18, L["Flask Items"], "flaskItems"),
+					foodItems = ItemSlotGroup(19, L["Food Items"], "foodItems"),
 				},
 			},
 		},

@@ -27,9 +27,9 @@ function QT:ChangeState(event)
 
 	if inCombat and QT.db.visibility.combat ~= "NONE" then
 		statedriver[QT.db.visibility.combat](QT.frame)
-	elseif T.C_Garrison_IsPlayerInGarrison(2) then
+	elseif T.C_Garrison_IsPlayerInGarrison and T.C_Garrison_IsPlayerInGarrison(2) then -- MoP Classic: Garrison doesn't exist, always nil/false
 		statedriver[QT.db.visibility.garrison](QT.frame)
-	elseif T.C_Garrison_IsPlayerInGarrison(3) then -- Order Halls
+	elseif T.C_Garrison_IsPlayerInGarrison and T.C_Garrison_IsPlayerInGarrison(3) then -- Order Halls
 		statedriver[QT.db.visibility.orderhall](QT.frame)
 	elseif T.IsResting() then
 		statedriver[QT.db.visibility.rested](QT.frame)

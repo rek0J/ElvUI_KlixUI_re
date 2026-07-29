@@ -28,7 +28,9 @@ local blacklisted = {
   ["USE_NO_REFUND_CONFIRM"] = true, -- another option rendered unusable 7.3 hotfix
   ["BUYOUT_AUCTION"] = true, -- require interaction
   ["RENAME_PET"] = true, -- name need to be defined by user
-  ["REPLACE_GLYPH"] = true, -- it call protected function PlaceGlyphInSocket
+  ["CONFIRM_GLYPH_PLACEMENT"] = true, -- calls protected function PlaceGlyphInSocket (old blacklist key "REPLACE_GLYPH" never matched, see Blizzard_GlyphUI.lua GlyphFrameGlyph_OnClick)
+  ["CONFIRM_REMOVE_GLYPH"] = true, -- calls protected function RemoveGlyphFromSocket (see Blizzard_GlyphUI.lua RemoveGlyphFromSocket)
+  ["CONFIRM_REMOVE_TALENT"] = true, -- calls protected function RemoveTalent (see Blizzard_TalentUI/Mists/Blizzard_TalentUI.lua OnAccept, pet talent tree)
 }
 
 function CSP:Message(...)

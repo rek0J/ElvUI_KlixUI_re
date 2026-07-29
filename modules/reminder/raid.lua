@@ -11,62 +11,52 @@ KRR.VisibilityStates = {
 
 KRR.ReminderBuffs = {
 	Flask = {
-		-- Legion
-		188034,			-- Flask of the Countless Armies (59 str)
-		188035,			-- Flask of the Thousand Scars (88 sta)
-		188033,			-- Flask of the Seventh Demon (59 agi)
-		188031,			-- Flask of the Whispered Pact (59 int)
-		242551,			-- Fel Focus Str, Agi and Int +23, stam + 34
-
-		-- Battle for Azeroth 
-		251836,			-- Flask of the Currents (238 agi)
-		251837,			-- Flask of Endless Fathoms (238 int)
-		251838,			-- Flask of the Vast Horizon (357 sta)
-		251839,			-- Flask of the Undertow (238 str)
-		298836,			-- Greater Flask of the Currents
-		298837,			-- Greater Flask of Endless Fathoms
-		298839,			-- Greater Flask of the Vast Horizon
-		298841,			-- Greater Flask of the Undertow
-
-		-- Shadowlands
-		307166,			-- Eternal FLask (190 stat)
-		307185,			-- Spectral Flask of Power (73 stat)
-		307187,			-- Spectral Flask of Stamina (109 sta)
+		-- Mists of Pandaria
+		114769,			-- Flask of Spring Blossoms (intellect)
+		114770,			-- Flask of the Earth (stamina)
+		114771,			-- Flask of the Warm Sun (agility)
+		105696,			-- Flask of Winter's Bite (strength)
 	},
 	DefiledAugmentRune = {
+		-- Legion/Argus content, doesn't exist on MoP Classic - see E.Mists checks below
 		224001,			-- Defiled Augumentation (15 primary stat)
 		270058,			-- Battle Scarred Augmentation (60 primary stat)
 	},
-	Food = {
-		104280,	-- Well Fed
-
-		-- Shadowlands
-		259455,	-- Well Fed
-		308434,	-- Well Fed
-		308488,	-- Well Fed
-		308506,	-- Well Fed
-		308514,	-- Well Fed
-		308637,	-- Well Fed
-		327715,	-- Well Fed
-		327851,	-- Well Fed
-	},
 	Intellect = {
-		264760, -- War-Scroll of Intellect
 		1459, -- Arcane Intellect
 	},
 	Stamina = {
-		6307, -- Blood Pact
-		264764, -- War-Scroll of Fortitude
 		21562, -- Power Word: Fortitude
 	},
 	AttackPower = {
-		264761, -- War-Scroll of Battle
 		6673, -- Battle Shout
 	},
 }
 
+-- Buff name used by every "Well Fed" food effect regardless of item/stat, so a single
+-- name-based aura check covers all MoP food instead of hardcoding every food item's spell ID.
+local FOOD_BUFF_NAME = _G.WELL_FED or "Well Fed"
+
+-- Which class can personally provide each class-restricted raid buff (for click-to-cast).
+local CLASS_BUFF_SPELLS = {
+	Intellect = {class = "MAGE", spell = 1459},
+	Stamina = {class = "PRIEST", spell = 21562},
+	AttackPower = {class = "WARRIOR", spell = 6673},
+}
+
+-- Returns the first configured item (in slot order) that's actually in the player's bags.
+local function PickAvailableItem(items)
+	if not items then return nil end
+	for i = 1, 5 do
+		local item = items[i]
+		if item and item ~= "" and T.GetItemCount(item) > 0 then
+			return item
+		end
+	end
+	return nil
+end
+
 local flaskbuffs = KRR.ReminderBuffs["Flask"]
-local foodbuffs = KRR.ReminderBuffs["Food"]
 local darunebuffs = KRR.ReminderBuffs["DefiledAugmentRune"]
 local intellectbuffs = KRR.ReminderBuffs["Intellect"]
 local staminabuffs = KRR.ReminderBuffs["Stamina"]
@@ -119,7 +109,7 @@ end
 
 -- Checks a buff list against the player's current auras and updates the frame.
 local function CheckBuffList(frame, buffList)
-	if not (buffList and buffList[1]) then return end
+	if not frame or not (buffList and buffList[1]) then return end
 	frame.t:SetTexture(SpellIcon(buffList[1]))
 	for _, spellID in T.pairs(buffList) do
 		if PlayerHasAura(spellID) then
@@ -130,12 +120,51 @@ local function CheckBuffList(frame, buffList)
 	ApplyBuffState(frame, buffList[1], false)
 end
 
+-- Well Fed covers a different spell ID per food item, so match by aura name instead
+-- of maintaining an ID list (and use the icon of whichever food is actually active).
+local function CheckFoodBuff(frame)
+	if not frame then return end
+	if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
+		local i = 1
+		while true do
+			local aura = C_UnitAuras.GetAuraDataByIndex("player", i, "HELPFUL")
+			if not aura then break end
+			if aura.name == FOOD_BUFF_NAME then
+				frame.t:SetTexture(aura.icon)
+				frame:SetAlpha(KRR.db.alpha or 0.3)
+				LCG.PixelGlow_Stop(frame)
+				return
+			end
+			i = i + 1
+		end
+	end
+
+	if KRR.db.glow then LCG.PixelGlow_Start(frame, color, nil, -0.25, nil, 1) end
+	frame:SetAlpha(1)
+end
+
+-- BAG_UPDATE can fire dozens of times in a row (bag rearrange/loot), so debounce it
+-- instead of re-scanning bags on every single one.
+local bagUpdatePending = false
 local function OnAuraChange(self, event, arg1, unit)
+	if event == "BAG_UPDATE" then
+		if not bagUpdatePending then
+			bagUpdatePending = true
+			T.C_Timer_After(0.2, function()
+				bagUpdatePending = false
+				KRR:UpdateClickActions()
+			end)
+		end
+		return
+	end
+
 	if (event == "UNIT_AURA" and arg1 ~= "player") then return end
 
-	CheckBuffList(FlaskFrame,       flaskbuffs)
-	CheckBuffList(FoodFrame,        foodbuffs)
-	CheckBuffList(DARuneFrame,      darunebuffs)
+	CheckBuffList(FlaskFrame, flaskbuffs)
+	CheckFoodBuff(FoodFrame)
+	if not E.Mists then
+		CheckBuffList(DARuneFrame, darunebuffs)
+	end
 
 	if KRR.db.class then
 		CheckBuffList(IntellectFrame,   intellectbuffs)
@@ -145,7 +174,8 @@ local function OnAuraChange(self, event, arg1, unit)
 end
 
 function KRR:CreateIconBuff(name, relativeTo, firstbutton)
-	local button = T.CreateFrame("Frame", name, KRR.frame)
+	local button = T.CreateFrame("Button", name, KRR.frame, "SecureActionButtonTemplate")
+	button:RegisterForClicks("AnyDown")
 	if firstbutton == true then
 		button:SetPoint("RIGHT", relativeTo, "RIGHT", E:Scale(-4), 0)
 	else
@@ -198,22 +228,28 @@ function KRR:Initialize()
 	E.FrameLocks[self.frame] = true
 
 	self.frame.backdrop:SetAllPoints()
-	
+
+	-- DA Rune (Legion/Argus) doesn't exist on MoP Classic, so it gets neither a frame nor a check there.
+	local numIcons = (KRR.db.class and 3 or 0) + 2 + (E.Mists and 0 or 1)
+	self.frame:SetSize((KRR.db.size * numIcons) + 28, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
+
 	if KRR.db.class then
-		self.frame:SetSize((KRR.db.size * 6) + 28, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
 		self:CreateIconBuff("IntellectFrame", RaidBuffReminder, true)
 		self:CreateIconBuff("StaminaFrame", IntellectFrame, false)
 		self:CreateIconBuff("AttackPowerFrame", StaminaFrame, false)
 		self:CreateIconBuff("FlaskFrame", AttackPowerFrame, false)
 		self:CreateIconBuff("FoodFrame", FlaskFrame, false)
-		self:CreateIconBuff("DARuneFrame", FoodFrame, false)
+		if not E.Mists then
+			self:CreateIconBuff("DARuneFrame", FoodFrame, false)
+		end
 	else
-		self.frame:SetSize((KRR.db.size * 3) + 16, KRR.db.size + 8) -- Backdrop + size (still needs some adjustments, LOL :P)
 		self:CreateIconBuff("FlaskFrame", RaidBuffReminder, true)
 		self:CreateIconBuff("FoodFrame", FlaskFrame, false)
-		self:CreateIconBuff("DARuneFrame", FoodFrame, false)
+		if not E.Mists then
+			self:CreateIconBuff("DARuneFrame", FoodFrame, false)
+		end
 	end
-	
+
 	self.frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	self.frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
 	self.frame:RegisterEvent("UNIT_AURA")
@@ -224,6 +260,7 @@ function KRR:Initialize()
 	self.frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 	self.frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+	self.frame:RegisterEvent("BAG_UPDATE")
 	self.frame:SetScript("OnEvent", OnAuraChange)
 
 	E:CreateMover(self.frame, "KUI_RaidBuffReminderMover", L["Raid Buffs Reminder"], nil, nil, nil, "ALL,SOLO,PARTY,RAID,KLIXUI", nil, "KlixUI,modules,reminder")
@@ -235,6 +272,45 @@ function KRR:Initialize()
 	end
 
 	self:ForUpdateAll()
+	self:UpdateClickActions()
+end
+
+-- Wires up left-click-to-use on the Flask/Food icons (first available item out of up to 5
+-- configured slots, in order) and, on the three class-buff icons, click-to-cast the player's
+-- own buff when their class provides it.
+-- SetAttribute on a secure button is forbidden in combat, hence KUI:RunOutOfCombat.
+function KRR:UpdateClickActions()
+	KUI:RunOutOfCombat("KuiRaidReminder:UpdateClickActions", function()
+		for _, info in T.pairs({
+			{frame = _G.FlaskFrame, item = PickAvailableItem(KRR.db.flaskItems)},
+			{frame = _G.FoodFrame, item = PickAvailableItem(KRR.db.foodItems)},
+		}) do
+			if info.frame then
+				if info.item then
+					info.frame:SetAttribute("type", "item")
+					info.frame:SetAttribute("item", info.item)
+				else
+					info.frame:SetAttribute("type", nil)
+					info.frame:SetAttribute("item", nil)
+				end
+			end
+		end
+
+		if KRR.db.class then
+			for key, info in T.pairs(CLASS_BUFF_SPELLS) do
+				local frame = _G[key.."Frame"]
+				if frame then
+					if E.myclass == info.class then
+						frame:SetAttribute("type", "spell")
+						frame:SetAttribute("spell", info.spell)
+					else
+						frame:SetAttribute("type", nil)
+						frame:SetAttribute("spell", nil)
+					end
+				end
+			end
+		end
+	end)
 end
 
 KUI:RegisterModule(KRR:GetName())

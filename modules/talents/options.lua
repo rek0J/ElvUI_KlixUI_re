@@ -60,7 +60,7 @@ local function BetterTalentsTable()
 				desc = L["Shows an animated border glow for the currently selected talents."],
 				disabled = function() return not E.db.KlixUI.talents.enable end,
 				get = function(info) return E.db.KlixUI.talents.borderGlow end,
-				set = function(info, value) E.db.KlixUI.talents.borderGlow = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+				set = function(info, value) E.db.KlixUI.talents.borderGlow = value; KBT:Update() end,
 			},
 			DefaultToTalentsTab = {
 				order = 9,

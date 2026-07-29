@@ -49,11 +49,11 @@ local bars = {}
 
 local RaidCDAnchor = T.CreateFrame("Frame", "RaidCDAnchor", E.UIParent)
 
-local FormatTime = function(T.time)
-	if T.time >= 60 then
-		return T.string_format("%.2d:%.2d", T.math_floor(T.time / 60), T.time % 60)
+local FormatTime = function(time)
+	if time >= 60 then
+		return T.string_format("%.2d:%.2d", T.math_floor(time / 60), time % 60)
 	else
-		return T.string_format("%.2d", T.time)
+		return T.string_format("%.2d", time)
 	end
 end
 
@@ -117,8 +117,19 @@ local StopTimer = function(bar)
 	UpdatePositions()
 end
 
+-- MoP Classic's C_Spell.GetSpellCharges returns one chargeInfo table (currentCharges/
+-- maxCharges/cooldownStartTime/cooldownDuration/chargeModRate); the old global GetSpellCharges
+-- returns those as separate values. Normalize to the old shape so callers stay unchanged.
+local function GetChargeInfo(spellID)
+	local a, b, c, d, e = T.GetSpellCharges(spellID)
+	if T.type(a) == "table" then
+		return a.currentCharges, a.maxCharges, a.cooldownStartTime, a.cooldownDuration, a.chargeModRate
+	end
+	return a, b, c, d, e
+end
+
 local UpdateCharges = function(bar)
-	local curCharges, maxCharges, start, duration = T.GetSpellCharges(20484)
+	local curCharges, maxCharges, start, duration = GetChargeInfo(20484)
 	if curCharges == maxCharges then
 		bar.startTime = 0
 		bar.endTime = T.GetTime()
@@ -228,7 +239,7 @@ local StartTimer = function(name, spellId)
 	local bar = CreateBar()
 	local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[T.select(2, T.UnitClass(name))]
 	if charges and spellId == 20484 then
-		local curCharges, _, start, duration = T.GetSpellCharges(20484)
+		local curCharges, _, start, duration = GetChargeInfo(20484)
 		currentNumResses = curCharges
 		bar.startTime = start
 		bar.endTime = start + duration
@@ -301,6 +312,7 @@ f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 f:RegisterEvent("ENCOUNTER_END")
 f:SetScript("OnEvent", function(self, event)
+	if not RC.db then return end -- module disabled: RC:Initialize() never ran, so RC.db was never assigned
 	if event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
 		if T.select(2, T.IsInInstance()) == "raid" and T.IsInGroup() then
 			self:RegisterEvent("SPELL_UPDATE_CHARGES")
@@ -337,7 +349,7 @@ f:SetScript("OnEvent", function(self, event)
 			else
 				return
 			end
-			if raid_spells[spellId] and IT.sInGroup() and ((RC.db.show_inraid and type == "raid") or (RC.db.show_inparty and type == "party") or (RC.db.show_inarena and type == "arena")) then
+			if raid_spells[spellId] and T.IsInGroup() and ((RC.db.show_inraid and type == "raid") or (RC.db.show_inparty and type == "party") or (RC.db.show_inarena and type == "arena")) then
 				if (sourceName == T.UnitName("player") and RC.db.show_self == true) or sourceName ~= T.UnitName("player") then
 					StartTimer(sourceName, spellId)
 				end

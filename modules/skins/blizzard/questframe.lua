@@ -15,7 +15,11 @@ local hooksecurefunc = hooksecurefunc
 
 -- Copied from ElvUI
 local function UpdateGreetingFrame()
-	for Button in _G.QuestFrameGreetingPanel.titleButtonPool:EnumerateActive() do
+	-- MoP Classic: QuestFrameGreetingPanel may not use a button pool (retail-only UI pattern)
+	local pool = _G.QuestFrameGreetingPanel.titleButtonPool
+	if not pool then return end
+
+	for Button in pool:EnumerateActive() do
 		Button.Icon:SetDrawLayer("ARTWORK")
 		local Text = Button:GetFontString():GetText()
 		if Text and strfind(Text, '|cff000000') then

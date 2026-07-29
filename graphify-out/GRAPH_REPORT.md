@@ -1,16 +1,16 @@
-# Graph Report - ElvUI_KlixUI  (2026-07-04)
+# Graph Report - ElvUI_KlixUI  (2026-07-26)
 
 ## Corpus Check
-- 391 files · ~547,783 words
+- 391 files · ~554,247 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2951 nodes · 3585 edges · 409 communities (358 shown, 51 thin omitted)
+- 2983 nodes · 3627 edges · 413 communities (362 shown, 51 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9bfcb637`
+- Built from commit: `cb51822f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -173,43 +173,48 @@
 - [[_COMMUNITY_Community 291|Community 291]]
 - [[_COMMUNITY_Community 292|Community 292]]
 - [[_COMMUNITY_Community 293|Community 293]]
+- [[_COMMUNITY_Community 311|Community 311]]
 - [[_COMMUNITY_Community 402|Community 402]]
 - [[_COMMUNITY_Community 403|Community 403]]
 - [[_COMMUNITY_Community 404|Community 404]]
 - [[_COMMUNITY_Community 405|Community 405]]
 - [[_COMMUNITY_Community 406|Community 406]]
 - [[_COMMUNITY_Community 407|Community 407]]
+- [[_COMMUNITY_Community 409|Community 409]]
+- [[_COMMUNITY_Community 410|Community 410]]
+- [[_COMMUNITY_Community 411|Community 411]]
+- [[_COMMUNITY_Community 413|Community 413]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Unpack()` - 34 edges
 2. `initZonesInstances()` - 23 edges
-3. `GetToast()` - 20 edges
-4. `initZonesInstances()` - 17 edges
-5. `KS:StyleEncounterJournal()` - 12 edges
-6. `KT:Initialize()` - 12 edges
-7. `2026-04-13 - MoP Classic Porting Update` - 12 edges
-8. `SMB:SkinMinimapButton()` - 11 edges
-9. `RegisterToastEvent()` - 11 edges
-10. `OnEnter()` - 10 edges
+3. `Changelog.md` - 22 edges
+4. `GetToast()` - 20 edges
+5. `initZonesInstances()` - 17 edges
+6. `KS:StyleEncounterJournal()` - 12 edges
+7. `KT:Initialize()` - 12 edges
+8. `2026-04-13 - MoP Classic Porting Update` - 12 edges
+9. `SMB:SkinMinimapButton()` - 11 edges
+10. `RegisterToastEvent()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `TS:DEFAULT_EVENT()` --calls--> `debug()`  [INFERRED]
+  modules/teamstats/teamstats.lua → libs/LibRealmInfo/LibRealmInfo.lua
 - `AP:BuildFrame()` --calls--> `Unpack()`  [INFERRED]
   modules/addonpanel/addonpanel.lua → libs/LibRealmInfo/LibRealmInfo.lua
 - `AP:InitProfiles()` --calls--> `Unpack()`  [INFERRED]
   modules/addonpanel/addonpanel.lua → libs/LibRealmInfo/LibRealmInfo.lua
 - `KS:ReskinGarrMaterial()` --calls--> `Unpack()`  [INFERRED]
   modules/skins/blizzard/garrison.lua → libs/LibRealmInfo/LibRealmInfo.lua
-- `KUI:DebugCommand()` --calls--> `strtrim()`  [INFERRED]
-  core/debugger.lua → modules/addonpanel/addonpanel.lua
-- `KUI:LoadAddOnSkinsProfile()` --calls--> `Unpack()`  [INFERRED]
-  core/addonProfiles/AddOnSkins.lua → libs/LibRealmInfo/LibRealmInfo.lua
+- `Style_Ace3TabSelected()` --calls--> `Unpack()`  [INFERRED]
+  modules/skins/ElvUI_OptionsUI.lua → libs/LibRealmInfo/LibRealmInfo.lua
 
 ## Hyperedges (group relationships)
 - **MoP Classic Porting Effort** — changelog_mop_porting, changelog_mop_char_toasts, changelog_minimap_combattext [INFERRED 0.85]
 - **KlixUI Bundled Libraries** — lib_herebedragons, lib_libeasing, lib_libprocessable, lib_librealminfo [INFERRED 0.75]
 - **2026-05-29 Taint Performance Debugger Session** — changelog_microbar_perf, changelog_compactraidfix, changelog_debugger [EXTRACTED 1.00]
 
-## Communities (409 total, 51 thin omitted)
+## Communities (413 total, 51 thin omitted)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.06
@@ -221,11 +226,11 @@ Nodes (11): createButton(), getAnchors(), lib:Refresh(), lib:Register(), lib:Set
 
 ### Community 5 - "Community 5"
 Cohesion: 0.05
-Nodes (4): GetItemScore(), GetRealInventoryType(), U1GetItemLevelByScanTooltip(), U1GetRealItemLevel()
+Nodes (6): GetItemScore(), GetRealInventoryType(), U1GetInventoryLevel(), U1GetInventoryLevelColor(), U1GetItemLevelByScanTooltip(), U1GetRealItemLevel()
 
 ### Community 6 - "Community 6"
 Cohesion: 0.06
-Nodes (16): AchievementToast_SetUp(), CanManageBlizzardAlertFrame(), GetAchievementToastTexture(), HasNonDNDToast(), IsDNDEnabled(), KT:ACHIEVEMENT_EARNED(), KT:CRITERIA_EARNED(), KT:LFG_COMPLETION_REWARD() (+8 more)
+Nodes (14): AchievementToast_SetUp(), GetAchievementToastTexture(), HasNonDNDToast(), IsDNDEnabled(), KT:ACHIEVEMENT_EARNED(), KT:CRITERIA_EARNED(), KT:LFG_COMPLETION_REWARD(), KT:PLAYER_REGEN_ENABLED() (+6 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.08
@@ -280,8 +285,8 @@ Cohesion: 0.10
 Nodes (14): applyCoordinateTransforms(), applyMapTransforms(), fixupZones(), gatherMapData(), HereBeDragons:GetPlayerWorldPosition(), HereBeDragons:GetUnitWorldPosition(), HereBeDragons:TranslateZoneCoordinates(), OnEvent() (+6 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.11
-Nodes (14): GetAchieveOrStatById(), GetPlayerData(), SaveAchievements(), SaveGearScore(), SaveTalents(), TS.CompareCallback(), TS:InspectLess_InspectItemReady(), TS:InspectLess_InspectReady() (+6 more)
+Cohesion: 0.10
+Nodes (15): GetAchieveOrStatById(), GetPlayerData(), SaveAchievements(), SaveGearScore(), SaveTalents(), TS.CompareCallback(), TS:DEFAULT_EVENT(), TS:InspectLess_InspectItemReady() (+7 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.10
@@ -320,8 +325,8 @@ Cohesion: 0.12
 Nodes (8): applyCoordinateTransforms(), getMapDataTable(), HereBeDragons:GetPlayerWorldPosition(), HereBeDragons:GetUnitWorldPosition(), HereBeDragons:GetWorldCoordinatesFromZone(), HereBeDragons:GetZoneCoordinatesFromWorld(), HereBeDragons:GetZoneSize(), HereBeDragons:TranslateZoneCoordinates()
 
 ### Community 30 - "Community 30"
-Cohesion: 0.11
-Nodes (13): AddonPanelTable(), KUI:LoadAddOnSkinsProfile(), LoadAddOnSkin(), styleArchaeology(), styleQuestChoice(), styleWarfrontPartyPose(), Unpack(), KS:StyleElvUIConfig() (+5 more)
+Cohesion: 0.14
+Nodes (15): AddonPanelTable(), KUI:LoadAddOnSkinsProfile(), LoadAddOnSkin(), styleArchaeology(), styleQuestChoice(), styleWarfrontPartyPose(), debug(), getNameForAPI() (+7 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.12
@@ -404,8 +409,8 @@ Cohesion: 0.21
 Nodes (10): GetDefaultHearthstone(), HearthStoneToUse_Random(), HearthStoneToUse_UpdateList(), HideOverlayGlow(), IsOverlayedSpell(), KAB:Initialize(), KAB:Macro_Refresh(), KAB:OnEvent() (+2 more)
 
 ### Community 54 - "Community 54"
-Cohesion: 0.22
-Nodes (15): EnableAchievementToasts(), EnableArchaeologyToasts(), EnableCommonLootToasts(), EnableCurrencyLootToasts(), EnableGarrisonToasts(), EnableInstanceToasts(), EnableRecipeToasts(), EnableSpecialLootToasts() (+7 more)
+Cohesion: 0.19
+Nodes (16): CanManageBlizzardAlertFrame(), EnableAchievementToasts(), EnableArchaeologyToasts(), EnableCommonLootToasts(), EnableCurrencyLootToasts(), EnableInstanceToasts(), EnableRecipeToasts(), EnableSpecialLootToasts() (+8 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.32
@@ -420,8 +425,8 @@ Cohesion: 0.23
 Nodes (13): AnchorSquareIcon(), ApplyDarkBorder(), ApplySquareButtonBorder(), GetExplicitButtonIconTexture(), GetPrimaryIconTexture(), GetTextureTexCoords(), HasTexture(), IsDecorativeTexture() (+5 more)
 
 ### Community 62 - "Community 62"
-Cohesion: 0.23
-Nodes (13): DisableGarrisonToasts(), GarrisonFollowerToast_SetUp(), GarrisonMissionToast_SetUp(), GetGarrisonTypeByFollowerType(), HasGarrisonFollowerTooltipSupport(), HasGarrisonToastSupport(), KT:GARRISON_FOLLOWER_ADDED(), KT:GARRISON_MISSION_FINISHED() (+5 more)
+Cohesion: 0.21
+Nodes (14): DisableGarrisonToasts(), EnableGarrisonToasts(), GarrisonFollowerToast_SetUp(), GarrisonMissionToast_SetUp(), GetGarrisonTypeByFollowerType(), HasGarrisonFollowerTooltipSupport(), HasGarrisonToastSupport(), KT:GARRISON_FOLLOWER_ADDED() (+6 more)
 
 ### Community 63 - "Community 63"
 Cohesion: 0.21
@@ -459,6 +464,10 @@ Nodes (8): CreateMenu(), Frame:PLAYER_ENTERING_WORLD(), GetTitleFormat(), OnEnte
 Cohesion: 0.33
 Nodes (6): GetDungeonCoords(), GetRecomDungeons(), GetRecomZones(), GetZoneDungeons(), LP:UpdateTooltip(), PvPorRaidFilter()
 
+### Community 75 - "Community 75"
+Cohesion: 0.21
+Nodes (5): GetAuraBySpellID(), KSR:PlayerHasFilteredBuff(), KSR:PlayerHasFilteredDebuff(), KSR:ReminderIcon_OnEvent(), OffhandHasWeapon()
+
 ### Community 77 - "Community 77"
 Cohesion: 0.24
 Nodes (3): CheckRep(), ReputationBar_OnEnter(), UpdateReputation()
@@ -468,8 +477,8 @@ Cohesion: 0.33
 Nodes (7): ColorObjectivesText(), QuestInfo_GetQuestID(), RestyleRewardButton(), RestyleSpellButton(), SetTextColor_White(), SetTextColor_Yellow(), styleQuestInfo()
 
 ### Community 79 - "Community 79"
-Cohesion: 0.36
-Nodes (9): debug(), getNameForAPI(), lib:GetCurrentRegion(), lib:GetRealmInfo(), lib:GetRealmInfoByGUID(), lib:GetRealmInfoByID(), lib:GetRealmInfoByUnit(), shallowCopy() (+1 more)
+Cohesion: 0.25
+Nodes (6): KS:StyleElvUIConfig(), pluginInstaller(), Style_Ace3TabSelected(), Style_CreateSeparatorLine(), Style_SetButtonColor(), StyleElvUIConfig()
 
 ### Community 80 - "Community 80"
 Cohesion: 0.20
@@ -552,8 +561,8 @@ Cohesion: 0.25
 Nodes (8): IsForbiddenMinimapButton(), IsInPetBattle(), IsLikelyNamedMinimapButton(), IsTomCatsButton(), NameEndsWithNumber(), NameMatchesButtonPattern(), NameMatchesPinPattern(), SMB:GrabMinimapButtons()
 
 ### Community 110 - "Community 110"
-Cohesion: 0.29
-Nodes (7): TS:VARIABLES_LOADED(), TeamStatsUI_CreateMinimapButton(), TS.CreateButtons(), CoreUIAnchor(), CoreUIEnableTooltip(), CoreUIShowOrHide(), U1Message()
+Cohesion: 0.25
+Nodes (8): TS:VARIABLES_LOADED(), TeamStatsUI_CreateMinimapButton(), TS.SetupColumns(), CoreUIEnableTooltip(), CoreUISetTextWithClassColor(), CoreUIShowOrHide(), CoreUIShowTooltip(), TplColumnButton()
 
 ### Community 113 - "Community 113"
 Cohesion: 0.47
@@ -576,16 +585,16 @@ Cohesion: 0.60
 Nodes (5): CameraZoom(), CameraZoomIn(), CameraZoomOut(), VehicleCameraZoomIn(), VehicleCameraZoomOut()
 
 ### Community 124 - "Community 124"
-Cohesion: 0.31
-Nodes (5): ApplyBuffState(), CheckBuffList(), OnAuraChange(), PlayerHasAura(), SpellIcon()
+Cohesion: 0.24
+Nodes (8): ApplyBuffState(), CheckBuffList(), CheckFoodBuff(), KRR:UpdateClickActions(), OnAuraChange(), PickAvailableItem(), PlayerHasAura(), SpellIcon()
 
 ### Community 126 - "Community 126"
-Cohesion: 0.33
-Nodes (6): TS.SetupColumns(), CoreUISetTextWithClassColor(), CoreUIShowTooltip(), TplColumnButton(), U1GetInventoryLevel(), U1GetInventoryLevelColor()
+Cohesion: 0.12
+Nodes (16): 2026-07-09 (Teil 2) - Datei-für-Datei-Nachkontrolle: cooldowns, tweaks, unitframes, 2026-07-09 (Teil 3) - Weitere Nachkontrolle: quest, unitframes-Rest, blizzard, locpanel, armory, addonpanel, raidmarkers, 2026-07-09 (Teil 4) - reminder/solo.lua nachgezogen, notification/reminder/raid geprüft, 2026-07-10 (Nachtrag) - cinematic.lua: GameMovieFinished existiert nicht auf diesem Client, 2026-07-10 (Teil 2) - skins/addons/ komplett durchgesehen, 2026-07-10 (Teil 3) - skins/blizzard/ komplett durchgesehen (alle ~49 geladenen Dateien), 2026-07-10 (Teil 4) - options.lua Restdurchsicht + Toasts-Optionsmenü-Abgleich, 2026-07-10 (Teil 5) - Unnötige Reload-Aufforderungen entfernt + chatClassColorOverride-Option (+8 more)
 
 ### Community 127 - "Community 127"
-Cohesion: 0.33
-Nodes (6): TS.SetTab(), CoreUIKeepCorner(), RP:Call(), RP:Schedule(), RunOnNextFrame(), scheduleOrBlock()
+Cohesion: 0.22
+Nodes (9): TS.CreateButtons(), TS.SetTab(), CoreUIAnchor(), CoreUIKeepCorner(), RP:Call(), RP:Schedule(), RunOnNextFrame(), scheduleOrBlock() (+1 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.47
@@ -656,31 +665,47 @@ Cohesion: 0.67
 Nodes (3): IsGoldBorderTexture(), SetTextureShown(), SMB:ApplyGoldBorderSetting()
 
 ### Community 402 - "Community 402"
-Cohesion: 0.06
-Nodes (30): 2026-04-13 - MoP Classic Porting Update, 2026-04-14 - Minimap Buttons and CombatText Follow-up, 2026-04-15 - Character Frame, Toasts and MoP UI Follow-up, 2026-05-29 - Performance, Taint und Debugger Verbesserungen, Actionbars, Armory, character frame and talents, Armory, stats and talents, Bags and item handling (+22 more)
+Cohesion: 0.17
+Nodes (12): 2026-04-13 - MoP Classic Porting Update, Actionbars, Armory, stats and talents, Bags and item handling, Blizzard skins, Compatibility approach, Core and configuration, Datatexts (+4 more)
 
 ### Community 403 - "Community 403"
 Cohesion: 0.33
 Nodes (5): LibEasing, LibEasing:Ease(func, beginValue, endValue, duration\[, easingFunc\], \[callback\]), LibEasing:StopEasing(handle), Provided Easing Formulas, Usage
 
+### Community 409 - "Community 409"
+Cohesion: 0.22
+Nodes (9): 2026-07-09 - Phase 5 Kompatibilität, AutoButtons-Rework und Bugfixes, AutoButtons (Quest-/Slot-Auto-Use-Leiste): Secure-Click überarbeitet, CompactRaidFrame-Taint-Fix: Ansatz ersetzt, Core: Phase-5-Globals aus C_AddOns / C_CVar / C_SpecializationInfo / C_Spell wiederhergestellt, Minimap-Buttons: LFG-/Gruppensuche-Schutz, Nachkontrolle: systematischer Abgleich aller `T.C_*`-Aufrufstellen gegen toolkit.lua, Nil-Guards in mehreren Modulen, Raid-Reminder: Buff-Check dedupliziert (+1 more)
+
+### Community 410 - "Community 410"
+Cohesion: 0.39
+Nodes (8): 2026-05-29 - Performance, Taint und Debugger Verbesserungen, 2026-07-10 - Kritisch: unbedingter Login-Crash in chat/Filters.lua und trade.lua; Options-Menü an Stasis angeglichen, Debugger: Cross-Attribution und Auto-Scan, Options-Menü an Stasis-Entscheidungen angeglichen, Performance: MicroBar event-basierte Updates, Status, SyncConfiguredLists Aufräumen, Taint-Fix: CompactRaidFrameManager ADDON_ACTION_BLOCKED
+
+### Community 411 - "Community 411"
+Cohesion: 0.33
+Nodes (6): 2026-04-15 - Character Frame, Toasts and MoP UI Follow-up, Armory, character frame and talents, Blizzard skins, movers and MoP guards, Minimap buttons and tooltip follow-up, Notes, Toasts and gameplay-related MoP API fixes
+
+### Community 413 - "Community 413"
+Cohesion: 0.40
+Nodes (5): 2026-04-14 - Minimap Buttons and CombatText Follow-up, Combat text, Minimap button rendering status, Porting notes, Square Minimap Buttons
+
 ## Knowledge Gaps
-- **37 isolated node(s):** `PreToolUse`, `allow`, `Performance: MicroBar event-basierte Updates`, `Taint-Fix: CompactRaidFrameManager ADDON_ACTION_BLOCKED`, `SyncConfiguredLists Aufräumen` (+32 more)
+- **56 isolated node(s):** `PreToolUse`, `allow`, `2026-07-11 (Teil 5) - Crash-Fix: ADDON_ACTION_FORBIDDEN beim Talent-Entfernen`, `2026-07-11 (Teil 4) - Crash-Fix: type()-Shadowing in raidCD + echte Taint-Quelle für CompactRaidFrame gefunden`, `2026-07-11 (Teil 3) - Crash-Fix: raidCD Chargen-API + CompactRaidFrame-Taint-Lücke` (+51 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **51 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Unpack()` connect `Community 30` to `Community 99`, `Community 36`, `Community 197`, `Community 12`, `Community 78`, `Community 79`, `Community 17`, `Community 18`, `Community 19`, `Community 52`, `Community 118`, `Community 23`, `Community 88`, `Community 126`?**
-  _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `strtrim()` connect `Community 9` to `Community 88`, `Community 67`, `Community 79`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `lib:GetRealmInfo()` connect `Community 79` to `Community 9`, `Community 30`?**
+- **Why does `Unpack()` connect `Community 30` to `Community 99`, `Community 36`, `Community 197`, `Community 12`, `Community 78`, `Community 79`, `Community 110`, `Community 17`, `Community 18`, `Community 19`, `Community 52`, `Community 118`, `Community 23`, `Community 88`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `strtrim()` connect `Community 9` to `Community 88`, `Community 67`, `Community 30`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `lib:GetRealmInfo()` connect `Community 30` to `Community 9`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Are the 28 inferred relationships involving `Unpack()` (e.g. with `ABS:ScanItem()` and `CreateButton()`) actually correct?**
   _`Unpack()` has 28 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `PreToolUse`, `allow`, `Performance: MicroBar event-basierte Updates` to the rest of the system?**
-  _40 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `PreToolUse`, `allow`, `2026-07-11 (Teil 5) - Crash-Fix: ADDON_ACTION_FORBIDDEN beim Talent-Entfernen` to the rest of the system?**
+  _59 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.01818181818181818 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

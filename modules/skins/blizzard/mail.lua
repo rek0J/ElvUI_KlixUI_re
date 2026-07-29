@@ -73,11 +73,13 @@ local function styleMail()
 	if SendMailScrollFrame then
 		SendMailScrollFrame:CreateBackdrop("Transparent")
 
+		local sendMailRegions = {SendMailFrame and SendMailFrame:GetRegions()}
 		for i = 4, 7 do
-			T.select(i, SendMailFrame:GetRegions()):Hide()
+			if sendMailRegions[i] then sendMailRegions[i]:Hide() end
 		end
 
-		T.select(4, SendMailScrollFrame:GetRegions()):Hide()
+		local scrollRegion = T.select(4, SendMailScrollFrame:GetRegions())
+		if scrollRegion then scrollRegion:Hide() end
 		if _G.SendMailBodyEditBox then
 			_G.SendMailBodyEditBox:SetPoint("TOPLEFT", 2, -2)
 			_G.SendMailBodyEditBox:SetWidth(278)

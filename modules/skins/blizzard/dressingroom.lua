@@ -59,8 +59,10 @@ local function styleDressingroom()
 		_G.SideDressUpFrame:Styling()
 	end
 
-	-- Undress Button
-	UndressButton()
+	-- Undress Button (MoP Classic: DressUpFrame.ModelScene/actor API doesn't exist here)
+	if _G.DressUpFrame.ModelScene then
+		UndressButton()
+	end
 end
 
 S:AddCallback("KuiDressingRoom", styleDressingroom)

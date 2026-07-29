@@ -15,7 +15,12 @@ local function OP_OnTooltipSetUnit(self)
     local npcID = T.select(6, ("-"):split(GUID))
     if not npcID or npcID == "" then return end
 
-    --local weightsTable = LOP:GetNPCWeightByCurrentQuests(T.tonumber(npcID))
+    -- MoP Classic: this tooltip feature relies on World Quest data (C_TaskQuest), which
+    -- doesn't exist here, so there's nothing to weight against. Stays disabled until/unless
+    -- LibObjectiveProgress-1.0 gets a MoP-compatible quest-progress source.
+    if not T.C_TaskQuest_GetQuestInfoByQuestID then return end
+
+    local weightsTable = LOP:GetNPCWeightByCurrentQuests(T.tonumber(npcID))
     if not weightsTable then return end
 
     for questID, npcWeight in T.next, weightsTable do

@@ -30,6 +30,7 @@ local function ChatTable()
 				type = "toggle",
 				name = L["Hide Player Brackets"],
 				desc = L["Removes brackets around the person who posts a chat message."],
+				set = function(info, value) E.db.KlixUI.chat[ info[#info] ] = value end,
 			},
 
 			hideChat = {
@@ -37,6 +38,7 @@ local function ChatTable()
 				type = "toggle",
 				name = L["Hide Community Chat"],
 				desc = L["Adds an overlay to the Community Chat. Useful for streamers."],
+				set = function(info, value) E.db.KlixUI.chat[ info[#info] ] = value end,
 			},
 
 			emotes = {
@@ -44,7 +46,16 @@ local function ChatTable()
 				type = "toggle",
 				name = L["Emotes"],
 			},
-		
+
+			classColorOverride = {
+				order = 6,
+				type = "toggle",
+				name = L["Class Colors in Chat"],
+				desc = L["Show player names in chat using their class color. Disabling this forces the default chat color (CVar: chatClassColorOverride)."],
+				get = function() return T.GetCVar("chatClassColorOverride") == "0" end,
+				set = function(info, value) T.SetCVar("chatClassColorOverride", value and "0" or "1") end,
+			},
+
 		-- Chat Separators
 			separators = {
 				order = 6,

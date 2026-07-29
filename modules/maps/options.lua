@@ -136,21 +136,23 @@ local function Maps()
 								name = L["Always Display Glow"],
 								desc = L["Always display the minimap glow."],
 								disabled = function() return not E.db.KlixUI.maps.minimap.glow end,
+								set = function(info, value) E.db.KlixUI.maps.minimap.glowAlways = value end,
 							},
 							hideincombat = {
 								order = 6,
 								type = "toggle",
 								name = L["Combat Hide"],
 								desc = L["Hide minimap while in combat."],
-								set = function(info, value) E.db.KlixUI.maps.minimap.hideincombat = value; MM:HideMinimapRegister() end,			
+								set = function(info, value) E.db.KlixUI.maps.minimap.hideincombat = value; MM:HideMinimapRegister() end,
 							},
 							fadeindelay = {
 								order = 7,
 								type = "range",
 								name = L["FadeIn Delay"],
 								desc = L["The time to wait before fading the minimap back in after combat hide. (0 = Disabled)"],
-								min = 0, max = 20, step = 1,	
+								min = 0, max = 20, step = 1,
 								disabled = function() return not E.db.KlixUI.maps.minimap.hideincombat end,
+								set = function(info, value) E.db.KlixUI.maps.minimap.fadeindelay = value end,
 							},
 							space1 = {
 								order = 9,
@@ -177,6 +179,7 @@ local function Maps()
 										name = L["Play Sound"],
 										desc = L["Plays a sound when a mail is received.\n|cffff8000Note: This will be disabled by default if notifcations or notification mail module is enabled.|r"],
 										disabled = function() return E.db.KlixUI.notification.enable and E.db.KlixUI.notification.mail and not E.db.KlixUI.notification.noSound end,
+										set = function(info, value) E.db.KlixUI.maps.minimap.mail.sound = value end,
 									},
 									hide = {
 										order = 3,
@@ -313,7 +316,7 @@ local function Maps()
 									ADDON = "Only AddOn Buttons",
 									BLIZZARD = "Only Blizzard Buttons",
 								},
-								set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+								set = function(info, value) E.db.KlixUI.maps.minimap.buttons[ info[#info] ] = value; if SMB.RefreshSettings then SMB:RefreshSettings() else SMB:Update() end end,
 								disabled = function() return not E.db.KlixUI.maps.minimap.buttons.enable end,
 							},
 							growthDirection = {
@@ -498,6 +501,12 @@ local function Maps()
 						order = 3,
 						type = "group",
 						name = L["Minimap Ping"],
+						-- Stasis: MM:MiniMapPing() is never called (commented out in minimap.lua's
+						-- Initialize, "Find a way to fix this soonish") and its text FontString is
+						-- never created either (KS:CreateFS doesn't exist in this codebase). The whole
+						-- feature is dead code, so hide the group instead of showing controls that do nothing.
+						disabled = function() return true end,
+						hidden = function() return true end,
 						get = function(info) return E.db.KlixUI.maps.minimap.ping[ info[#info] ] end,
 						set = function(info, value) E.db.KlixUI.maps.minimap.ping[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
 						args = {
@@ -956,7 +965,7 @@ local function injectElvUIDataTextsOptions()
 			["VERSION"] = L["Version"],
 		},
 		get = function(info) return E.db.KlixUI.maps.minimap.topbar.locationtext end,
-		set = function(info, value) E.db.KlixUI.maps.minimap.topbar.locationtext = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+		set = function(info, value) E.db.KlixUI.maps.minimap.topbar.locationtext = value; E:GetModule('Minimap'):Update_ZoneText() end,
 		disabled = function() return E.db.general.minimap.locationText ~= "ABOVE" end,
 	}
 	

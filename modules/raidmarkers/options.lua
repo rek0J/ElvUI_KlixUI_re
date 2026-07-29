@@ -187,6 +187,7 @@ local function RaidMarkers()
 						type = "select",
 						name = L["RaidMarkingButton"]..'1',
 						disabled = function() return not E.db.KlixUI.raidmarkers.quickmark.enable end,
+						set = function(info, value) E.db.KlixUI.raidmarkers.quickmark.markingButton1 = value end,
 						values = {
 							['ctrl'] = "Ctrl",
 							['alt'] = "Alt",
@@ -198,6 +199,7 @@ local function RaidMarkers()
 						type = "select",
 						name = L["RaidMarkingButton"]..'2',
 						disabled = function() return not E.db.KlixUI.raidmarkers.quickmark.enable end,
+						set = function(info, value) E.db.KlixUI.raidmarkers.quickmark.markingButton2 = value end,
 						values = {
 							["LeftButton"] = L["MouseButton1"],
 							["RightButton"] = L["MouseButton2"],

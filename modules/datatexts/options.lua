@@ -122,8 +122,7 @@ local function Datatexts()
 						type = "group",
 						name = L["Professions Datatext"],
 						get = function(info) return E.db.KlixUI.profDT[info[#info]] end,
-						--set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; DT:LoadDataTexts() end,
-						set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+						set = function(info, value) E.db.KlixUI.profDT[info[#info]] = value; DT:LoadDataTexts() end,
 						args = {
 							prof = {
 								type = "select",
@@ -156,7 +155,7 @@ local function Datatexts()
 						type = "group",
 						name = L["Time Datatext"],
 						get = function(info) return E.db.KlixUI.timeDT[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.timeDT[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL") end,
+						set = function(info, value) E.db.KlixUI.timeDT[ info[#info] ] = value end,
 						args = {
 							size = {
 								order = 1,
@@ -176,6 +175,8 @@ local function Datatexts()
 								type = "toggle",
 								name = L["Invasions"],
 								desc = L["Display upcomming and current Legion and BfA invasions in the time datatext tooltip."],
+								disabled = function() return not E.Retail end,
+								hidden = function() return not E.Retail end,
 							},
 							played = {
 								order = 4,

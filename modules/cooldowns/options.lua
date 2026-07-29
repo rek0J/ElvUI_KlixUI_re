@@ -44,6 +44,7 @@ local function CooldownTable()
 								width = "full",
 								name = L["Enable"],
 								disabled = function() return not E.db.KlixUI.cooldowns.dimishing.enable end,
+								set = function(info, value) E.db.KlixUI.cooldowns.dimishing.text.enable = value end,
 							},
 							font = {
 								order = 2,
@@ -103,6 +104,7 @@ local function CooldownTable()
 						name = L["Size"],
 						min = 5, max = 75, step = 1,
 						disabled = function() return not E.db.KlixUI.cooldowns.enemy.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.enemy.size = value end,
 					},
 					direction = {
 						order = 5,
@@ -115,6 +117,7 @@ local function CooldownTable()
 							["RIGHT"] = L["Right"],
 						},
 						disabled = function() return not E.db.KlixUI.cooldowns.enemy.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.enemy.direction = value end,
 					},
 					show_always = {
 						order = 6,
@@ -122,6 +125,7 @@ local function CooldownTable()
 						name = L["Show Always"],
 						desc = L["Show the enemy cooldown spells in every related instance types."],
 						disabled = function() return not E.db.KlixUI.cooldowns.enemy.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.enemy.show_always = value end,
 					},
 					show_inpvp = {
 						order = 7,
@@ -129,6 +133,7 @@ local function CooldownTable()
 						name = L["Show In PvP"],
 						desc = L["Show the enemy cooldown spells in battlegrounds."],
 						disabled = function() return not E.db.KlixUI.cooldowns.enemy.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.enemy.show_inpvp = value end,
 					},
 					show_inarena = {
 						order = 8,
@@ -136,6 +141,7 @@ local function CooldownTable()
 						name = L["Show In Arena"],
 						desc = L["Show the enemy cooldown spells in arenas."],
 						disabled = function() return not E.db.KlixUI.cooldowns.enemy.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.enemy.show_inarena = value end,
 					},
 				},
 			},
@@ -152,7 +158,7 @@ local function CooldownTable()
 						name = L["Enable"],
 						desc = L["Pulse"],
 						get = function() return E.db.KlixUI.cooldowns.pulse.enable ~= false or false end,
-						set = function(info, v) E.db.KlixUI.cooldowns.pulse.enable = v if v then PC:EnableCooldownFlash() else PC:DisableCooldownFlash() end E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, v) E.db.KlixUI.cooldowns.pulse.enable = v if v then PC:EnableCooldownFlash() else PC:DisableCooldownFlash() end end,
 					},
 					test = {
 						order = 3,
@@ -180,6 +186,7 @@ local function CooldownTable()
 						type = "range",
 						min = 0.5, max = 2.5, step = 0.1,
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.fadeInTime = value end,
 					},
 					fadeOutTime = {
 						order = 7,
@@ -187,6 +194,7 @@ local function CooldownTable()
 						type = "range",
 						min = 0.5, max = 2.5, step = 0.1,
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.fadeOutTime = value end,
 					},
 					maxAlpha = {
 						order = 8,
@@ -195,6 +203,7 @@ local function CooldownTable()
 						min = 0.25, max = 1, step = 0.05,
 						isPercent = true,
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.maxAlpha = value end,
 					},
 					holdTime = {
 						order = 9,
@@ -202,6 +211,7 @@ local function CooldownTable()
 						type = "range",
 						min = 0.3, max = 2.5, step = 0.1,
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.holdTime = value end,
 					},
 					animScale = {
 						order = 10,
@@ -209,12 +219,14 @@ local function CooldownTable()
 						type = "range",
 						min = 0.5, max = 2, step = 0.1,
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.animScale = value end,
 					},
 					showSpellName = {
 						order = 11,
 						name = L["Display spell name"],
 						type = "toggle",
 						hidden = function() return not E.db.KlixUI.cooldowns.pulse.enable end,
+						set = function(info, value) E.db.KlixUI.cooldowns.pulse.showSpellName = value end,
 					},
 					enablePet = {
 						order = 12,
@@ -226,7 +238,7 @@ local function CooldownTable()
 					},
 				},
 			},
-			--[[raid = {
+			raid = {
 				order = 5,
 				type = "group",
 				name = L["Raid"],
@@ -243,7 +255,7 @@ local function CooldownTable()
 						type = "description",
 						name = "",
 					},
-					space1 = {
+					space2 = {
 						order = 3,
 						type = "description",
 						name = "",
@@ -253,47 +265,56 @@ local function CooldownTable()
 						type = "range",
 						name = L["Width"],
 						min = 5, max = 500, step = 1,
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.width = value end,
 					},
 					height = {
 						order = 5,
 						type = "range",
 						name = L["Height"],
 						min = 5, max = 200, step = 1,
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.height = value end,
 					},
 					upwards = {
 						order = 6,
 						type = "toggle",
 						name = L["Sort Upwards"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.upwards = value end,
 					},
 					expiration = {
 						order = 7,
 						type = "toggle",
 						name = L["Sort by Expiration Time"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.expiration = value end,
 					},
 					show_self = {
 						order = 8,
 						type = "toggle",
 						name = L["Show Self Cooldown"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.show_self = value end,
 					},
 					show_icon = {
 						order = 9,
 						type = "toggle",
 						name = L["Show Icons"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.show_icon = value end,
 					},
 					show_inparty = {
 						order = 10,
 						type = "toggle",
 						name = L["Show In Party"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.show_inparty = value end,
 					},
 					show_inraid = {
 						order = 11,
 						type = "toggle",
 						name = L["Show In Raid"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.show_inraid = value end,
 					},
 					show_inarena = {
 						order = 12,
 						type = "toggle",
 						name = L["Show In Arena"],
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.show_inarena = value end,
 					},
 					text = {
 						order = 20,
@@ -301,7 +322,7 @@ local function CooldownTable()
 						name = L["Cooldown Text"],
 						guiInline = true,
 						get = function(info) return E.db.KlixUI.cooldowns.raid.text[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.cooldowns.raid.text[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.cooldowns.raid.text[ info[#info] ] = value end,
 						args = {
 							font = {
 								order = 1,
@@ -329,7 +350,7 @@ local function CooldownTable()
 						},
 					},
 				},
-			},]]
+			},
 		},		
 	}
 end

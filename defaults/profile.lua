@@ -693,6 +693,25 @@ P['KlixUI'] = {
 			["show_inarena"] = true,
 		},
 
+		['raid'] = {
+			["enable"] = true,
+			["width"] = 200,
+			["height"] = 20,
+			["show_icon"] = true,
+			["upwards"] = false,
+			["expiration"] = true,
+			["show_self"] = true,
+			["show_inparty"] = true,
+			["show_inraid"] = true,
+			["show_inarena"] = true,
+			["text"] = {
+				["font"] = "Expressway",
+				["fontSize"] = 12,
+				["fontOutline"] = "OUTLINE",
+				["shadow"] = true,
+			},
+		},
+
 	},
 	
 	-- DataBars
@@ -1418,6 +1437,8 @@ P['KlixUI'] = {
 			["backdrop"] = true,
 			["glow"] = true,
 			["customVisibility"] = "[noexists, nogroup] hide; show",
+			["flaskItems"] = { "", "", "", "", "" },
+			["foodItems"] = { "", "", "", "", "" },
 		},
 	},
 	

@@ -238,7 +238,7 @@ local function ArmoryTable()
 						set = function(info, r, g, b)
 							E.db.KlixUI.armory.ilvl[ info[#info] ] = {}
 							local t = E.db.KlixUI.armory.ilvl[ info[#info] ]
-							t.r, t.g, t.b, t.a = r, g, b, a
+							t.r, t.g, t.b = r, g, b
 							KA:UpdatePaperDoll()
 						end,
 					},
@@ -448,6 +448,7 @@ local function ArmoryTable()
 										type = "toggle",
 										name = L["Enable"],
 										desc = L["Shows a glow indicator of not enchanted items only."],
+										set = function(info, value) E.db.KlixUI.armory.indicators.enchant.glow.enable = value; KA:UpdatePaperDoll() end,
 									},
 									style = {
 										order = 2,
@@ -509,6 +510,7 @@ local function ArmoryTable()
 										order = 1,
 										name = L["Enable"],
 										desc = L["Shows a glow indictor for unsocketed items only."],
+										set = function(info, value) E.db.KlixUI.armory.indicators.socket.glow.enable = value; KA:UpdatePaperDoll() end,
 									},
 									style = {
 										order = 2,

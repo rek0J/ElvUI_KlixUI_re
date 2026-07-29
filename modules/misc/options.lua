@@ -92,6 +92,7 @@ local function Misc()
 						type = "toggle",
 						name = L["Buy Max Stack"],
 						desc = L["Alt-Click on an item, sold buy a merchant, to buy a full stack."],
+						set = function(info, value) E.db.KlixUI.misc.buyall = value end,
 					},
 					talkingHead = {
 						order = 7,
@@ -106,6 +107,7 @@ local function Misc()
 						desc = L["Show the nearest Flight Master's Whistle Location on the minimap and in the tooltip."],
 						disabled = function() return T.IsAddOnLoaded("WhistledAway") end,
 						hidden = function() return T.IsAddOnLoaded("WhistledAway") end,
+						set = function(info, value) E.db.KlixUI.misc.whistleLocation = value end,
 					},
 					whistleSound = {
 						order = 9,
@@ -119,6 +121,7 @@ local function Misc()
 						name = L["Custom Flight Master's Whistle Sound"],
 						desc = L["Use a custom sound when you use the Flight Master's Whistle."],
 						disabled = function() return not E.db.KlixUI.misc.whistleSound end,
+						set = function(info, value) E.db.KlixUI.misc.toggleSoundCustom = value end,
 					},
 					whistleSoundCustom = {
 						type = 'input',
@@ -141,12 +144,16 @@ local function Misc()
 						order = 13,
 						name = L["Transmog Remover Button"],
 						desc = L["Enable/Disable the transmog remover button in the transmogrify window."],
+						-- MoP Classic: WardrobeTransmogFrame.ModelScene (Retail's model-scene wardrobe UI) doesn't exist here.
+						disabled = function() return E.Mists end,
+						hidden = function() return E.Mists end,
 					},
 					leaderSound = {
 						order = 14,
 						type = "toggle",
 						name = L["Leader Change Sound"],
 						desc = L["Plays a sound when you become the group leader."],
+						set = function(info, value) E.db.KlixUI.misc.leaderSound = value end,
 					},
 					vehicleSeatMissing = {
 						order = 15,
@@ -269,11 +276,13 @@ local function Misc()
 								name = L["Companion Pet Name"],
 								width = "full",
 								set = function(info, value)
-									local speciesID = T.C_PetJournal_FindPetIDByName(value)
+									local speciesID = T.C_PetJournal_FindPetIDByName and T.C_PetJournal_FindPetIDByName(value)
 									if speciesID then
 										E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = value
-									else
+									elseif T.C_PetJournal_GetPetInfoByIndex then
 										E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = T.select(8, T.C_PetJournal_GetPetInfoByIndex(1))
+									else
+										E.db.KlixUI.misc.AFKPetModel[ info[#info] ] = value
 									end
 									E.db.KlixUI.misc.AFKPetModel.modelScale = 1 --Reset scale when new pet is set
 								end,
@@ -320,7 +329,9 @@ local function Misc()
 						type = "toggle",
 						name = L["Style"],
 						desc = L["Display the MerchantFrame in one window instead of a small one with variouse amount of pages."],
-						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant end,
+						-- MoP Classic: RebuildMerchantFrame() is skipped at runtime (merchant.lua) to avoid protected layout mutations.
+						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant or (not E.Retail and not E.TBC) end,
+						hidden = function() return not E.Retail and not E.TBC end,
 					},
 					subpages = {
 						order = 2,
@@ -328,19 +339,22 @@ local function Misc()
 						name = L["Subpages"],
 						desc = L["Subpages are blocks of 10 items. This option set how many of subpages will be shown on a single page."],
 						min = 2, max = 5, step = 1,
-						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant or E.db.KlixUI.misc.merchant.style ~= true end,
+						disabled = function() return not E.private.KlixUI.skins.blizzard.merchant or E.db.KlixUI.misc.merchant.style ~= true or (not E.Retail and not E.TBC) end,
+						hidden = function() return not E.Retail and not E.TBC end,
 					},
 					itemlevel = {
 						order = 3,
 						type = "toggle",
 						name = L["ItemLevel"],
 						desc = L["Display the item level on the MerchantFrame."],
+						set = function(info, value) E.db.KlixUI.misc.merchant.itemlevel = value end,
 					},
 					equipslot = {
 						order = 4,
 						type = "toggle",
 						name = L["EquipSlot"],
 						desc = L["Display the equip slot on the MerchantFrame."],
+						set = function(info, value) E.db.KlixUI.misc.merchant.equipslot = value end,
 					},
 				},
 			},
@@ -377,6 +391,7 @@ local function Misc()
 						name = L["Sound"],
 						desc =  L["Play a sound when bloodlust/heroism is popped."],
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.sound = value end,
 					},
 					text = {
 						order = 5,
@@ -384,12 +399,14 @@ local function Misc()
 						name = L["Text"],
 						desc =  L["Print a chat message of whom who popped bloodlust/heroism."],
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.text = value end,
 					},
 					faction = {
 						type = 'select',
 						order = 6,
 						name = L["Sound Type"],
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable or not E.db.KlixUI.misc.bloodlust.sound end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.faction = value end,
 						values = {
 							["HORDE"] = L["Horde"],
 							["ALLIANCE"] = L["Alliance"],
@@ -403,6 +420,7 @@ local function Misc()
 						name = L["Sound Override"],
 						desc =  L["Force to play even when other sounds are disabled."],
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable or not E.db.KlixUI.misc.bloodlust.sound end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.SoundOverride = value end,
 					},
 					UseCustomVolume = {
 						order = 8,
@@ -410,6 +428,7 @@ local function Misc()
 						name = L["Use Custom Volume"],
 						desc =  L["Use custom volume.\n|cffff8000Note: This will only work if 'Sound Override' is enabled.|r"],
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable or not E.db.KlixUI.misc.bloodlust.sound or not E.db.KlixUI.misc.bloodlust.SoundOverride end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.UseCustomVolume = value end,
 					},
 					CustomVolume = {
 						order = 9,
@@ -417,6 +436,7 @@ local function Misc()
 						name = L["Volume"],
 						min = 1, max = 100, step = 1,
 						disabled = function() return not E.db.KlixUI.misc.bloodlust.enable or not E.db.KlixUI.misc.bloodlust.sound or not E.db.KlixUI.misc.bloodlust.SoundOverride or not E.db.KlixUI.misc.bloodlust.UseCustomVolume end,
+						set = function(info, value) E.db.KlixUI.misc.bloodlust.CustomVolume = value end,
 					},
 					customSound = {
 						type = 'input',
@@ -552,6 +572,7 @@ local function Misc()
 						type = "toggle",
 						name = L["Auto Keystones"],
 						desc = L["Automatically insert keystones when you open the keystonewindow in a dungeon."],
+						set = function(info, value) E.db.KlixUI.misc.auto.keystones = value end,
 					},
 					gossip = {
 						order = 2,
@@ -564,6 +585,7 @@ local function Misc()
 						type = "toggle",
 						name = L["Auto Auction"],
 						desc = L["Shift + Right-Click to auto buy auctions at the auctionhouse."],
+						set = function(info, value) E.db.KlixUI.misc.auto.auction = value end,
 					},
 					skipAA = {
 						order = 4,
@@ -589,7 +611,7 @@ local function Misc()
 						type = "group",
 						name = L["Work Orders"],
 						get = function(info) return E.db.KlixUI.misc.auto.workorder[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.misc.auto.workorder[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.misc.auto.workorder[ info[#info] ] = value end,
 						args = {
 							intro = {
 								order = 1,
@@ -676,7 +698,7 @@ local function Misc()
 						type = "group",
 						name = L["Screenshot"],
 						get = function(info) return E.db.KlixUI.misc.auto.screenshot[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.misc.auto.screenshot[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.misc.auto.screenshot[ info[#info] ] = value end,
 						args = {
 							enable = {
 								order = 1,
@@ -714,7 +736,7 @@ local function Misc()
 						type = "group",
 						name = L["Role Check"],
 						get = function(info) return E.db.KlixUI.misc.auto.rolecheck[ info[#info] ] end,
-						set = function(info, value) E.db.KlixUI.misc.auto.rolecheck[ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+						set = function(info, value) E.db.KlixUI.misc.auto.rolecheck[ info[#info] ] = value end,
 						args = {
 							enable = {
 								order = 1,

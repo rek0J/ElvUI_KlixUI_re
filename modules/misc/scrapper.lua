@@ -2,7 +2,8 @@ local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local SCRAP = KUI:NewModule("Scrapper", "AceEvent-3.0", "AceHook-3.0")
 local S = E:GetModule('Skins')
 
-local itemLocation = itemLocation or _G.ItemLocation:CreateEmpty()
+-- MoP Classic: Scrapping Machine doesn't exist here; guard against a missing ItemLocation global at load time.
+local itemLocation = KUI.Features.ScrappingMachine and _G.ItemLocation and _G.ItemLocation:CreateEmpty()
 
 local function ItemPrint(text, ...)
 	if E.db.KlixUI.misc.scrapper.Itemprint then

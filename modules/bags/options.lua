@@ -33,6 +33,7 @@ local function BagTable()
 						type = "toggle",
 						name = L["Auto Open Containers"],
 						desc = L["Enable/disable the auto opening of container, treasure etc."],
+						set = function(info, value) E.private.KlixUI.bags.autoOpen = value end,
 					},
 				},
 			},

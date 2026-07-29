@@ -12,8 +12,8 @@ local function styleHekili()
 			_G["Hekili_AOE_B"..i]:CreateIconShadow()
 		end
 			
-		local shadowPrimary = _G["Hekili_Primary_B"..i].ishadow
-		local shadowAOE = _G["Hekili_AOE_B"..i].ishadow
+		local shadowPrimary = _G["Hekili_Primary_B"..i] and _G["Hekili_Primary_B"..i].ishadow
+		local shadowAOE = _G["Hekili_AOE_B"..i] and _G["Hekili_AOE_B"..i].ishadow
 		if shadowPrimary then
 			shadowPrimary:SetInside(_G["Hekili_Primary_B"..i], 0, 0)
 		end
@@ -29,8 +29,8 @@ local function styleHekili()
 		_G["HekiliDisplayDefensives"]:CreateIconShadow()
 	end
 		
-	local shadowInt = _G["HekiliDisplayInterrupts"].ishadow
-	local shadowDef = _G["HekiliDisplayDefensives"].ishadow
+	local shadowInt = _G["HekiliDisplayInterrupts"] and _G["HekiliDisplayInterrupts"].ishadow
+	local shadowDef = _G["HekiliDisplayDefensives"] and _G["HekiliDisplayDefensives"].ishadow
 	if shadowInt then
 		shadowInt:SetInside(_G["HekiliDisplayInterrupts"], 0, 0)
 	end

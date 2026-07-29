@@ -329,7 +329,7 @@
       "label": "KUI:RegisterModule()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L86",
+      "source_location": "L85",
       "id": "core_core_kui_registermodule",
       "community": 95,
       "norm_label": "kui:registermodule()"
@@ -338,7 +338,7 @@
       "label": "KUI:InitializeModules()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L97",
+      "source_location": "L96",
       "id": "core_core_kui_initializemodules",
       "community": 95,
       "norm_label": "kui:initializemodules()"
@@ -347,7 +347,7 @@
       "label": "KUI:AddOptions()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L108",
+      "source_location": "L107",
       "id": "core_core_kui_addoptions",
       "community": 95,
       "norm_label": "kui:addoptions()"
@@ -356,7 +356,7 @@
       "label": "KUI:DasOptions()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L114",
+      "source_location": "L113",
       "id": "core_core_kui_dasoptions",
       "community": 95,
       "norm_label": "kui:dasoptions()"
@@ -365,7 +365,7 @@
       "label": "KUI:ErrorOn()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L132",
+      "source_location": "L131",
       "id": "core_core_kui_erroron",
       "community": 95,
       "norm_label": "kui:erroron()"
@@ -374,7 +374,7 @@
       "label": "KUI:LoadCommands()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L149",
+      "source_location": "L148",
       "id": "core_core_kui_loadcommands",
       "community": 95,
       "norm_label": "kui:loadcommands()"
@@ -383,7 +383,7 @@
       "label": "KUI:Init()",
       "file_type": "code",
       "source_file": "core/core.lua",
-      "source_location": "L160",
+      "source_location": "L159",
       "id": "core_core_kui_init",
       "community": 95,
       "norm_label": "kui:init()"
@@ -1175,7 +1175,7 @@
       "label": "KUI:IsDeveloper()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L916",
+      "source_location": "L929",
       "id": "core_toolkit_kui_isdeveloper",
       "community": 2,
       "norm_label": "kui:isdeveloper()"
@@ -1184,7 +1184,7 @@
       "label": "KUI:IsDeveloperRealm()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L920",
+      "source_location": "L933",
       "id": "core_toolkit_kui_isdeveloperrealm",
       "community": 2,
       "norm_label": "kui:isdeveloperrealm()"
@@ -1193,7 +1193,7 @@
       "label": "KUI:Print()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L924",
+      "source_location": "L937",
       "id": "core_toolkit_kui_print",
       "community": 2,
       "norm_label": "kui:print()"
@@ -1202,7 +1202,7 @@
       "label": "KUI:PrintURL()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L928",
+      "source_location": "L941",
       "id": "core_toolkit_kui_printurl",
       "community": 2,
       "norm_label": "kui:printurl()"
@@ -1211,7 +1211,7 @@
       "label": "KUI:ErrorPrint()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L932",
+      "source_location": "L945",
       "id": "core_toolkit_kui_errorprint",
       "community": 2,
       "norm_label": "kui:errorprint()"
@@ -1220,7 +1220,7 @@
       "label": "KUI:DebugProtectedAction()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L945",
+      "source_location": "L958",
       "id": "core_toolkit_kui_debugprotectedaction",
       "community": 2,
       "norm_label": "kui:debugprotectedaction()"
@@ -1229,7 +1229,7 @@
       "label": "KUI:IsFrameSafe()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L950",
+      "source_location": "L963",
       "id": "core_toolkit_kui_isframesafe",
       "community": 2,
       "norm_label": "kui:isframesafe()"
@@ -1238,7 +1238,7 @@
       "label": "KUI:IsUnsafeUnitFrame()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L973",
+      "source_location": "L986",
       "id": "core_toolkit_kui_isunsafeunitframe",
       "community": 2,
       "norm_label": "kui:isunsafeunitframe()"
@@ -1247,7 +1247,7 @@
       "label": "DrainNextQueuedFunc()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L995",
+      "source_location": "L1008",
       "id": "core_toolkit_drainnextqueuedfunc",
       "community": 2,
       "norm_label": "drainnextqueuedfunc()"
@@ -1256,7 +1256,7 @@
       "label": "EnsureCombatQueueFrame()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1021",
+      "source_location": "L1034",
       "id": "core_toolkit_ensurecombatqueueframe",
       "community": 291,
       "norm_label": "ensurecombatqueueframe()"
@@ -1265,7 +1265,7 @@
       "label": "KUI:RunOutOfCombat()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1031",
+      "source_location": "L1044",
       "id": "core_toolkit_kui_runoutofcombat",
       "community": 291,
       "norm_label": "kui:runoutofcombat()"
@@ -1274,7 +1274,7 @@
       "label": "KUI:FlushCombatQueue()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1058",
+      "source_location": "L1071",
       "id": "core_toolkit_kui_flushcombatqueue",
       "community": 2,
       "norm_label": "kui:flushcombatqueue()"
@@ -1283,7 +1283,7 @@
       "label": "KUI:cOption()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1090",
+      "source_location": "L1103",
       "id": "core_toolkit_kui_coption",
       "community": 2,
       "norm_label": "kui:coption()"
@@ -1292,7 +1292,7 @@
       "label": "KUI:SplitList()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1095",
+      "source_location": "L1108",
       "id": "core_toolkit_kui_splitlist",
       "community": 2,
       "norm_label": "kui:splitlist()"
@@ -1301,7 +1301,7 @@
       "label": "KUI:MismatchText()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1103",
+      "source_location": "L1116",
       "id": "core_toolkit_kui_mismatchtext",
       "community": 2,
       "norm_label": "kui:mismatchtext()"
@@ -1310,7 +1310,7 @@
       "label": "KUI:RegisterKuiMedia()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1115",
+      "source_location": "L1128",
       "id": "core_toolkit_kui_registerkuimedia",
       "community": 2,
       "norm_label": "kui:registerkuimedia()"
@@ -1319,7 +1319,7 @@
       "label": "KUI:unpackColor()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1141",
+      "source_location": "L1154",
       "id": "core_toolkit_kui_unpackcolor",
       "community": 2,
       "norm_label": "kui:unpackcolor()"
@@ -1328,7 +1328,7 @@
       "label": "KUI:ClassColor()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1162",
+      "source_location": "L1175",
       "id": "core_toolkit_kui_classcolor",
       "community": 2,
       "norm_label": "kui:classcolor()"
@@ -1337,7 +1337,7 @@
       "label": "KUI:ClassColorCode()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1168",
+      "source_location": "L1181",
       "id": "core_toolkit_kui_classcolorcode",
       "community": 2,
       "norm_label": "kui:classcolorcode()"
@@ -1346,7 +1346,7 @@
       "label": "RGBToHex()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1199",
+      "source_location": "L1212",
       "id": "core_toolkit_rgbtohex",
       "community": 292,
       "norm_label": "rgbtohex()"
@@ -1355,7 +1355,7 @@
       "label": "KUI:ColorStr()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1207",
+      "source_location": "L1220",
       "id": "core_toolkit_kui_colorstr",
       "community": 292,
       "norm_label": "kui:colorstr()"
@@ -1364,7 +1364,7 @@
       "label": "KUI:SimpleTable()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1223",
+      "source_location": "L1236",
       "id": "core_toolkit_kui_simpletable",
       "community": 2,
       "norm_label": "kui:simpletable()"
@@ -1373,7 +1373,7 @@
       "label": "KUI:IsAddOnEnabled()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1250",
+      "source_location": "L1263",
       "id": "core_toolkit_kui_isaddonenabled",
       "community": 2,
       "norm_label": "kui:isaddonenabled()"
@@ -1382,7 +1382,7 @@
       "label": "KUI:IsAddOnPartiallyEnabled()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1257",
+      "source_location": "L1270",
       "id": "core_toolkit_kui_isaddonpartiallyenabled",
       "community": 2,
       "norm_label": "kui:isaddonpartiallyenabled()"
@@ -1391,7 +1391,7 @@
       "label": "KUI:PairsByKeys()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1264",
+      "source_location": "L1277",
       "id": "core_toolkit_kui_pairsbykeys",
       "community": 2,
       "norm_label": "kui:pairsbykeys()"
@@ -1400,7 +1400,7 @@
       "label": "KUI:SetMoverPosition()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1279",
+      "source_location": "L1292",
       "id": "core_toolkit_kui_setmoverposition",
       "community": 2,
       "norm_label": "kui:setmoverposition()"
@@ -1409,7 +1409,7 @@
       "label": "KUI:AddMoverCategories()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1288",
+      "source_location": "L1301",
       "id": "core_toolkit_kui_addmovercategories",
       "community": 2,
       "norm_label": "kui:addmovercategories()"
@@ -1418,7 +1418,7 @@
       "label": "KUI:Reset()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1294",
+      "source_location": "L1307",
       "id": "core_toolkit_kui_reset",
       "community": 2,
       "norm_label": "kui:reset()"
@@ -1427,7 +1427,7 @@
       "label": "KUI:GetMapInfo()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1304",
+      "source_location": "L1317",
       "id": "core_toolkit_kui_getmapinfo",
       "community": 2,
       "norm_label": "kui:getmapinfo()"
@@ -1436,7 +1436,7 @@
       "label": "KUI:SetupProfileCallbacks()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1313",
+      "source_location": "L1326",
       "id": "core_toolkit_kui_setupprofilecallbacks",
       "community": 2,
       "norm_label": "kui:setupprofilecallbacks()"
@@ -1445,7 +1445,7 @@
       "label": "KUI:UpdateRegisteredDBs()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1320",
+      "source_location": "L1333",
       "id": "core_toolkit_kui_updateregistereddbs",
       "community": 2,
       "norm_label": "kui:updateregistereddbs()"
@@ -1454,7 +1454,7 @@
       "label": "KUI:UpdateRegisteredDB()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1332",
+      "source_location": "L1345",
       "id": "core_toolkit_kui_updateregistereddb",
       "community": 2,
       "norm_label": "kui:updateregistereddb()"
@@ -1463,7 +1463,7 @@
       "label": "KUI:RegisterDB()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1341",
+      "source_location": "L1354",
       "id": "core_toolkit_kui_registerdb",
       "community": 2,
       "norm_label": "kui:registerdb()"
@@ -1472,7 +1472,7 @@
       "label": "KUI:UpdateAll()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1349",
+      "source_location": "L1362",
       "id": "core_toolkit_kui_updateall",
       "community": 2,
       "norm_label": "kui:updateall()"
@@ -1481,7 +1481,7 @@
       "label": "MovableButton_Match()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1359",
+      "source_location": "L1372",
       "id": "core_toolkit_movablebutton_match",
       "community": 293,
       "norm_label": "movablebutton_match()"
@@ -1490,7 +1490,7 @@
       "label": "KUI:MovableButtonSettings()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1363",
+      "source_location": "L1376",
       "id": "core_toolkit_kui_movablebuttonsettings",
       "community": 293,
       "norm_label": "kui:movablebuttonsettings()"
@@ -1499,7 +1499,7 @@
       "label": "KUI:CreateMovableButtons()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1386",
+      "source_location": "L1399",
       "id": "core_toolkit_kui_createmovablebuttons",
       "community": 2,
       "norm_label": "kui:createmovablebuttons()"
@@ -1508,7 +1508,7 @@
       "label": "KUI:CreateText()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1440",
+      "source_location": "L1453",
       "id": "core_toolkit_kui_createtext",
       "community": 2,
       "norm_label": "kui:createtext()"
@@ -1517,7 +1517,7 @@
       "label": "KUI:GetItemLevel()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1452",
+      "source_location": "L1465",
       "id": "core_toolkit_kui_getitemlevel",
       "community": 2,
       "norm_label": "kui:getitemlevel()"
@@ -1526,7 +1526,7 @@
       "label": "KUI:GetIconFromID()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1476",
+      "source_location": "L1489",
       "id": "core_toolkit_kui_geticonfromid",
       "community": 2,
       "norm_label": "kui:geticonfromid()"
@@ -1535,7 +1535,7 @@
       "label": "KUI:BagSearch()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1488",
+      "source_location": "L1501",
       "id": "core_toolkit_kui_bagsearch",
       "community": 2,
       "norm_label": "kui:bagsearch()"
@@ -1544,7 +1544,7 @@
       "label": "dir()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1500",
+      "source_location": "L1513",
       "id": "core_toolkit_dir",
       "community": 2,
       "norm_label": "dir()"
@@ -1553,7 +1553,7 @@
       "label": "table.length()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1507",
+      "source_location": "L1520",
       "id": "core_toolkit_table_length",
       "community": 32,
       "norm_label": "table.length()"
@@ -1562,7 +1562,7 @@
       "label": "KUI:UpdateSoftGlowColor()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1516",
+      "source_location": "L1529",
       "id": "core_toolkit_kui_updatesoftglowcolor",
       "community": 2,
       "norm_label": "kui:updatesoftglowcolor()"
@@ -1571,7 +1571,7 @@
       "label": "KUI:CreatePulse()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1532",
+      "source_location": "L1545",
       "id": "core_toolkit_kui_createpulse",
       "community": 2,
       "norm_label": "kui:createpulse()"
@@ -1580,7 +1580,7 @@
       "label": "KUI:GetRoleTexCoord()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1564",
+      "source_location": "L1577",
       "id": "core_toolkit_kui_getroletexcoord",
       "community": 2,
       "norm_label": "kui:getroletexcoord()"
@@ -1589,7 +1589,7 @@
       "label": "KUI:ReskinRole()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1582",
+      "source_location": "L1595",
       "id": "core_toolkit_kui_reskinrole",
       "community": 2,
       "norm_label": "kui:reskinrole()"
@@ -1598,7 +1598,7 @@
       "label": "CreateWideShadow()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1609",
+      "source_location": "L1622",
       "id": "core_toolkit_createwideshadow",
       "community": 2,
       "norm_label": "createwideshadow()"
@@ -1607,7 +1607,7 @@
       "label": "CreateSoftShadow()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1627",
+      "source_location": "L1640",
       "id": "core_toolkit_createsoftshadow",
       "community": 2,
       "norm_label": "createsoftshadow()"
@@ -1616,7 +1616,7 @@
       "label": "CreateSoftGlow()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1644",
+      "source_location": "L1657",
       "id": "core_toolkit_createsoftglow",
       "community": 2,
       "norm_label": "createsoftglow()"
@@ -1625,7 +1625,7 @@
       "label": "CreateIconShadow()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1665",
+      "source_location": "L1678",
       "id": "core_toolkit_createiconshadow",
       "community": 2,
       "norm_label": "createiconshadow()"
@@ -1634,7 +1634,7 @@
       "label": "Styling()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1682",
+      "source_location": "L1695",
       "id": "core_toolkit_styling",
       "community": 2,
       "norm_label": "styling()"
@@ -1643,7 +1643,7 @@
       "label": "addapi()",
       "file_type": "code",
       "source_file": "core/toolkit.lua",
-      "source_location": "L1731",
+      "source_location": "L1744",
       "id": "core_toolkit_addapi",
       "community": 2,
       "norm_label": "addapi()"
@@ -2660,7 +2660,7 @@
       "label": "worldmapProvider:RemoveAllData()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L373",
+      "source_location": "L377",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapprovider_removealldata",
       "community": 13,
       "norm_label": "worldmapprovider:removealldata()"
@@ -2669,7 +2669,7 @@
       "label": "worldmapProvider:RemovePinByIcon()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L377",
+      "source_location": "L381",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapprovider_removepinbyicon",
       "community": 13,
       "norm_label": "worldmapprovider:removepinbyicon()"
@@ -2678,7 +2678,7 @@
       "label": "worldmapProvider:RemovePinsByRef()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L385",
+      "source_location": "L389",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapprovider_removepinsbyref",
       "community": 13,
       "norm_label": "worldmapprovider:removepinsbyref()"
@@ -2687,7 +2687,7 @@
       "label": "worldmapProvider:RefreshAllData()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L393",
+      "source_location": "L397",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapprovider_refreshalldata",
       "community": 13,
       "norm_label": "worldmapprovider:refreshalldata()"
@@ -2696,7 +2696,7 @@
       "label": "worldmapProvider:HandlePin()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L401",
+      "source_location": "L405",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapprovider_handlepin",
       "community": 13,
       "norm_label": "worldmapprovider:handlepin()"
@@ -2705,7 +2705,7 @@
       "label": "worldmapProviderPin:OnLoad()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L462",
+      "source_location": "L466",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapproviderpin_onload",
       "community": 13,
       "norm_label": "worldmapproviderpin:onload()"
@@ -2714,7 +2714,7 @@
       "label": "worldmapProviderPin:OnAcquired()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L467",
+      "source_location": "L471",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapproviderpin_onacquired",
       "community": 13,
       "norm_label": "worldmapproviderpin:onacquired()"
@@ -2723,7 +2723,7 @@
       "label": "worldmapProviderPin:OnReleased()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L478",
+      "source_location": "L482",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_worldmapproviderpin_onreleased",
       "community": 13,
       "norm_label": "worldmapproviderpin:onreleased()"
@@ -2732,7 +2732,7 @@
       "label": "UpdateMinimap()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L494",
+      "source_location": "L498",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_updateminimap",
       "community": 13,
       "norm_label": "updateminimap()"
@@ -2741,7 +2741,7 @@
       "label": "UpdateWorldMap()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L499",
+      "source_location": "L503",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_updateworldmap",
       "community": 13,
       "norm_label": "updateworldmap()"
@@ -2750,7 +2750,7 @@
       "label": "OnUpdateHandler()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L504",
+      "source_location": "L508",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_onupdatehandler",
       "community": 13,
       "norm_label": "onupdatehandler()"
@@ -2759,7 +2759,7 @@
       "label": "OnEventHandler()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L521",
+      "source_location": "L525",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_oneventhandler",
       "community": 13,
       "norm_label": "oneventhandler()"
@@ -2768,7 +2768,7 @@
       "label": "pins:AddMinimapIconWorld()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L557",
+      "source_location": "L561",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_addminimapiconworld",
       "community": 13,
       "norm_label": "pins:addminimapiconworld()"
@@ -2777,7 +2777,7 @@
       "label": "pins:AddMinimapIconMap()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L597",
+      "source_location": "L601",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_addminimapiconmap",
       "community": 13,
       "norm_label": "pins:addminimapiconmap()"
@@ -2786,7 +2786,7 @@
       "label": "pins:IsMinimapIconOnEdge()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L621",
+      "source_location": "L625",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_isminimapicononedge",
       "community": 13,
       "norm_label": "pins:isminimapicononedge()"
@@ -2795,7 +2795,7 @@
       "label": "pins:RemoveMinimapIcon()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L632",
+      "source_location": "L636",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_removeminimapicon",
       "community": 13,
       "norm_label": "pins:removeminimapicon()"
@@ -2804,7 +2804,7 @@
       "label": "pins:RemoveAllMinimapIcons()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L645",
+      "source_location": "L649",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_removeallminimapicons",
       "community": 13,
       "norm_label": "pins:removeallminimapicons()"
@@ -2813,7 +2813,7 @@
       "label": "pins:SetMinimapObject()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L658",
+      "source_location": "L662",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_setminimapobject",
       "community": 13,
       "norm_label": "pins:setminimapobject()"
@@ -2822,7 +2822,7 @@
       "label": "pins:AddWorldMapIconWorld()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L683",
+      "source_location": "L687",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_addworldmapiconworld",
       "community": 13,
       "norm_label": "pins:addworldmapiconworld()"
@@ -2831,7 +2831,7 @@
       "label": "pins:AddWorldMapIconMap()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L724",
+      "source_location": "L728",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_addworldmapiconmap",
       "community": 13,
       "norm_label": "pins:addworldmapiconmap()"
@@ -2840,7 +2840,7 @@
       "label": "pins:RemoveWorldMapIcon()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L764",
+      "source_location": "L768",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_removeworldmapicon",
       "community": 13,
       "norm_label": "pins:removeworldmapicon()"
@@ -2849,7 +2849,7 @@
       "label": "pins:RemoveAllWorldMapIcons()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L776",
+      "source_location": "L780",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_removeallworldmapicons",
       "community": 13,
       "norm_label": "pins:removeallworldmapicons()"
@@ -2858,7 +2858,7 @@
       "label": "pins:GetVectorToIcon()",
       "file_type": "code",
       "source_file": "libs/HereBeDragons/HereBeDragons-Pins-2.0.lua",
-      "source_location": "L789",
+      "source_location": "L793",
       "id": "libs_herebedragons_herebedragons_pins_2_0_lua_herebedragons_herebedragons_pins_2_0_pins_getvectortoicon",
       "community": 13,
       "norm_label": "pins:getvectortoicon()"
@@ -5002,7 +5002,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L1",
       "id": "libs_librealminfo_librealminfo_lua",
-      "community": 79,
+      "community": 30,
       "norm_label": "librealminfo.lua"
     },
     {
@@ -5011,7 +5011,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L20",
       "id": "librealminfo_librealminfo_debug",
-      "community": 79,
+      "community": 30,
       "norm_label": "debug()"
     },
     {
@@ -5020,7 +5020,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L26",
       "id": "librealminfo_librealminfo_shallowcopy",
-      "community": 79,
+      "community": 30,
       "norm_label": "shallowcopy()"
     },
     {
@@ -5029,7 +5029,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L36",
       "id": "librealminfo_librealminfo_getnameforapi",
-      "community": 79,
+      "community": 30,
       "norm_label": "getnameforapi()"
     },
     {
@@ -5038,7 +5038,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L44",
       "id": "librealminfo_librealminfo_lib_getcurrentregion",
-      "community": 79,
+      "community": 30,
       "norm_label": "lib:getcurrentregion()"
     },
     {
@@ -5047,7 +5047,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L70",
       "id": "librealminfo_librealminfo_lib_getrealminfo",
-      "community": 79,
+      "community": 30,
       "norm_label": "lib:getrealminfo()"
     },
     {
@@ -5056,7 +5056,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L100",
       "id": "librealminfo_librealminfo_lib_getrealminfobyid",
-      "community": 79,
+      "community": 30,
       "norm_label": "lib:getrealminfobyid()"
     },
     {
@@ -5065,7 +5065,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L119",
       "id": "librealminfo_librealminfo_lib_getrealminfobyguid",
-      "community": 79,
+      "community": 30,
       "norm_label": "lib:getrealminfobyguid()"
     },
     {
@@ -5074,7 +5074,7 @@
       "source_file": "libs/LibRealmInfo/LibRealmInfo.lua",
       "source_location": "L133",
       "id": "librealminfo_librealminfo_lib_getrealminfobyunit",
-      "community": 79,
+      "community": 30,
       "norm_label": "lib:getrealminfobyunit()"
     },
     {
@@ -10247,7 +10247,7 @@
       "label": "AutoButtonApplyAttributes()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L219",
+      "source_location": "L217",
       "id": "actionbars_autobuttons_autobuttonapplyattributes",
       "community": 36,
       "norm_label": "autobuttonapplyattributes()"
@@ -10256,7 +10256,7 @@
       "label": "AutoButtonShow()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L292",
+      "source_location": "L263",
       "id": "actionbars_autobuttons_autobuttonshow",
       "community": 36,
       "norm_label": "autobuttonshow()"
@@ -10265,7 +10265,7 @@
       "label": "CreateButton()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L337",
+      "source_location": "L308",
       "id": "actionbars_autobuttons_createbutton",
       "community": 36,
       "norm_label": "createbutton()"
@@ -10274,7 +10274,7 @@
       "label": "ABS:ScanItem()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L440",
+      "source_location": "L432",
       "id": "actionbars_autobuttons_abs_scanitem",
       "community": 36,
       "norm_label": "abs:scanitem()"
@@ -10283,7 +10283,7 @@
       "label": "ABS:ScanItemCount()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L637",
+      "source_location": "L629",
       "id": "actionbars_autobuttons_abs_scanitemcount",
       "community": 36,
       "norm_label": "abs:scanitemcount()"
@@ -10292,7 +10292,7 @@
       "label": "ABS:UpdateBind()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L661",
+      "source_location": "L653",
       "id": "actionbars_autobuttons_abs_updatebind",
       "community": 36,
       "norm_label": "abs:updatebind()"
@@ -10301,7 +10301,7 @@
       "label": "ABS:ToggleAutoButton()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L699",
+      "source_location": "L691",
       "id": "actionbars_autobuttons_abs_toggleautobutton",
       "community": 36,
       "norm_label": "abs:toggleautobutton()"
@@ -10310,7 +10310,7 @@
       "label": "ABS:UpdateAutoButton()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L734",
+      "source_location": "L726",
       "id": "actionbars_autobuttons_abs_updateautobutton",
       "community": 36,
       "norm_label": "abs:updateautobutton()"
@@ -10319,7 +10319,7 @@
       "label": "ABS:Initialize()",
       "file_type": "code",
       "source_file": "modules/actionbars/autoButtons.lua",
-      "source_location": "L800",
+      "source_location": "L792",
       "id": "actionbars_autobuttons_abs_initialize",
       "community": 36,
       "norm_label": "abs:initialize()"
@@ -10508,7 +10508,7 @@
       "label": "SEB:UpdateVisibility()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L396",
+      "source_location": "L399",
       "id": "actionbars_specandequipbar_seb_updatevisibility",
       "community": 66,
       "norm_label": "seb:updatevisibility()"
@@ -10517,7 +10517,7 @@
       "label": "SEB:IsManuallyHidden()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L447",
+      "source_location": "L450",
       "id": "actionbars_specandequipbar_seb_ismanuallyhidden",
       "community": 66,
       "norm_label": "seb:ismanuallyhidden()"
@@ -10526,7 +10526,7 @@
       "label": "SEB:PLAYER_REGEN_ENABLED()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L450",
+      "source_location": "L453",
       "id": "actionbars_specandequipbar_seb_player_regen_enabled",
       "community": 66,
       "norm_label": "seb:player_regen_enabled()"
@@ -10535,7 +10535,7 @@
       "label": "SEB:PLAYER_REGEN_DISABLED()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L454",
+      "source_location": "L457",
       "id": "actionbars_specandequipbar_seb_player_regen_disabled",
       "community": 66,
       "norm_label": "seb:player_regen_disabled()"
@@ -10544,7 +10544,7 @@
       "label": "SEB:UNIT_AURA()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L458",
+      "source_location": "L461",
       "id": "actionbars_specandequipbar_seb_unit_aura",
       "community": 66,
       "norm_label": "seb:unit_aura()"
@@ -10553,7 +10553,7 @@
       "label": "SEB:Initialize()",
       "file_type": "code",
       "source_file": "modules/actionbars/specandequipBar.lua",
-      "source_location": "L501",
+      "source_location": "L504",
       "id": "actionbars_specandequipbar_seb_initialize",
       "community": 66,
       "norm_label": "seb:initialize()"
@@ -11309,7 +11309,7 @@
       "label": "injectElvUIArmoryOptions()",
       "file_type": "code",
       "source_file": "modules/armory/options.lua",
-      "source_location": "L731",
+      "source_location": "L733",
       "id": "armory_options_injectelvuiarmoryoptions",
       "community": 145,
       "norm_label": "injectelvuiarmoryoptions()"
@@ -11867,7 +11867,7 @@
       "label": "IS:OverrideVendorGrays()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L443",
+      "source_location": "L448",
       "id": "bags_itemselect_is_overridevendorgrays",
       "community": 46,
       "norm_label": "is:overridevendorgrays()"
@@ -11876,7 +11876,7 @@
       "label": "IS:ProcessFrameUpdate()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L451",
+      "source_location": "L456",
       "id": "bags_itemselect_is_processframeupdate",
       "community": 46,
       "norm_label": "is:processframeupdate()"
@@ -11885,7 +11885,7 @@
       "label": "IS:ProcessSelected()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L475",
+      "source_location": "L480",
       "id": "bags_itemselect_is_processselected",
       "community": 46,
       "norm_label": "is:processselected()"
@@ -11894,7 +11894,7 @@
       "label": "IS:Reset()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L488",
+      "source_location": "L493",
       "id": "bags_itemselect_is_reset",
       "community": 46,
       "norm_label": "is:reset()"
@@ -11903,7 +11903,7 @@
       "label": "IS:ShowProcessFrame()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L513",
+      "source_location": "L518",
       "id": "bags_itemselect_is_showprocessframe",
       "community": 46,
       "norm_label": "is:showprocessframe()"
@@ -11912,7 +11912,7 @@
       "label": "IS:ToggleSelect()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L546",
+      "source_location": "L551",
       "id": "bags_itemselect_is_toggleselect",
       "community": 46,
       "norm_label": "is:toggleselect()"
@@ -11921,7 +11921,7 @@
       "label": "IS:Initialize()",
       "file_type": "code",
       "source_file": "modules/bags/itemselect.lua",
-      "source_location": "L568",
+      "source_location": "L573",
       "id": "bags_itemselect_is_initialize",
       "community": 46,
       "norm_label": "is:initialize()"
@@ -13160,10 +13160,19 @@
       "norm_label": "sortbyexpiration()"
     },
     {
+      "label": "GetChargeInfo()",
+      "file_type": "code",
+      "source_file": "modules/cooldowns/raidCD.lua",
+      "source_location": "L123",
+      "id": "cooldowns_raidcd_getchargeinfo",
+      "community": 189,
+      "norm_label": "getchargeinfo()"
+    },
+    {
       "label": "RC:Initialize()",
       "file_type": "code",
       "source_file": "modules/cooldowns/raidCD.lua",
-      "source_location": "L360",
+      "source_location": "L372",
       "id": "cooldowns_raidcd_rc_initialize",
       "community": 189,
       "norm_label": "rc:initialize()"
@@ -13703,7 +13712,7 @@
       "label": "injectElvUIDataTextsOptions()",
       "file_type": "code",
       "source_file": "modules/datatexts/options.lua",
-      "source_location": "L264",
+      "source_location": "L265",
       "id": "datatexts_options_injectelvuidatatextsoptions",
       "community": 211,
       "norm_label": "injectelvuidatatextsoptions()"
@@ -16079,7 +16088,7 @@
       "label": "InjectElvUIMapsOptions()",
       "file_type": "code",
       "source_file": "modules/maps/options.lua",
-      "source_location": "L910",
+      "source_location": "L919",
       "id": "maps_options_injectelvuimapsoptions",
       "community": 81,
       "norm_label": "injectelvuimapsoptions()"
@@ -16088,7 +16097,7 @@
       "label": "injectElvUIDataTextsOptions()",
       "file_type": "code",
       "source_file": "modules/maps/options.lua",
-      "source_location": "L922",
+      "source_location": "L931",
       "id": "maps_options_injectelvuidatatextsoptions",
       "community": 81,
       "norm_label": "injectelvuidatatextsoptions()"
@@ -17177,7 +17186,7 @@
       "label": "CSP:Message()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L33",
+      "source_location": "L36",
       "id": "misc_confirmsp_csp_message",
       "community": 108,
       "norm_label": "csp:message()"
@@ -17186,7 +17195,7 @@
       "label": "CSP:BackTimer()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L37",
+      "source_location": "L40",
       "id": "misc_confirmsp_csp_backtimer",
       "community": 108,
       "norm_label": "csp:backtimer()"
@@ -17195,7 +17204,7 @@
       "label": "__genOrderedIndex()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L72",
+      "source_location": "L75",
       "id": "misc_confirmsp_genorderedindex",
       "community": 108,
       "norm_label": "__genorderedindex()"
@@ -17204,7 +17213,7 @@
       "label": "orderedNext()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L79",
+      "source_location": "L82",
       "id": "misc_confirmsp_orderednext",
       "community": 108,
       "norm_label": "orderednext()"
@@ -17213,7 +17222,7 @@
       "label": "CSP:orderedPairs()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L98",
+      "source_location": "L101",
       "id": "misc_confirmsp_csp_orderedpairs",
       "community": 108,
       "norm_label": "csp:orderedpairs()"
@@ -17222,7 +17231,7 @@
       "label": "CSP:Initialize()",
       "file_type": "code",
       "source_file": "modules/misc/confirmSP.lua",
-      "source_location": "L102",
+      "source_location": "L105",
       "id": "misc_confirmsp_csp_initialize",
       "community": 108,
       "norm_label": "csp:initialize()"
@@ -17987,7 +17996,7 @@
       "label": "ItemPrint()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L7",
+      "source_location": "L8",
       "id": "misc_scrapper_itemprint",
       "community": 59,
       "norm_label": "itemprint()"
@@ -17996,7 +18005,7 @@
       "label": "PositionScrapButton()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L13",
+      "source_location": "L14",
       "id": "misc_scrapper_positionscrapbutton",
       "community": 59,
       "norm_label": "positionscrapbutton()"
@@ -18005,7 +18014,7 @@
       "label": "CreateEmptyTooltip()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "misc_scrapper_createemptytooltip",
       "community": 59,
       "norm_label": "createemptytooltip()"
@@ -18014,7 +18023,7 @@
       "label": "ItemLvlComparison()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L42",
+      "source_location": "L43",
       "id": "misc_scrapper_itemlvlcomparison",
       "community": 59,
       "norm_label": "itemlvlcomparison()"
@@ -18023,7 +18032,7 @@
       "label": "IsPartOfEquipmentSet()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L69",
+      "source_location": "L70",
       "id": "misc_scrapper_ispartofequipmentset",
       "community": 59,
       "norm_label": "ispartofequipmentset()"
@@ -18032,7 +18041,7 @@
       "label": "IsAzeriteItem()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L78",
+      "source_location": "L79",
       "id": "misc_scrapper_isazeriteitem",
       "community": 59,
       "norm_label": "isazeriteitem()"
@@ -18041,7 +18050,7 @@
       "label": "ReadTooltip()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L90",
+      "source_location": "L91",
       "id": "misc_scrapper_readtooltip",
       "community": 59,
       "norm_label": "readtooltip()"
@@ -18050,7 +18059,7 @@
       "label": "ShouldInsert()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L125",
+      "source_location": "L126",
       "id": "misc_scrapper_shouldinsert",
       "community": 59,
       "norm_label": "shouldinsert()"
@@ -18059,7 +18068,7 @@
       "label": "InsertScrapItems()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L143",
+      "source_location": "L144",
       "id": "misc_scrapper_insertscrapitems",
       "community": 59,
       "norm_label": "insertscrapitems()"
@@ -18068,7 +18077,7 @@
       "label": "ScrappingMachineUpdate()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L180",
+      "source_location": "L181",
       "id": "misc_scrapper_scrappingmachineupdate",
       "community": 59,
       "norm_label": "scrappingmachineupdate()"
@@ -18077,7 +18086,7 @@
       "label": "ScrappingiLvL()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L199",
+      "source_location": "L200",
       "id": "misc_scrapper_scrappingilvl",
       "community": 59,
       "norm_label": "scrappingilvl()"
@@ -18086,7 +18095,7 @@
       "label": "SCRAP:Initialize()",
       "file_type": "code",
       "source_file": "modules/misc/scrapper.lua",
-      "source_location": "L213",
+      "source_location": "L214",
       "id": "misc_scrapper_scrap_initialize",
       "community": 59,
       "norm_label": "scrap:initialize()"
@@ -18644,7 +18653,7 @@
       "label": "OP:Initialize()",
       "file_type": "code",
       "source_file": "modules/quest/objectiveprogress.lua",
-      "source_location": "L31",
+      "source_location": "L36",
       "id": "quest_objectiveprogress_op_initialize",
       "community": 214,
       "norm_label": "op:initialize()"
@@ -19172,10 +19181,19 @@
       "norm_label": "options.lua"
     },
     {
+      "label": "ItemSlotGroup()",
+      "file_type": "code",
+      "source_file": "modules/reminder/options.lua",
+      "source_location": "L9",
+      "id": "reminder_options_itemslotgroup",
+      "community": 311,
+      "norm_label": "itemslotgroup()"
+    },
+    {
       "label": "Reminder()",
       "file_type": "code",
       "source_file": "modules/reminder/options.lua",
-      "source_location": "L7",
+      "source_location": "L31",
       "id": "reminder_options_reminder",
       "community": 311,
       "norm_label": "reminder()"
@@ -19190,10 +19208,19 @@
       "norm_label": "raid.lua"
     },
     {
+      "label": "PickAvailableItem()",
+      "file_type": "code",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L48",
+      "id": "reminder_raid_pickavailableitem",
+      "community": 124,
+      "norm_label": "pickavailableitem()"
+    },
+    {
       "label": "PlayerHasAura()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L80",
+      "source_location": "L70",
       "id": "reminder_raid_playerhasaura",
       "community": 124,
       "norm_label": "playerhasaura()"
@@ -19202,7 +19229,7 @@
       "label": "SpellIcon()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L100",
+      "source_location": "L90",
       "id": "reminder_raid_spellicon",
       "community": 124,
       "norm_label": "spellicon()"
@@ -19211,7 +19238,7 @@
       "label": "ApplyBuffState()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L109",
+      "source_location": "L99",
       "id": "reminder_raid_applybuffstate",
       "community": 124,
       "norm_label": "applybuffstate()"
@@ -19220,16 +19247,25 @@
       "label": "CheckBuffList()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L121",
+      "source_location": "L111",
       "id": "reminder_raid_checkbufflist",
       "community": 124,
       "norm_label": "checkbufflist()"
     },
     {
+      "label": "CheckFoodBuff()",
+      "file_type": "code",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L125",
+      "id": "reminder_raid_checkfoodbuff",
+      "community": 124,
+      "norm_label": "checkfoodbuff()"
+    },
+    {
       "label": "OnAuraChange()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L133",
+      "source_location": "L149",
       "id": "reminder_raid_onaurachange",
       "community": 124,
       "norm_label": "onaurachange()"
@@ -19238,7 +19274,7 @@
       "label": "KRR:CreateIconBuff()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L147",
+      "source_location": "L176",
       "id": "reminder_raid_krr_createiconbuff",
       "community": 124,
       "norm_label": "krr:createiconbuff()"
@@ -19247,7 +19283,7 @@
       "label": "KRR:Visibility()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L172",
+      "source_location": "L202",
       "id": "reminder_raid_krr_visibility",
       "community": 124,
       "norm_label": "krr:visibility()"
@@ -19256,7 +19292,7 @@
       "label": "KRR:Backdrop()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L183",
+      "source_location": "L213",
       "id": "reminder_raid_krr_backdrop",
       "community": 124,
       "norm_label": "krr:backdrop()"
@@ -19265,10 +19301,19 @@
       "label": "KRR:Initialize()",
       "file_type": "code",
       "source_file": "modules/reminder/raid.lua",
-      "source_location": "L192",
+      "source_location": "L222",
       "id": "reminder_raid_krr_initialize",
       "community": 124,
       "norm_label": "krr:initialize()"
+    },
+    {
+      "label": "KRR:UpdateClickActions()",
+      "file_type": "code",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L282",
+      "id": "reminder_raid_krr_updateclickactions",
+      "community": 124,
+      "norm_label": "krr:updateclickactions()"
     },
     {
       "label": "solo.lua",
@@ -19289,10 +19334,19 @@
       "norm_label": "offhandhasweapon()"
     },
     {
+      "label": "GetAuraBySpellID()",
+      "file_type": "code",
+      "source_file": "modules/reminder/solo.lua",
+      "source_location": "L27",
+      "id": "reminder_solo_getaurabyspellid",
+      "community": 75,
+      "norm_label": "getaurabyspellid()"
+    },
+    {
       "label": "KSR:PlayerHasFilteredBuff()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L25",
+      "source_location": "L44",
       "id": "reminder_solo_ksr_playerhasfilteredbuff",
       "community": 75,
       "norm_label": "ksr:playerhasfilteredbuff()"
@@ -19301,7 +19355,7 @@
       "label": "KSR:PlayerHasFilteredDebuff()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L46",
+      "source_location": "L60",
       "id": "reminder_solo_ksr_playerhasfiltereddebuff",
       "community": 75,
       "norm_label": "ksr:playerhasfiltereddebuff()"
@@ -19310,7 +19364,7 @@
       "label": "KSR:CanSpellBeUsed()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L61",
+      "source_location": "L71",
       "id": "reminder_solo_ksr_canspellbeused",
       "community": 75,
       "norm_label": "ksr:canspellbeused()"
@@ -19319,7 +19373,7 @@
       "label": "KSR:ReminderIcon_OnUpdate()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L73",
+      "source_location": "L83",
       "id": "reminder_solo_ksr_remindericon_onupdate",
       "community": 75,
       "norm_label": "ksr:remindericon_onupdate()"
@@ -19328,7 +19382,7 @@
       "label": "KSR:FilterCheck()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L126",
+      "source_location": "L136",
       "id": "reminder_solo_ksr_filtercheck",
       "community": 75,
       "norm_label": "ksr:filtercheck()"
@@ -19337,7 +19391,7 @@
       "label": "KSR:ReminderIcon_OnEvent()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L188",
+      "source_location": "L198",
       "id": "reminder_solo_ksr_remindericon_onevent",
       "community": 75,
       "norm_label": "ksr:remindericon_onevent()"
@@ -19346,7 +19400,7 @@
       "label": "KSR:CreateReminder()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L354",
+      "source_location": "L364",
       "id": "reminder_solo_ksr_createreminder",
       "community": 75,
       "norm_label": "ksr:createreminder()"
@@ -19355,7 +19409,7 @@
       "label": "KSR:CheckForNewReminders()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L396",
+      "source_location": "L406",
       "id": "reminder_solo_ksr_checkfornewreminders",
       "community": 75,
       "norm_label": "ksr:checkfornewreminders()"
@@ -19364,7 +19418,7 @@
       "label": "KSR:Initialize()",
       "file_type": "code",
       "source_file": "modules/reminder/solo.lua",
-      "source_location": "L407",
+      "source_location": "L417",
       "id": "reminder_solo_ksr_initialize",
       "community": 75,
       "norm_label": "ksr:initialize()"
@@ -19375,7 +19429,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L1",
       "id": "modules_skins_elvui_optionsui_lua",
-      "community": 30,
+      "community": 79,
       "norm_label": "elvui_optionsui.lua"
     },
     {
@@ -19384,7 +19438,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L5",
       "id": "skins_elvui_optionsui_styleelvuiconfig",
-      "community": 30,
+      "community": 79,
       "norm_label": "styleelvuiconfig()"
     },
     {
@@ -19393,7 +19447,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L23",
       "id": "skins_elvui_optionsui_styleelvuiinstall",
-      "community": 30,
+      "community": 79,
       "norm_label": "styleelvuiinstall()"
     },
     {
@@ -19402,7 +19456,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L33",
       "id": "skins_elvui_optionsui_plugininstaller",
-      "community": 30,
+      "community": 79,
       "norm_label": "plugininstaller()"
     },
     {
@@ -19411,7 +19465,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L40",
       "id": "skins_elvui_optionsui_styleace3tooltip",
-      "community": 30,
+      "community": 79,
       "norm_label": "styleace3tooltip()"
     },
     {
@@ -19420,7 +19474,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L46",
       "id": "skins_elvui_optionsui_style_createseparatorline",
-      "community": 30,
+      "community": 79,
       "norm_label": "style_createseparatorline()"
     },
     {
@@ -19429,7 +19483,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L58",
       "id": "skins_elvui_optionsui_style_setbuttoncolor",
-      "community": 30,
+      "community": 79,
       "norm_label": "style_setbuttoncolor()"
     },
     {
@@ -19438,7 +19492,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L75",
       "id": "skins_elvui_optionsui_style_ace3tabselected",
-      "community": 30,
+      "community": 79,
       "norm_label": "style_ace3tabselected()"
     },
     {
@@ -19447,7 +19501,7 @@
       "source_file": "modules/skins/ElvUI_OptionsUI.lua",
       "source_location": "L89",
       "id": "skins_elvui_optionsui_ks_styleelvuiconfig",
-      "community": 30,
+      "community": 79,
       "norm_label": "ks:styleelvuiconfig()"
     },
     {
@@ -21749,7 +21803,7 @@
       "label": "RemoveParchment()",
       "file_type": "code",
       "source_file": "modules/skins/blizzard/questframe.lua",
-      "source_location": "L27",
+      "source_location": "L31",
       "id": "blizzard_questframe_removeparchment",
       "community": 149,
       "norm_label": "removeparchment()"
@@ -21758,7 +21812,7 @@
       "label": "styleQuestFrame()",
       "file_type": "code",
       "source_file": "modules/skins/blizzard/questframe.lua",
-      "source_location": "L37",
+      "source_location": "L41",
       "id": "blizzard_questframe_stylequestframe",
       "community": 149,
       "norm_label": "stylequestframe()"
@@ -22723,7 +22777,7 @@
       "source_file": "modules/teamstats/teamstats.lua",
       "source_location": "L129",
       "id": "teamstats_teamstats_ts_default_event",
-      "community": 79,
+      "community": 20,
       "norm_label": "ts:default_event()"
     },
     {
@@ -22957,7 +23011,7 @@
       "source_file": "modules/teamstats/teamstatsUI.lua",
       "source_location": "L176",
       "id": "teamstats_teamstatsui_ts_createbuttons",
-      "community": 110,
+      "community": 127,
       "norm_label": "ts.createbuttons()"
     },
     {
@@ -22984,7 +23038,7 @@
       "source_file": "modules/teamstats/teamstatsUI.lua",
       "source_location": "L491",
       "id": "teamstats_teamstatsui_ts_setupcolumns",
-      "community": 126,
+      "community": 110,
       "norm_label": "ts.setupcolumns()"
     },
     {
@@ -23353,7 +23407,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L330",
       "id": "teamstats_tscore_tplcolumnbutton",
-      "community": 126,
+      "community": 110,
       "norm_label": "tplcolumnbutton()"
     },
     {
@@ -23407,7 +23461,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L509",
       "id": "teamstats_tscore_u1message",
-      "community": 110,
+      "community": 127,
       "norm_label": "u1message()"
     },
     {
@@ -23443,7 +23497,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L568",
       "id": "teamstats_tscore_coreuishowtooltip",
-      "community": 126,
+      "community": 110,
       "norm_label": "coreuishowtooltip()"
     },
     {
@@ -23452,7 +23506,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L596",
       "id": "teamstats_tscore_coreuisettextwithclasscolor",
-      "community": 126,
+      "community": 110,
       "norm_label": "coreuisettextwithclasscolor()"
     },
     {
@@ -23479,7 +23533,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L636",
       "id": "teamstats_tscore_coreuianchor",
-      "community": 110,
+      "community": 127,
       "norm_label": "coreuianchor()"
     },
     {
@@ -23533,7 +23587,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L769",
       "id": "teamstats_tscore_u1getinventorylevelcolor",
-      "community": 126,
+      "community": 5,
       "norm_label": "u1getinventorylevelcolor()"
     },
     {
@@ -23542,7 +23596,7 @@
       "source_file": "modules/teamstats/TSCore.lua",
       "source_location": "L790",
       "id": "teamstats_tscore_u1getinventorylevel",
-      "community": 126,
+      "community": 5,
       "norm_label": "u1getinventorylevel()"
     },
     {
@@ -23749,7 +23803,7 @@
       "source_file": "modules/toasts/toasts.lua",
       "source_location": "L102",
       "id": "toasts_toasts_canmanageblizzardalertframe",
-      "community": 6,
+      "community": 54,
       "norm_label": "canmanageblizzardalertframe()"
     },
     {
@@ -24208,7 +24262,7 @@
       "source_file": "modules/toasts/toasts.lua",
       "source_location": "L1486",
       "id": "toasts_toasts_enablegarrisontoasts",
-      "community": 54,
+      "community": 62,
       "norm_label": "enablegarrisontoasts()"
     },
     {
@@ -24667,7 +24721,7 @@
       "source_file": "modules/toasts/toasts.lua",
       "source_location": "L2551",
       "id": "toasts_toasts_kt_postalertmove",
-      "community": 6,
+      "community": 54,
       "norm_label": "kt:postalertmove()"
     },
     {
@@ -24980,7 +25034,7 @@
       "label": "CommunitiesMemberList_RefreshListDisplay_Hook()",
       "file_type": "code",
       "source_file": "modules/tooltip/realm.lua",
-      "source_location": "L368",
+      "source_location": "L372",
       "id": "tooltip_realm_communitiesmemberlist_refreshlistdisplay_hook",
       "community": 128,
       "norm_label": "communitiesmemberlist_refreshlistdisplay_hook()"
@@ -24989,7 +25043,7 @@
       "label": "RI:PLAYER_LOGIN()",
       "file_type": "code",
       "source_file": "modules/tooltip/realm.lua",
-      "source_location": "L385",
+      "source_location": "L389",
       "id": "tooltip_realm_ri_player_login",
       "community": 128,
       "norm_label": "ri:player_login()"
@@ -24998,7 +25052,7 @@
       "label": "RI:Initialize()",
       "file_type": "code",
       "source_file": "modules/tooltip/realm.lua",
-      "source_location": "L394",
+      "source_location": "L398",
       "id": "tooltip_realm_ri_initialize",
       "community": 128,
       "norm_label": "ri:initialize()"
@@ -25043,7 +25097,7 @@
       "label": "KTT:Initialize()",
       "file_type": "code",
       "source_file": "modules/tooltip/tooltip.lua",
-      "source_location": "L242",
+      "source_location": "L246",
       "id": "tooltip_tooltip_ktt_initialize",
       "community": 143,
       "norm_label": "ktt:initialize()"
@@ -25061,7 +25115,7 @@
       "label": "eventhandler()",
       "file_type": "code",
       "source_file": "modules/tweaks/cinematic.lua",
-      "source_location": "L21",
+      "source_location": "L25",
       "id": "tweaks_cinematic_eventhandler",
       "community": 349,
       "norm_label": "eventhandler()"
@@ -25097,7 +25151,7 @@
       "label": "ApplyFix()",
       "file_type": "code",
       "source_file": "modules/tweaks/compactraidfix.lua",
-      "source_location": "L38",
+      "source_location": "L55",
       "id": "tweaks_compactraidfix_applyfix",
       "community": 218,
       "norm_label": "applyfix()"
@@ -25484,7 +25538,7 @@
       "label": "HM:Initialize()",
       "file_type": "code",
       "source_file": "modules/unitframes/elements/healerMana.lua",
-      "source_location": "L24",
+      "source_location": "L26",
       "id": "elements_healermana_hm_initialize",
       "community": 221,
       "norm_label": "hm:initialize()"
@@ -25999,7 +26053,7 @@
       "source_file": "changelog.md",
       "source_location": "L1",
       "id": "changelog_md",
-      "community": 402,
+      "community": 126,
       "norm_label": "changelog.md"
     },
     {
@@ -26008,167 +26062,392 @@
       "source_file": "changelog.md",
       "source_location": "L1",
       "id": "elvui_klixui_changelog_changelog_md",
-      "community": 402,
+      "community": 126,
       "norm_label": "changelog.md"
     },
     {
-      "label": "2026-05-29 - Performance, Taint und Debugger Verbesserungen",
+      "label": "2026-07-11 (Teil 5) - Crash-Fix: ADDON_ACTION_FORBIDDEN beim Talent-Entfernen",
       "file_type": "document",
       "source_file": "changelog.md",
       "source_location": "L3",
-      "id": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen",
-      "community": 402,
-      "norm_label": "2026-05-29 - performance, taint und debugger verbesserungen"
+      "id": "elvui_klixui_changelog_2026_07_11_teil_5_crash_fix_addon_action_forbidden_beim_talent_entfernen",
+      "community": 126,
+      "norm_label": "2026-07-11 (teil 5) - crash-fix: addon_action_forbidden beim talent-entfernen"
+    },
+    {
+      "label": "2026-07-11 (Teil 4) - Crash-Fix: type()-Shadowing in raidCD + echte Taint-Quelle f\u00fcr CompactRaidFrame gefunden",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L7",
+      "id": "elvui_klixui_changelog_2026_07_11_teil_4_crash_fix_type_shadowing_in_raidcd_echte_taint_quelle_f\u00fcr_compactraidframe_gefunden",
+      "community": 126,
+      "norm_label": "2026-07-11 (teil 4) - crash-fix: type()-shadowing in raidcd + echte taint-quelle fur compactraidframe gefunden"
+    },
+    {
+      "label": "2026-07-11 (Teil 3) - Crash-Fix: raidCD Chargen-API + CompactRaidFrame-Taint-L\u00fccke",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L13",
+      "id": "elvui_klixui_changelog_2026_07_11_teil_3_crash_fix_raidcd_chargen_api_compactraidframe_taint_l\u00fccke",
+      "community": 126,
+      "norm_label": "2026-07-11 (teil 3) - crash-fix: raidcd chargen-api + compactraidframe-taint-lucke"
+    },
+    {
+      "label": "2026-07-11 (Teil 2) - Crash-Fix: ADDON_ACTION_FORBIDDEN beim Glyph-Wechsel",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L19",
+      "id": "elvui_klixui_changelog_2026_07_11_teil_2_crash_fix_addon_action_forbidden_beim_glyph_wechsel",
+      "community": 126,
+      "norm_label": "2026-07-11 (teil 2) - crash-fix: addon_action_forbidden beim glyph-wechsel"
+    },
+    {
+      "label": "2026-07-11 - Raid-Buff-Reminder: 5 Fallback-Slots pro Flask/Food",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L23",
+      "id": "elvui_klixui_changelog_2026_07_11_raid_buff_reminder_5_fallback_slots_pro_flask_food",
+      "community": 126,
+      "norm_label": "2026-07-11 - raid-buff-reminder: 5 fallback-slots pro flask/food"
+    },
+    {
+      "label": "2026-07-10 (Teil 7) - Raid-Buff-Reminder: MoP-Daten korrigiert + Klick-zum-Buffen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L27",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_7_raid_buff_reminder_mop_daten_korrigiert_klick_zum_buffen",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 7) - raid-buff-reminder: mop-daten korrigiert + klick-zum-buffen"
+    },
+    {
+      "label": "2026-07-10 (Teil 6) - Crash-Fix: reminder/raid.lua \"Class Specific Buffs\"",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L37",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_6_crash_fix_reminder_raid_lua_class_specific_buffs",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 6) - crash-fix: reminder/raid.lua \"class specific buffs\""
+    },
+    {
+      "label": "2026-07-10 (Teil 5) - Unn\u00f6tige Reload-Aufforderungen entfernt + chatClassColorOverride-Option",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L41",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_5_unn\u00f6tige_reload_aufforderungen_entfernt_chatclasscoloroverride_option",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 5) - unnotige reload-aufforderungen entfernt + chatclasscoloroverride-option"
+    },
+    {
+      "label": "2026-07-10 (Teil 4) - options.lua Restdurchsicht + Toasts-Optionsmen\u00fc-Abgleich",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L55",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_4_options_lua_restdurchsicht_toasts_optionsmen\u00fc_abgleich",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 4) - options.lua restdurchsicht + toasts-optionsmenu-abgleich"
+    },
+    {
+      "label": "2026-07-10 (Teil 3) - skins/blizzard/ komplett durchgesehen (alle ~49 geladenen Dateien)",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L62",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_3_skins_blizzard_komplett_durchgesehen_alle_49_geladenen_dateien",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 3) - skins/blizzard/ komplett durchgesehen (alle ~49 geladenen dateien)"
+    },
+    {
+      "label": "2026-07-10 (Teil 2) - skins/addons/ komplett durchgesehen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L71",
+      "id": "elvui_klixui_changelog_2026_07_10_teil_2_skins_addons_komplett_durchgesehen",
+      "community": 126,
+      "norm_label": "2026-07-10 (teil 2) - skins/addons/ komplett durchgesehen"
+    },
+    {
+      "label": "2026-07-10 (Nachtrag) - cinematic.lua: GameMovieFinished existiert nicht auf diesem Client",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L80",
+      "id": "elvui_klixui_changelog_2026_07_10_nachtrag_cinematic_lua_gamemoviefinished_existiert_nicht_auf_diesem_client",
+      "community": 126,
+      "norm_label": "2026-07-10 (nachtrag) - cinematic.lua: gamemoviefinished existiert nicht auf diesem client"
+    },
+    {
+      "label": "2026-07-09 (Teil 2) - Datei-f\u00fcr-Datei-Nachkontrolle: cooldowns, tweaks, unitframes",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L87",
+      "id": "elvui_klixui_changelog_2026_07_09_teil_2_datei_f\u00fcr_datei_nachkontrolle_cooldowns_tweaks_unitframes",
+      "community": 126,
+      "norm_label": "2026-07-09 (teil 2) - datei-fur-datei-nachkontrolle: cooldowns, tweaks, unitframes"
+    },
+    {
+      "label": "2026-07-09 - Phase 5 Kompatibilit\u00e4t, AutoButtons-Rework und Bugfixes",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L97",
+      "id": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "community": 409,
+      "norm_label": "2026-07-09 - phase 5 kompatibilitat, autobuttons-rework und bugfixes"
+    },
+    {
+      "label": "Core: Phase-5-Globals aus C_AddOns / C_CVar / C_SpecializationInfo / C_Spell wiederhergestellt",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L101",
+      "id": "elvui_klixui_changelog_core_phase_5_globals_aus_c_addons_c_cvar_c_specializationinfo_c_spell_wiederhergestellt",
+      "community": 409,
+      "norm_label": "core: phase-5-globals aus c_addons / c_cvar / c_specializationinfo / c_spell wiederhergestellt"
+    },
+    {
+      "label": "CompactRaidFrame-Taint-Fix: Ansatz ersetzt",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L107",
+      "id": "elvui_klixui_changelog_compactraidframe_taint_fix_ansatz_ersetzt",
+      "community": 409,
+      "norm_label": "compactraidframe-taint-fix: ansatz ersetzt"
+    },
+    {
+      "label": "AutoButtons (Quest-/Slot-Auto-Use-Leiste): Secure-Click \u00fcberarbeitet",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L112",
+      "id": "elvui_klixui_changelog_autobuttons_quest_slot_auto_use_leiste_secure_click_\u00fcberarbeitet",
+      "community": 409,
+      "norm_label": "autobuttons (quest-/slot-auto-use-leiste): secure-click uberarbeitet"
+    },
+    {
+      "label": "Raid-Reminder: Buff-Check dedupliziert",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L123",
+      "id": "elvui_klixui_changelog_raid_reminder_buff_check_dedupliziert",
+      "community": 409,
+      "norm_label": "raid-reminder: buff-check dedupliziert"
+    },
+    {
+      "label": "Solo-Reminder: Tippfehler behoben",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L128",
+      "id": "elvui_klixui_changelog_solo_reminder_tippfehler_behoben",
+      "community": 409,
+      "norm_label": "solo-reminder: tippfehler behoben"
+    },
+    {
+      "label": "Minimap-Buttons: LFG-/Gruppensuche-Schutz",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L132",
+      "id": "elvui_klixui_changelog_minimap_buttons_lfg_gruppensuche_schutz",
+      "community": 409,
+      "norm_label": "minimap-buttons: lfg-/gruppensuche-schutz"
+    },
+    {
+      "label": "Nil-Guards in mehreren Modulen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L136",
+      "id": "elvui_klixui_changelog_nil_guards_in_mehreren_modulen",
+      "community": 409,
+      "norm_label": "nil-guards in mehreren modulen"
+    },
+    {
+      "label": "Nachkontrolle: systematischer Abgleich aller `T.C_*`-Aufrufstellen gegen toolkit.lua",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L149",
+      "id": "elvui_klixui_changelog_nachkontrolle_systematischer_abgleich_aller_t_c_aufrufstellen_gegen_toolkit_lua",
+      "community": 409,
+      "norm_label": "nachkontrolle: systematischer abgleich aller `t.c_*`-aufrufstellen gegen toolkit.lua"
+    },
+    {
+      "label": "2026-07-09 (Teil 3) - Weitere Nachkontrolle: quest, unitframes-Rest, blizzard, locpanel, armory, addonpanel, raidmarkers",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L165",
+      "id": "elvui_klixui_changelog_2026_07_09_teil_3_weitere_nachkontrolle_quest_unitframes_rest_blizzard_locpanel_armory_addonpanel_raidmarkers",
+      "community": 126,
+      "norm_label": "2026-07-09 (teil 3) - weitere nachkontrolle: quest, unitframes-rest, blizzard, locpanel, armory, addonpanel, raidmarkers"
+    },
+    {
+      "label": "2026-07-09 (Teil 4) - reminder/solo.lua nachgezogen, notification/reminder/raid gepr\u00fcft",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L173",
+      "id": "elvui_klixui_changelog_2026_07_09_teil_4_reminder_solo_lua_nachgezogen_notification_reminder_raid_gepr\u00fcft",
+      "community": 126,
+      "norm_label": "2026-07-09 (teil 4) - reminder/solo.lua nachgezogen, notification/reminder/raid gepruft"
+    },
+    {
+      "label": "2026-07-10 - Kritisch: unbedingter Login-Crash in chat/Filters.lua und trade.lua; Options-Men\u00fc an Stasis angeglichen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L178",
+      "id": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "community": 410,
+      "norm_label": "2026-07-10 - kritisch: unbedingter login-crash in chat/filters.lua und trade.lua; options-menu an stasis angeglichen"
+    },
+    {
+      "label": "Options-Men\u00fc an Stasis-Entscheidungen angeglichen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L184",
+      "id": "elvui_klixui_changelog_options_men\u00fc_an_stasis_entscheidungen_angeglichen",
+      "community": 410,
+      "norm_label": "options-menu an stasis-entscheidungen angeglichen"
     },
     {
       "label": "Performance: MicroBar event-basierte Updates",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L7",
+      "source_location": "L193",
       "id": "elvui_klixui_changelog_performance_microbar_event_basierte_updates",
-      "community": 402,
+      "community": 410,
       "norm_label": "performance: microbar event-basierte updates"
     },
     {
       "label": "Taint-Fix: CompactRaidFrameManager ADDON_ACTION_BLOCKED",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L13",
+      "source_location": "L199",
       "id": "elvui_klixui_changelog_taint_fix_compactraidframemanager_addon_action_blocked",
-      "community": 402,
+      "community": 410,
       "norm_label": "taint-fix: compactraidframemanager addon_action_blocked"
     },
     {
       "label": "SyncConfiguredLists Aufr\u00e4umen",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L23",
+      "source_location": "L209",
       "id": "elvui_klixui_changelog_syncconfiguredlists_aufr\u00e4umen",
-      "community": 402,
+      "community": 410,
       "norm_label": "syncconfiguredlists aufraumen"
     },
     {
       "label": "Debugger: Cross-Attribution und Auto-Scan",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L30",
+      "source_location": "L216",
       "id": "elvui_klixui_changelog_debugger_cross_attribution_und_auto_scan",
-      "community": 402,
+      "community": 410,
       "norm_label": "debugger: cross-attribution und auto-scan"
     },
     {
       "label": "Status",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L39",
+      "source_location": "L225",
       "id": "elvui_klixui_changelog_status",
-      "community": 402,
+      "community": 410,
       "norm_label": "status"
     },
     {
       "label": "2026-04-15 - Character Frame, Toasts and MoP UI Follow-up",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L46",
+      "source_location": "L232",
       "id": "elvui_klixui_changelog_2026_04_15_character_frame_toasts_and_mop_ui_follow_up",
-      "community": 402,
+      "community": 411,
       "norm_label": "2026-04-15 - character frame, toasts and mop ui follow-up"
     },
     {
       "label": "Armory, character frame and talents",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L50",
+      "source_location": "L236",
       "id": "elvui_klixui_changelog_armory_character_frame_and_talents",
-      "community": 402,
+      "community": 411,
       "norm_label": "armory, character frame and talents"
     },
     {
       "label": "Toasts and gameplay-related MoP API fixes",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L63",
+      "source_location": "L249",
       "id": "elvui_klixui_changelog_toasts_and_gameplay_related_mop_api_fixes",
-      "community": 402,
+      "community": 411,
       "norm_label": "toasts and gameplay-related mop api fixes"
     },
     {
       "label": "Minimap buttons and tooltip follow-up",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L77",
+      "source_location": "L263",
       "id": "elvui_klixui_changelog_minimap_buttons_and_tooltip_follow_up",
-      "community": 402,
+      "community": 411,
       "norm_label": "minimap buttons and tooltip follow-up"
     },
     {
       "label": "Blizzard skins, movers and MoP guards",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L90",
+      "source_location": "L276",
       "id": "elvui_klixui_changelog_blizzard_skins_movers_and_mop_guards",
-      "community": 402,
+      "community": 411,
       "norm_label": "blizzard skins, movers and mop guards"
     },
     {
       "label": "Notes",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L102",
+      "source_location": "L288",
       "id": "elvui_klixui_changelog_notes",
-      "community": 402,
+      "community": 411,
       "norm_label": "notes"
     },
     {
       "label": "2026-04-14 - Minimap Buttons and CombatText Follow-up",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L107",
+      "source_location": "L293",
       "id": "elvui_klixui_changelog_2026_04_14_minimap_buttons_and_combattext_follow_up",
-      "community": 402,
+      "community": 413,
       "norm_label": "2026-04-14 - minimap buttons and combattext follow-up"
     },
     {
       "label": "Combat text",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L111",
+      "source_location": "L297",
       "id": "elvui_klixui_changelog_combat_text",
-      "community": 402,
+      "community": 413,
       "norm_label": "combat text"
     },
     {
       "label": "Square Minimap Buttons",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L117",
+      "source_location": "L303",
       "id": "elvui_klixui_changelog_square_minimap_buttons",
-      "community": 402,
+      "community": 413,
       "norm_label": "square minimap buttons"
     },
     {
       "label": "Minimap button rendering status",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L131",
+      "source_location": "L317",
       "id": "elvui_klixui_changelog_minimap_button_rendering_status",
-      "community": 402,
+      "community": 413,
       "norm_label": "minimap button rendering status"
     },
     {
       "label": "Porting notes",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L137",
+      "source_location": "L323",
       "id": "elvui_klixui_changelog_porting_notes",
-      "community": 402,
+      "community": 413,
       "norm_label": "porting notes"
     },
     {
       "label": "2026-04-13 - MoP Classic Porting Update",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L141",
+      "source_location": "L327",
       "id": "elvui_klixui_changelog_2026_04_13_mop_classic_porting_update",
       "community": 402,
       "norm_label": "2026-04-13 - mop classic porting update"
@@ -26177,7 +26456,7 @@
       "label": "Core and configuration",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L145",
+      "source_location": "L331",
       "id": "elvui_klixui_changelog_core_and_configuration",
       "community": 402,
       "norm_label": "core and configuration"
@@ -26186,7 +26465,7 @@
       "label": "Bags and item handling",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L152",
+      "source_location": "L338",
       "id": "elvui_klixui_changelog_bags_and_item_handling",
       "community": 402,
       "norm_label": "bags and item handling"
@@ -26195,7 +26474,7 @@
       "label": "Layout and datatext panels",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L159",
+      "source_location": "L345",
       "id": "elvui_klixui_changelog_layout_and_datatext_panels",
       "community": 402,
       "norm_label": "layout and datatext panels"
@@ -26204,7 +26483,7 @@
       "label": "Datatexts",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L165",
+      "source_location": "L351",
       "id": "elvui_klixui_changelog_datatexts",
       "community": 402,
       "norm_label": "datatexts"
@@ -26213,7 +26492,7 @@
       "label": "Actionbars",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L171",
+      "source_location": "L357",
       "id": "elvui_klixui_changelog_actionbars",
       "community": 402,
       "norm_label": "actionbars"
@@ -26222,7 +26501,7 @@
       "label": "Maps, minimap and world map",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L178",
+      "source_location": "L364",
       "id": "elvui_klixui_changelog_maps_minimap_and_world_map",
       "community": 402,
       "norm_label": "maps, minimap and world map"
@@ -26231,7 +26510,7 @@
       "label": "Armory, stats and talents",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L189",
+      "source_location": "L375",
       "id": "elvui_klixui_changelog_armory_stats_and_talents",
       "community": 402,
       "norm_label": "armory, stats and talents"
@@ -26240,7 +26519,7 @@
       "label": "Blizzard skins",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L196",
+      "source_location": "L382",
       "id": "elvui_klixui_changelog_blizzard_skins",
       "community": 402,
       "norm_label": "blizzard skins"
@@ -26249,7 +26528,7 @@
       "label": "Miscellaneous fixes",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L202",
+      "source_location": "L388",
       "id": "elvui_klixui_changelog_miscellaneous_fixes",
       "community": 402,
       "norm_label": "miscellaneous fixes"
@@ -26258,7 +26537,7 @@
       "label": "Compatibility approach",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L211",
+      "source_location": "L397",
       "id": "elvui_klixui_changelog_compatibility_approach",
       "community": 402,
       "norm_label": "compatibility approach"
@@ -26267,7 +26546,7 @@
       "label": "Known limitations",
       "file_type": "document",
       "source_file": "changelog.md",
-      "source_location": "L216",
+      "source_location": "L402",
       "id": "elvui_klixui_changelog_known_limitations",
       "community": 402,
       "norm_label": "known limitations"
@@ -26424,6 +26703,15 @@
       "id": "libprocessable_changelog_31_https_github_com_p3lim_wow_libprocessable_tree_31_2018_07_24",
       "community": 405,
       "norm_label": "[31](https://github.com/p3lim-wow/libprocessable/tree/31) (2018-07-24)"
+    },
+    {
+      "label": "2026-05-29 - Performance, Taint und Debugger Verbesserungen",
+      "file_type": "document",
+      "source_file": "changelog.md",
+      "source_location": "L94",
+      "community": 410,
+      "norm_label": "2026-05-29 - performance, taint und debugger verbesserungen",
+      "id": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen"
     },
     {
       "label": "ElvUI_KlixUI-Classic AddOn",
@@ -45529,6 +45817,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "modules/cooldowns/raidCD.lua",
+      "source_location": "L123",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_cooldowns_raidcd_lua",
+      "target": "cooldowns_raidcd_getchargeinfo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/cooldowns/raidCD.lua",
       "source_location": "L360",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -54020,11 +54318,32 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "modules/reminder/options.lua",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_reminder_options_lua",
+      "target": "reminder_options_itemslotgroup"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/options.lua",
       "source_location": "L7",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "modules_reminder_options_lua",
       "target": "reminder_options_reminder"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/options.lua",
+      "source_location": "L193",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "reminder_options_reminder",
+      "target": "reminder_options_itemslotgroup"
     },
     {
       "relation": "contains",
@@ -54045,6 +54364,16 @@
       "confidence_score": 1.0,
       "source": "modules_reminder_raid_lua",
       "target": "reminder_raid_checkbufflist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L113",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_reminder_raid_lua",
+      "target": "reminder_raid_checkfoodbuff"
     },
     {
       "relation": "contains",
@@ -54080,6 +54409,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "modules/reminder/raid.lua",
+      "source_location": "L254",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_reminder_raid_lua",
+      "target": "reminder_raid_krr_updateclickactions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/raid.lua",
       "source_location": "L222",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -54100,6 +54439,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "modules/reminder/raid.lua",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_reminder_raid_lua",
+      "target": "reminder_raid_pickavailableitem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/raid.lua",
       "source_location": "L80",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -54115,6 +54464,17 @@
       "confidence_score": 1.0,
       "source": "modules_reminder_raid_lua",
       "target": "reminder_raid_spellicon"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L285",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "reminder_raid_krr_updateclickactions",
+      "target": "reminder_raid_pickavailableitem"
     },
     {
       "relation": "calls",
@@ -54170,6 +54530,27 @@
       "confidence_score": 1.0,
       "source": "reminder_raid_onaurachange",
       "target": "reminder_raid_checkbufflist"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/raid.lua",
+      "source_location": "L138",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "reminder_raid_onaurachange",
+      "target": "reminder_raid_checkfoodbuff"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/solo.lua",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "modules_reminder_solo_lua",
+      "target": "reminder_solo_getaurabyspellid"
     },
     {
       "relation": "contains",
@@ -54281,6 +54662,28 @@
       "confidence_score": 1.0,
       "source": "reminder_solo_ksr_remindericon_onevent",
       "target": "reminder_solo_offhandhasweapon"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/solo.lua",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "reminder_solo_ksr_playerhasfilteredbuff",
+      "target": "reminder_solo_getaurabyspellid"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "modules/reminder/solo.lua",
+      "source_location": "L63",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "reminder_solo_ksr_playerhasfiltereddebuff",
+      "target": "reminder_solo_getaurabyspellid"
     },
     {
       "relation": "contains",
@@ -62940,11 +63343,311 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "changelog.md",
-      "source_location": "L30",
+      "source_location": "L3",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen",
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_09_teil_2_datei_f\u00fcr_datei_nachkontrolle_cooldowns_tweaks_unitframes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L81",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_09_teil_3_weitere_nachkontrolle_quest_unitframes_rest_blizzard_locpanel_armory_addonpanel_raidmarkers"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L89",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_09_teil_4_reminder_solo_lua_nachgezogen_notification_reminder_raid_gepr\u00fcft"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_nachtrag_cinematic_lua_gamemoviefinished_existiert_nicht_auf_diesem_client"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_2_skins_addons_komplett_durchgesehen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_3_skins_blizzard_komplett_durchgesehen_alle_49_geladenen_dateien"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_4_options_lua_restdurchsicht_toasts_optionsmen\u00fc_abgleich"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_5_unn\u00f6tige_reload_aufforderungen_entfernt_chatclasscoloroverride_option"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_6_crash_fix_reminder_raid_lua_class_specific_buffs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_10_teil_7_raid_buff_reminder_mop_daten_korrigiert_klick_zum_buffen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_11_raid_buff_reminder_5_fallback_slots_pro_flask_food"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_11_teil_2_crash_fix_addon_action_forbidden_beim_glyph_wechsel"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_11_teil_3_crash_fix_raidcd_chargen_api_compactraidframe_taint_l\u00fccke"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_11_teil_4_crash_fix_type_shadowing_in_raidcd_echte_taint_quelle_f\u00fcr_compactraidframe_gefunden"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "elvui_klixui_changelog_changelog_md",
+      "target": "elvui_klixui_changelog_2026_07_11_teil_5_crash_fix_addon_action_forbidden_beim_talent_entfernen",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_autobuttons_quest_slot_auto_use_leiste_secure_click_\u00fcberarbeitet"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_compactraidframe_taint_fix_ansatz_ersetzt"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_core_phase_5_globals_aus_c_addons_c_cvar_c_specializationinfo_c_spell_wiederhergestellt"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_minimap_buttons_lfg_gruppensuche_schutz"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_nachkontrolle_systematischer_abgleich_aller_t_c_aufrufstellen_gegen_toolkit_lua"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_nil_guards_in_mehreren_modulen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_raid_reminder_buff_check_dedupliziert"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_09_phase_5_kompatibilit\u00e4t_autobuttons_rework_und_bugfixes",
+      "target": "elvui_klixui_changelog_solo_reminder_tippfehler_behoben"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L132",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
       "target": "elvui_klixui_changelog_debugger_cross_attribution_und_auto_scan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L100",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "target": "elvui_klixui_changelog_options_men\u00fc_an_stasis_entscheidungen_angeglichen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L109",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "target": "elvui_klixui_changelog_performance_microbar_event_basierte_updates"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L141",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "target": "elvui_klixui_changelog_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "target": "elvui_klixui_changelog_syncconfiguredlists_aufr\u00e4umen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L115",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_07_10_kritisch_unbedingter_login_crash_in_chat_filters_lua_und_trade_lua_options_men\u00fc_an_stasis_angeglichen",
+      "target": "elvui_klixui_changelog_taint_fix_compactraidframemanager_addon_action_blocked"
     },
     {
       "relation": "contains",
@@ -62960,11 +63663,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "changelog.md",
-      "source_location": "L39",
+      "source_location": "L13",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen",
-      "target": "elvui_klixui_changelog_status"
+      "target": "elvui_klixui_changelog_taint_fix_compactraidframemanager_addon_action_blocked"
     },
     {
       "relation": "contains",
@@ -62980,11 +63683,21 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "changelog.md",
-      "source_location": "L13",
+      "source_location": "L30",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen",
-      "target": "elvui_klixui_changelog_taint_fix_compactraidframemanager_addon_action_blocked"
+      "target": "elvui_klixui_changelog_debugger_cross_attribution_und_auto_scan"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "changelog.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "elvui_klixui_changelog_2026_05_29_performance_taint_und_debugger_verbesserungen",
+      "target": "elvui_klixui_changelog_status"
     },
     {
       "relation": "contains",
@@ -63599,5 +64312,5 @@
       "source_file": "changelog.md"
     }
   ],
-  "built_at_commit": "9bfcb637c93a3e8e8b43a2102f264e51fb151e8a"
+  "built_at_commit": "cb51822f5315a882d131381cdff601071d1425d5"
 }

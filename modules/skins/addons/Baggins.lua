@@ -156,17 +156,17 @@ local function styleBaggins()
 		  
 		button.UpgradeIcon:SetShown(T.IsContainerItemAnUpgrade(bag, slot))
 		  
-		if link then
+		if link and T.C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID then
 			button.Azerite:SetShown(T.C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(link))
 		else
 			button.Azerite:Hide()
 		end
-		  
+
 		if CanIMogIt then
-			ContainerFrameItemButton_CIMIUpdateIcon(button.CanIMogItOverlay)    
+			ContainerFrameItemButton_CIMIUpdateIcon(button.CanIMogItOverlay)
 		end
-		  
-		if T.C_NewItems_IsNewItem(bag, slot) and quality then
+
+		if T.C_NewItems_IsNewItem and T.C_NewItems_IsNewItem(bag, slot) and quality then
 			button.NewItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality])
 			--button.flashAnim:Play()
 			--button.newitemglowAnim:Play()
@@ -179,7 +179,7 @@ local function styleBaggins()
 	end)
 
 	hooksecurefunc(Baggins, "CloseAllBags", function()
-		  T.C_NewItems_ClearAll()
+		if T.C_NewItems_ClearAll then T.C_NewItems_ClearAll() end
 	end)
 	
 	Baggins.opts.args.General.args.NewItemDuration.disabled = true

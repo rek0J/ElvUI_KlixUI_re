@@ -72,7 +72,7 @@ function KUF:UpdateRoleIcon()
 		local index = GetBattleFieldIndexFromUnitName(name)
 		if index then
 		local _, _, _, _, _, _, _, _, classToken, _, _, _, _, _, _, talentSpec = T.GetBattlefieldScore(index)
-			if classToken and talentSpec then
+			if classToken and talentSpec and specNameToRole[classToken] then
 				role = specNameToRole[classToken][talentSpec]
 			else
 				role = T.UnitGroupRolesAssigned(self.unit) --Fallback

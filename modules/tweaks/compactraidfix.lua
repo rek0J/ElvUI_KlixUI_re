@@ -35,6 +35,23 @@ local function UnregisterRaidFrameEvents()
 	end
 end
 
+-- Fix D: Blizzard's CompactRaidFrameContainerMixin:GetUnitFrame creates new CompactRaidFrame<N>
+-- buttons on demand (still on GROUP_ROSTER_UPDATE) and immediately calls
+-- CompactUnitFrame_SetUpdateAllEvent(frame, "GROUP_ROSTER_UPDATE") on them - this can happen
+-- *after* the periodic sweep above already ran (race on the same event), leaving a freshly
+-- created frame (e.g. CompactRaidFrame6 when the raid grows) still wired up. Hooking the exact
+-- function Blizzard uses to wire that event closes the race regardless of timing.
+if type(_G.CompactUnitFrame_SetUpdateAllEvent) == "function" then
+	hooksecurefunc("CompactUnitFrame_SetUpdateAllEvent", function(frame)
+		if frame and frame.GetName and frame.UnregisterAllEvents then
+			local name = frame:GetName()
+			if name and name:match("^CompactRaidFrame%d") then
+				frame:UnregisterAllEvents()
+			end
+		end
+	end)
+end
+
 local function ApplyFix()
 	if T.InCombatLockdown() then return end
 	for _, name in ipairs(FRAMES_TO_FIX) do

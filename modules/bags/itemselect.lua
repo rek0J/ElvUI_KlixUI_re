@@ -427,6 +427,11 @@ function IS:IsAppearanceCollected(ID, Link, Type, EquipLoc)
 		return true;
 	end
 
+	-- MoP Classic: no Transmog Collection/Appearances system, so there's nothing to check.
+	if(not T.C_TransmogCollection_GetItemInfo) then
+		return true;
+	end
+
 	-- Get the source ID of the item.
 	local SourceID = T.select(2, T.C_TransmogCollection_GetItemInfo(Link));
 

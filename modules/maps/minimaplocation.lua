@@ -96,8 +96,8 @@ hooksecurefunc(M, 'Update_ZoneText', function()
 	if E.db.KlixUI.maps.minimap.topbar.locationtext == "LOCATION" then
 		location.text:SetTextColor(M:GetLocTextColor())
 		location.text:SetText(T.string_sub(T.GetMinimapZoneText(), 1, 25))
-	--elseif E.db.KlixUI.maps.minimap.topbar.locationtext == "VERSION" then
-		--location.text:SetText(KUI.Title.. "v"..KUI.Version)
+	elseif E.db.KlixUI.maps.minimap.topbar.locationtext == "VERSION" then
+		location.text:SetText(KUI.Title.. "v"..KUI.Version)
 	end
 
 	getPos(1)

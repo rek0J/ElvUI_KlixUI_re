@@ -1,4 +1,12 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<script file="databars.lua"/>
+	<!-- azerite.lua, honor.lua, paragonRep.lua: retail-only (BFA Azerite / Legion Paragon rep),
+	     dropped from the load chain in 2019 ("Reenabled databars for classic"). -->
+	<!-- experience.lua, reputation.lua, questXP.lua: XP/rep-bar hover tooltip + colour hooks on
+	     top of ElvUI's own DataBars module. Not retail-specific, but intentionally dropped from
+	     the load chain in the "KlixUI Revived" pass (2026-04-14) rather than being ported/verified
+	     against the current ElvUI DataBars API. Left in stasis here on purpose; re-enable only
+	     after confirming EDB.expBar/EDB.honorBar/EDB:UpdateExperience/EDB:UpdateHonor still match
+	     ElvUI's current DataBars module shape. -->
 	<script file="options.lua"/>
 </Ui>

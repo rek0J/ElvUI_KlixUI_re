@@ -40,12 +40,14 @@ local function Tooltip()
 						name = L["Title Color"],
 						desc = L["Change the color of the title to something more cool!"],
 						disabled = function() return not E.private.tooltip.enable or not E.db.KlixUI.tooltip.tooltip end,
+						set = function(info, value) E.db.KlixUI.tooltip.titleColor = value end,
 					},
 					memberInfo = {
 						order = 3,
 						type = "toggle",
 						name = L["LFG Member Info"],
 						desc = L["Adds member info for the LFG group list tooltip."],
+						set = function(info, value) E.db.KlixUI.tooltip.memberInfo = value end,
 					},
 
 					achievement = {
@@ -53,6 +55,7 @@ local function Tooltip()
 						type = "toggle",
 						name = ACHIEVEMENT_BUTTON,
 						desc = L["Adds information to the tooltip, on which character you earned an achievement.\nCredit: |cffff7d0aMerathilisUI|r"],
+						set = function(info, value) E.db.KlixUI.tooltip.achievement = value end,
 					},
 
 					keystone = {
@@ -264,6 +267,7 @@ local function Tooltip()
 						name = L["Guild Name"],
 						desc = L["Shows the current mouseover units guild name."],
 						disabled = function() return not E.db.KlixUI.nameHover.enable end,
+						set = function(info, value) E.db.KlixUI.nameHover.guild = value end,
 					},
 
 					guildRank = {
@@ -272,6 +276,7 @@ local function Tooltip()
 						name = L["Guild Rank"],
 						desc = L["Shows the current mouseover units guild rank."],
 						disabled = function() return not E.db.KlixUI.nameHover.enable or not E.db.KlixUI.nameHover.guild end,
+						set = function(info, value) E.db.KlixUI.nameHover.guildRank = value end,
 					},
 
 					race = {
@@ -280,6 +285,7 @@ local function Tooltip()
 						name = L["Level, Race & Class"],
 						desc = L["Shows the current mouseover units level, race and class.\n|cffff8000Note: Holding down the shift key will display the gender aswell!|r"],
 						disabled = function() return not E.db.KlixUI.nameHover.enable end,
+						set = function(info, value) E.db.KlixUI.nameHover.race = value end,
 					},
 
 					space3 = {
@@ -294,6 +300,7 @@ local function Tooltip()
 						name = L["Realm Name"],
 						desc = L["Shows the current mouseover units realm name when holding down the shift-key."],
 						disabled = function() return not E.db.KlixUI.nameHover.enable end,
+						set = function(info, value) E.db.KlixUI.nameHover.realm = value end,
 					},
 
 					realmAlways = {
@@ -302,6 +309,7 @@ local function Tooltip()
 						name = L["Always Show Realm Name"],
 						desc = L["Always show the current mouseover units realm name."],
 						disabled = function() return not E.db.KlixUI.nameHover.enable or not E.db.KlixUI.nameHover.realm end,
+						set = function(info, value) E.db.KlixUI.nameHover.realmAlways = value end,
 					},
 
 					titles = {
@@ -310,6 +318,7 @@ local function Tooltip()
 						name = L["Titles"],
 						desc = L["Shows the current mouseover units titles."],
 						disabled = function() return not E.db.KlixUI.nameHover.enable end,
+						set = function(info, value) E.db.KlixUI.nameHover.titles = value end,
 					},
 
 					font = {

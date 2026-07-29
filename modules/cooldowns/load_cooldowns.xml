@@ -2,6 +2,6 @@
 	<Script file="dimishingCD.lua"/>
 	<Script file="pulseCD.lua"/>
 	<Script file="enemyCD.lua"/>
-	<!--Script file="raidCD.lua"/-->
+	<Script file="raidCD.lua"/>
 	<Script file="options.lua"/>
 </Ui>

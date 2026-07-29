@@ -24,6 +24,7 @@ local function styleLFGList()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.lfg ~= true or E.private.KlixUI.skins.blizzard.lfg ~= true then return end
 
 	local LFGListFrame = _G.LFGListFrame
+	if not LFGListFrame then return end -- MoP Classic: Premade Groups (LFGList) UI doesn't exist here
 
 	-- Category selection
 	local CategorySelection = LFGListFrame.CategorySelection

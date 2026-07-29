@@ -67,7 +67,7 @@ local function BlizzardTable()
 						name = L["Remember"],
 						desc = L["Remember positions of frames after moving them."],
 						get = function(info) return E.private.KlixUI.module.blizzmove.remember end,
-						set = function(info, value) E.private.KlixUI.module.blizzmove.remember = value; E:StaticPopup_Show("PRIVATE_RL") end,
+						set = function(info, value) E.private.KlixUI.module.blizzmove.remember = value end,
 						disabled = function() return not E.private.KlixUI.module.blizzmove.enable end,
 					},
 				},

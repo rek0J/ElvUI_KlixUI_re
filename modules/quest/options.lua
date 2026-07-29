@@ -31,8 +31,9 @@ local function QuestTable()
 				order = 2,
 				type = "toggle",
 				name = L["Objective Progress"],
-				desc = L["Adds quest/mythic+ dungeon progress to the tooltip."],
-				
+				desc = E.Mists and L["Not available on MoP Classic: this relies on World Quest data (C_TaskQuest), which doesn't exist here."] or L["Adds quest/mythic+ dungeon progress to the tooltip."],
+				disabled = function() return E.Mists end,
+				hidden = function() return E.Mists end,
 			},
 			auto = {
 				order = 3,
@@ -58,6 +59,7 @@ local function QuestTable()
 						name = L["Disable Key"],
 						desc = L["When the specific key is down the quest automatization is disabled."],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.diskey = value end,
 						values = { "Alt", "Ctrl", "Shift" },
 					},
 					space1 = {
@@ -71,6 +73,7 @@ local function QuestTable()
 						name = L["Auto Accept Quests"],
 						desc = L["Enable/Disable auto quest accepting"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.accept = value end,
 					},
 					complete = {
 						order = 6,
@@ -78,6 +81,7 @@ local function QuestTable()
 						name = L["Auto Complete Quests"],
 						desc = L["Enable/Disable auto quest complete"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.complete = value end,
 					},
 					dailiesonly = {
 						order = 7,
@@ -85,6 +89,7 @@ local function QuestTable()
 						name = L["Dailies Only"],
 						desc = L["Enable/Disable auto accepting for daily quests only"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.dailiesonly = value end,
 					},
 					pvp = {
 						order = 8,
@@ -92,6 +97,7 @@ local function QuestTable()
 						name = L["Accept PVP Quests"],
 						desc = L["Enable/Disable auto accepting for PvP flagging quests"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.pvp = value end,
 					},
 					escort = {
 						order = 9,
@@ -99,6 +105,7 @@ local function QuestTable()
 						name = L["Auto Accept Escorts"],
 						desc = L["Enable/Disable auto escort accepting"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.escort = value end,
 					},
 					inraid = {
 						order = 10,
@@ -106,6 +113,7 @@ local function QuestTable()
 						name = L["Enable in Raid"],
 						desc = L["Enable/Disable auto accepting quests in raid"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.inraid = value end,
 					},
 					greeting = {
 						order = 11,
@@ -113,6 +121,7 @@ local function QuestTable()
 						name = L["Skip Greetings"],
 						desc = L["Enable/Disable NPC's greetings skip for one or more quests"],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.greeting = value end,
 					},
 					reward = {
 						order = 12,
@@ -120,6 +129,7 @@ local function QuestTable()
 						name = L["Auto Select Quest Reward"],
 						desc = L["Automatically select the quest reward with the highest vendor sell value."],
 						disabled = function() return not E.db.KlixUI.quest.auto.enable end,
+						set = function(info, value) E.db.KlixUI.quest.auto.reward = value end,
 					},
 				},
 			},
@@ -155,36 +165,42 @@ local function QuestTable()
 						type = "toggle",
 						name = L["No Detail"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.noDetail = value end,
 					},
 					instance = {
 						order = 6,
 						type = "toggle",
 						name = L["Instance"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.instance = value end,
 					},
 					raid = {
 						order = 7,
 						type = "toggle",
 						name = L["Raid"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.raid = value end,
 					},
 					party = {
 						order = 8,
 						type = "toggle",
 						name = L["Party"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.party = value end,
 					},
 					solo = {
 						order = 9,
 						type = "toggle",
 						name = L["Solo"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.solo = value end,
 					},
 					ignore_supplies = {
 						order = 10,
 						type = "toggle",
 						name = L["Ignore supplies quest"],
 						disabled = function() return not E.db.KlixUI.quest.announce.enable end,
+						set = function(info, value) E.db.KlixUI.quest.announce.ignore_supplies = value end,
 					},
 				},
 		    },

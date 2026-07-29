@@ -2,20 +2,22 @@ local KUI, T, E, L, V, P, G = unpack(select(2, ...))
 local HM = KUI:NewModule("HealerMana", "AceEvent-3.0")
 
 local function UpdateMana()
-    if T.IsInRaid() then 
+    if T.IsInRaid() then
 		return
     elseif T.IsInGroup() then
-        local members = T.GetNumGroupMembers()
-        for i = 1, members do
-            local frame = _G["ElvUF_PartyGroup1UnitButton" .. i]
-            frame.Power:Hide()
-            if i == 1 then
-                local role = T.UnitGroupRolesAssigned("player")
-                if role == "HEALER" then frame.Power:Show() end
-            else
-                local k = i - 1
-                local role = T.UnitGroupRolesAssigned("party" .. k)
-                if role == "HEALER" then frame.Power:Show() end
+        local header = _G['ElvUF_Party']
+        if not header then return end
+
+        for i = 1, header:GetNumChildren() do
+            local group = T.select(i, header:GetChildren())
+            if group then
+                for j = 1, group:GetNumChildren() do
+                    local unitbutton = T.select(j, group:GetChildren())
+                    if unitbutton and unitbutton.Power and unitbutton.unit then
+                        local role = T.UnitGroupRolesAssigned(unitbutton.unit)
+                        unitbutton.Power:SetShown(role == "HEALER")
+                    end
+                end
             end
         end
     end

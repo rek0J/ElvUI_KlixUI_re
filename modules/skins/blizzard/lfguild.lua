@@ -19,9 +19,9 @@ local function styleLookingForGuild()
 	local styled
 	hooksecurefunc("LookingForGuildFrame_CreateUIElements", function()
 		if styled then return end
-		DUI:ReskinRole(_G.LookingForGuildTankButton, "TANK")
-		DUI:ReskinRole(_G.LookingForGuildHealerButton, "HEALER")
-		DUI:ReskinRole(_G.LookingForGuildDamagerButton, "DPS")
+		KUI:ReskinRole(_G.LookingForGuildTankButton, "TANK")
+		KUI:ReskinRole(_G.LookingForGuildHealerButton, "HEALER")
+		KUI:ReskinRole(_G.LookingForGuildDamagerButton, "DPS")
 
 		styled = true
 	end)

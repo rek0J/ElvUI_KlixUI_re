@@ -168,7 +168,7 @@ function SQT:PartialUpdate(index)
 		if self.update_required == true then
 			self.update_required = nil
 			self.inInstance = T.select(1, T.IsInInstance())
-			self.areaID = areaID
+			self.areaID = T.C_Map_GetBestMapForUnit("player")
 			--[===[@debug@
 			DebugLog("Reschedule partial update")
 			--@end-debug@]===]

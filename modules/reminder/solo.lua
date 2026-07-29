@@ -22,19 +22,33 @@ local function OffhandHasWeapon()
 	return itemEquipLoc and itemEquipLoc ~= 'INVTYPE_SHIELD' and itemEquipLoc ~= 'INVTYPE_HOLDABLE' or false
 end
 
+-- Prefers the direct GetPlayerAuraBySpellID API; falls back to an index scan.
+-- (AuraUtil.FindAuraByName is gone on this client, see modules/reminder/raid.lua)
+local function GetAuraBySpellID(spellID, filter)
+	if C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID then
+		local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
+		if aura then return aura end
+	end
+	if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
+		local i = 1
+		while true do
+			local aura = C_UnitAuras.GetAuraDataByIndex("player", i, filter)
+			if not aura then break end
+			if aura.spellId == spellID then return aura end
+			i = i + 1
+		end
+	end
+	return nil
+end
+
 function KSR:PlayerHasFilteredBuff(frame, db, checkPersonal)
 	for buff, value in T.pairs(db) do
 		if value == true then
-			local name = T.GetSpellInfo(buff)
-			local _, icon, _, _, _, _, unitCaster
-			if name then _, icon, _, _, _, _, unitCaster = T.AuraUtil_FindAuraByName(name, "player", "HELPFUL") end
-
-			if checkPersonal then
-				if (name and icon and unitCaster == "player") then
-					return true
-				end
-			else
-				if (name and icon) then
+			local aura = GetAuraBySpellID(buff, "HELPFUL")
+			if aura then
+				if checkPersonal then
+					if aura.sourceUnit == "player" then return true end
+				else
 					return true
 				end
 			end
@@ -46,11 +60,7 @@ end
 function KSR:PlayerHasFilteredDebuff(frame, db)
 	for debuff, value in T.pairs(db) do
 		if value == true then
-			local name = T.GetSpellInfo(debuff)
-			local _, icon
-			if name then _, icon = T.AuraUtil_FindAuraByName(name, "player", "HARMFUL") end
-
-			if (name and icon) then
+			if GetAuraBySpellID(debuff, "HARMFUL") then
 				return true
 			end
 		end

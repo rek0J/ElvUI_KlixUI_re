@@ -13,14 +13,18 @@ local omfpf = _G["MovieFrame_PlayMovie"]
 _G["MovieFrame_PlayMovie"] = function(...)
 	if T.IsModifierKeyDown() or E.global.KlixUI.cinematic.kill == false or T.IsAddOnLoaded("CinematicCanceler") then return omfpf(...) end
 	KUI:Print("Movie Canceled.")
-	T.GameMovieFinished()
+	if T.GameMovieFinished then T.GameMovieFinished() end
 	return true
 end
 
 
+if type(_G.GameMovieFinished) == "function" then
+	hooksecurefunc(_G, "GameMovieFinished", function() if moviePlayed then T.SetCVar("Sound_EnableAllSound", 0) end moviePlayed = false end)
+end
+
 local function eventhandler(self, event)
 if E.global.KlixUI.cinematic.kill then return end
-	
+
 	if not T.GetCVarBool("Sound_EnableAllSound") then
 		if (event == "CINEMATIC_START") and E.global.KlixUI.cinematic.enableSound then
 			T.SetCVar("Sound_EnableAllSound", 1)
@@ -38,8 +42,6 @@ if E.global.KlixUI.cinematic.kill then return end
 				T.SetCVar("Sound_EnableAllSound", 1)
 			end
 		end
-		
-		hooksecurefunc(_G, "GameMovieFinished", function() if moviePlayed then T.SetCVar("Sound_EnableAllSound", 0) end moviePlayed = false end)
 	end
 end
 
